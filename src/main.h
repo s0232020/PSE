@@ -273,6 +273,7 @@ public:
                 return "No error";
         }
     }
+
     bool generateStatusReport(const std::string& filename) const {
         // maak output bestand
         std::ofstream outputFile(filename);
