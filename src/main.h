@@ -71,7 +71,7 @@ class PrintingSystem {
      * which will return the amount of printers and jobs
      * **/
 public:
-    LoadError loadFromFile(const std::string& filename) {
+    void loadFromFile(const std::string& filename) {
         /**
          Made by Jelle
          This function is going to parse a xml file and is going to store the printer and it's jobs with it's different
