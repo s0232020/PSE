@@ -73,6 +73,7 @@ private:
     int pageCount_;
     std::string userName_;
 };
+
 enum class LoadError {
     NO_ERROR,
     MISSING_SYSTEM,

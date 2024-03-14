@@ -4,7 +4,7 @@ class PrintingSystemTest : public ::testing::Test {
     /**
      * This is a class for testing the xml files
      **/
-     
+
 protected:
     virtual void SetUp() override {}
     virtual void TearDown() override {}
