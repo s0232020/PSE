@@ -1,0 +1,22 @@
+<!-- valid.xml -->
+<SYSTEM>
+    <DEVICE>
+        <name>Printer1</name>
+        <emissions>50</emissions>
+        <speed>20</speed>
+    </DEVICE>
+    <DEVICE>
+        <name>Printer2</name>
+        <emissions>30</emissions>
+        <speed>30</speed>
+    </DEVICE>
+    <JOB>
+        <jobNumber>1</jobNumber>
+        <pageCount>10</pageCount>
+    </JOB>
+    <JOB>
+        <jobNumber>2</jobNumber>
+        <pageCount>20</pageCount>
+        <userName>Bob</userName>
+    </JOB>
+</SYSTEM>

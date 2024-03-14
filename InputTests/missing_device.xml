@@ -1,0 +1,13 @@
+<!-- valid.xml -->
+<SYSTEM>
+    <JOB>
+        <jobNumber>1</jobNumber>
+        <pageCount>10</pageCount>
+        <userName>Alice</userName>
+    </JOB>
+    <JOB>
+        <jobNumber>2</jobNumber>
+        <pageCount>20</pageCount>
+        <userName>Bob</userName>
+    </JOB>
+</SYSTEM>

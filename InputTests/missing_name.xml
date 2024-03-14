@@ -1,0 +1,12 @@
+<!-- missing_name.xml -->
+<SYSTEM>
+    <DEVICE>
+        <emissions>50</emissions>
+        <speed>20</speed>
+    </DEVICE>
+    <JOB>
+        <jobNumber>1</jobNumber>
+        <pageCount>10</pageCount>
+        <userName>Alice</userName>
+    </JOB>
+</SYSTEM>
