@@ -17,6 +17,8 @@ public:
         return name_;
     }
 
+    std::vector<Job> completedJobs_;
+
     int getEmissions() const {
         return emissions_;
     }
@@ -312,6 +314,8 @@ public:
 
 
 
+
+
     void processJob(const std::string& printerName) {
         // Zoek de printer met de gegeven naam
         for (auto& printer : printers_) {
@@ -325,6 +329,9 @@ public:
 
                     // Verwijder  job uit  wachtrij, want die is klaar
                     printer.jobs_.erase(printer.jobs_.begin());
+
+                    printer.completedJobs_.push_back(job); // Voeg de voltooide job toe aan de lijst met voltooide jobs
+
 
                     // show bericht op scherm met details van de job die is uitgevoerd
                     std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
