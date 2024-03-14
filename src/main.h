@@ -71,7 +71,7 @@ class PrintingSystem {
      * which will return the amount of printers and jobs
      * **/
 public:
-    void loadFromFile(const std::string& filename) {
+    LoadError loadFromFile(const std::string& filename) {
         /**
          Made by Jelle
          This function is going to parse a xml file and is going to store the printer and it's jobs with it's different
@@ -92,69 +92,88 @@ public:
         if (!systemElement) {
             loadError = LoadError::MISSING_SYSTEM;
         }
-
         TiXmlElement* element = systemElement->FirstChildElement();
+        std::string name = "";
+        int emissions = 0;
+        int speed = 0;
+        int jobNumber = 0;
+        int pageCount = 0;
+        const char* userName = "";
         while (element != nullptr) {
             const char* elementName = element->Value();
+            TiXmlElement* nameElement = element->FirstChildElement("name");
+            TiXmlElement* emissionsElement = element->FirstChildElement("emissions");
+            TiXmlElement* speedElement = element->FirstChildElement("speed");
             if (strcmp(elementName, "DEVICE") == 0) {
-                if (!element->FirstChildElement("name")){
+                if (!nameElement){
                     loadError = LoadError::MISSING_NAME;
                 }
-                element = element->NextSiblingElement();
-                if (!element->FirstChildElement("emissions")){
+                if (nameElement){
+                    name = nameElement->GetText();
+                }
+                if (!emissionsElement){
                     loadError = LoadError::MISSING_EMISSIONS;
                 }
-                element = element->NextSiblingElement();
-                if (!element->FirstChildElement("speed")){
+                if (emissionsElement){
+                    emissions = std::atoi(emissionsElement->GetText());
+                    if (emissions < 0){
+                        loadError = LoadError::NEGATIVE_VALUE_EMISSIONS;
+                    }
+                }
+                if (!speedElement){
                     loadError = LoadError::MISSING_SPEED;
                 }
-                // Store all the elements in variables
-                const char* name = element->FirstChildElement("name")->GetText();
-                int emissions = std::atoi(element->FirstChildElement("emissions")->GetText());
-                int speed = std::atoi(element->FirstChildElement("speed")->GetText());
-                if (speed < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_SPEED;
-                }
-                if (emissions < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_EMISSIONS;
+                if (speedElement){
+                    speed = std::atoi(speedElement->GetText());
+                    if (speed < 0){
+                        loadError = LoadError::NEGATIVE_VALUE_SPEED;
+                    }
                 }
                 Printer printer(name, emissions, speed);
                 printers_.push_back(printer);
                 DeviceSeen = true;
             }
             else if (strcmp(elementName, "JOB") == 0) {
-                if (!element->FirstChildElement("jobNumber")){
+                TiXmlElement* jobNumberElement = element->FirstChildElement("jobNumber");
+                TiXmlElement* pageCountElement = element->FirstChildElement("pageCount");
+                TiXmlElement* userNameElement = element->FirstChildElement("userName");
+                if (!jobNumberElement){
                     loadError = LoadError::MISSING_JOB_NUMBER;
                 }
-                element = element->NextSiblingElement();
-                if (!element->FirstChildElement("pageCount")){
+                if (jobNumberElement){
+                    jobNumber = std::atoi(jobNumberElement->GetText());
+                    if (jobNumber < 0){
+                        loadError = LoadError::NEGATIVE_VALUE_JOB_NUMBER;
+                    }
+                }
+                if (!pageCountElement){
                     loadError = LoadError::MISSING_PAGE_COUNT;
                 }
-                element = element->NextSiblingElement();
-                if (!element->FirstChildElement("userName")){
+                if (pageCountElement){
+                    pageCount = std::atoi(pageCountElement->GetText());
+                    if (pageCount < 0){
+                        loadError = LoadError::NEGATIVE_VALUE_PAGE_COUNT;
+                    }
+                }
+                if (!userNameElement){
                     loadError = LoadError::MISSING_USER_NAME;
                 }
-                // Store all the elements in variables
-                int jobNumber = std::atoi(element->FirstChildElement("jobNumber")->GetText());
-                int pageCount = std::atoi(element->FirstChildElement("pageCount")->GetText());
-                const char* userName = element->FirstChildElement("userName")->GetText();
-                if (jobNumber < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_JOB_NUMBER;
-                }
-                if (pageCount < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_PAGE_COUNT;
+                if (userNameElement){
+                    userName = userNameElement->GetText();
                 }
                 Job job(jobNumber, pageCount, userName);
                 jobs_.push_back(job);
                 JobSeen = true;
             }
+            element = element->NextSiblingElement();
         }
-        if (!DeviceSeen) { // Check to see if there is a device in the xml file
+        if (!DeviceSeen) {
             loadError = LoadError::MISSING_DEVICE;
         }
         if (!JobSeen) {
             loadError = LoadError::MISSING_JOB;
         }
+        return loadError;
     }
     std::string getLoadErrorMessage(LoadError error) {
         switch (error) {

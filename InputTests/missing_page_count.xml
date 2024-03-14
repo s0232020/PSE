@@ -1,0 +1,12 @@
+<!-- negative_page_count.xml -->
+<SYSTEM>
+    <DEVICE>
+        <name>Printer1</name>
+        <emissions>50</emissions>
+        <speed>20</speed>
+    </DEVICE>
+    <JOB>
+        <jobNumber>1</jobNumber>
+        <userName>Alice</userName>
+    </JOB>
+</SYSTEM>
