@@ -2,9 +2,9 @@
 
 class PrintingSystemTest : public ::testing::Test {
     /**
-     * Made by Jelle
      * This is a class for testing the xml files
-     * **/
+     **/
+     
 protected:
     virtual void SetUp() override {}
     virtual void TearDown() override {}
