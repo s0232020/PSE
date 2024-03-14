@@ -45,6 +45,9 @@ TEST_F(PrintingSystemTest, MissingTests){
 
     error = system.loadFromFile("negative_speed.xml");
     EXPECT_EQ(LoadError::NEGATIVE_VALUE_SPEED, error);
+
+    error = system.loadFromFile("valid.xml");
+    EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
 

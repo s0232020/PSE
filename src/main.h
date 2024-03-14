@@ -1,6 +1,7 @@
 #ifndef PROJECTTITLE_MAIN_H
 #define PROJECTTITLE_MAIN_H
 #include "Include.h"
+class Job;
 class Printer {
     /**
      * Made by Jelle
@@ -23,6 +24,12 @@ public:
     }
     void setEmissions(int emissions) { emissions_ = emissions; }
     void setSpeed(int speed) { speed_ = speed; }
+
+    void addJob(const Job& job);
+
+    std::vector<Job> jobs_;
+
+
 private:
     std::string name_;
     int emissions_;
@@ -41,6 +48,21 @@ public:
     int getJobNumber() const { return jobNumber_; }
     int getPageCount() const { return pageCount_; }
     const std::string& getUserName() const { return userName_; }
+
+    bool processPage() {
+        if (pageCount_ > 0) {
+            --pageCount_;
+            return true;
+        }
+        return false;
+    }
+
+    bool isCompleted() const {
+        return pageCount_ == 0;
+    }
+
+
+
 private:
     int jobNumber_;
     int pageCount_;
@@ -71,6 +93,7 @@ class PrintingSystem {
      * which will return the amount of printers and jobs
      * **/
 public:
+
     LoadError loadFromFile(const std::string& filename) {
         /**
          Made by Jelle
@@ -207,6 +230,54 @@ public:
             default:
                 return "No error";
         }
+    }
+
+    bool generateStatusReport(const std::string& filename) const {
+        std::ofstream outputFile(filename);
+
+        if (!outputFile.is_open()) {
+            std::cout << "Failed to create output file: " << filename << "\n";
+            return false;
+        }
+
+        for (const auto& printer : printers_) {
+            outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
+            outputFile << "* Current:\n";
+
+            // TODO: Implement a way to associate jobs with printers to display the correct current and queued jobs.
+
+            outputFile << "* Queue:\n";
+        }
+
+        for (const auto& job : jobs_) {
+            outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
+        }
+
+        outputFile.close();
+        return true;
+    }
+
+    void processJob(const std::string& printerName) {
+        for (auto& printer : printers_) {
+            if (printer.getName() == printerName && !printer.jobs_.empty()) {
+                Job& job = printer.jobs_.front();
+
+                while (job.processPage()) {
+                    // Simulate printing a page.
+                }
+
+                printer.jobs_.erase(printer.jobs_.begin());
+
+                std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
+                std::cout << "Number: " << job.getJobNumber() << "\n";
+                std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
+                std::cout << job.getPageCount() << " pages\n";
+
+                return;
+            }
+        }
+
+        std::cout << "No jobs found for printer: " << printerName << "\n";
     }
 
     int getPrinterCount() const { // Keep count of how many devices there are

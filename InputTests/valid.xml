@@ -1,23 +1,22 @@
-<!-- valid.xml -->
 <SYSTEM>
     <DEVICE>
-        <name>Printer1</name>
-        <emissions>50</emissions>
-        <speed>20</speed>
+        <name>Office_Printer5</name>
+        <emissions>3</emissions>
+        <speed>40</speed>
     </DEVICE>
     <DEVICE>
-        <name>Printer2</name>
-        <emissions>30</emissions>
-        <speed>30</speed>
+        <name>Office_Printer6</name>
+        <emissions>5</emissions>
+        <speed>50</speed>
     </DEVICE>
     <JOB>
-        <jobNumber>1</jobNumber>
-        <pageCount>10</pageCount>
-        <userName>Alice</userName>
+        <jobNumber>89751</jobNumber>
+        <pageCount>2</pageCount>
+        <userName>SergeDemeyer</userName>
     </JOB>
     <JOB>
-        <jobNumber>2</jobNumber>
-        <pageCount>20</pageCount>
-        <userName>Bob</userName>
+        <jobNumber>2189</jobNumber>
+        <pageCount>3</pageCount>
+        <userName>anonymous_user</userName>
     </JOB>
 </SYSTEM>

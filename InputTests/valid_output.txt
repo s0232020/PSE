@@ -1,0 +1,8 @@
+Printer Office_Printer5 (CO2: 3g/page):
+* Current:
+* Queue:
+Printer Office_Printer6 (CO2: 5g/page):
+* Current:
+* Queue:
+  [#89751|SergeDemeyer]
+  [#2189|anonymous_user]
