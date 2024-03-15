@@ -5,6 +5,35 @@ class PrintingSystemTest : public ::testing::Test {
     /**
      * This is a class for testing the xml files
      **/
+public:
+    bool matchFiles(std::string expectedFileName, std::string filename){
+        std::ifstream expectedFile(expectedFileName);
+        std::string filenametxt = filename + ".txt";
+        if(!std::ifstream(filenametxt)){
+            system.loadFromFile(filename);
+            system.generateStatusReport(filenametxt);
+        }
+        std::ifstream validFile(filenametxt);
+
+        // Check if both files are open
+        if (!expectedFile.is_open() || !validFile.is_open()) {
+            std::cerr << "Failed to open one or more files" << std::endl;
+        }
+
+        // Read characters from each file and compare them
+        char expectedChar, Char;
+        int position = 0;
+        while (expectedFile.get(expectedChar) && validFile.get(Char)) {
+            if (expectedChar != Char) {
+                return false;
+            }
+            position++;
+        }
+
+        return true;
+        expectedFile.close();
+        validFile.close();
+    }
 
 protected:
     virtual void SetUp() override {}
@@ -51,4 +80,8 @@ TEST_F(PrintingSystemTest, MissingTests){
     EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
-
+TEST_F(PrintingSystemTest, HappyDay) {
+    // Assert whether files match or not
+    EXPECT_TRUE(matchFiles("expected_output.txt", "valid.xml"));
+    EXPECT_FALSE(matchFiles("non_expected_output.txt", "valid.xml"));
+}

@@ -298,13 +298,7 @@ public:
 
     bool generateStatusReport(const std::string& filename) {
         std::ofstream outputFile;
-        int fileIndex = 1;
         std::string outputFilename = filename;
-
-        // Check if file already exists and append a number to the filename if necessary
-        while (std::ifstream(outputFilename)) {
-            outputFilename = filename + "_" + std::to_string(fileIndex++) + ".txt";
-        }
 
         // Open output file with new filename
         outputFile.open(outputFilename);
@@ -320,17 +314,17 @@ public:
             outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
             const Job& currentJob = printer.getCurrentJob();
 
-                for(const auto& job : printer.getJobQueue()) {
-                    if(job.getJobNumber() == currentJob.getJobNumber()) {
-                        // This is the first job, print "Current"
-                        outputFile << "* Current:\n";
-                        outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
-                        outputFile << "* Queue:\n";
-                    } else {
-                        // This is not the first job, print "Queue"
-                        outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
-                    }
+            for(const auto& job : printer.getJobQueue()) {
+                if(job.getJobNumber() == currentJob.getJobNumber()) {
+                    // This is the first job, print "Current"
+                    outputFile << "* Current:\n";
+                    outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
+                    outputFile << "* Queue:\n";
+                } else {
+                    // This is not the first job, print "Queue"
+                    outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
                 }
+            }
             outputFile << "\n";
         }
 
