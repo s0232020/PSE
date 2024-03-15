@@ -1,0 +1,346 @@
+\doxysection{main.\+h}
+\hypertarget{main_8h_source}{}\label{main_8h_source}\index{src/main.h@{src/main.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ PROJECTTITLE\_MAIN\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ PROJECTTITLE\_MAIN\_H}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Include.h"{}}}
+\DoxyCodeLine{00004\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_job}{Job}};}
+\DoxyCodeLine{00005\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_printer}{Printer}}\ \{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \mbox{\hyperlink{class_printer_ac17912c4a8e5ad2e034b9e99d95c1040}{Printer}}(\textcolor{keyword}{const}\ std::string\&\ name,\ \textcolor{keywordtype}{int}\ emissions,\ \textcolor{keywordtype}{int}\ speed)\ :}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \ \ \ \ name\_(name),\ emissions\_(emissions),\ speed\_(speed)\ \{\}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ std::string\ getName()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ name\_;}
+\DoxyCodeLine{00018\ \ \ \ \ \}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ std::vector<Job>\ completedJobs\_;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{int}\ getEmissions()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ emissions\_;}
+\DoxyCodeLine{00024\ \ \ \ \ \}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ getSpeed()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ speed\_;}
+\DoxyCodeLine{00028\ \ \ \ \ \}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ setEmissions(\textcolor{keywordtype}{int}\ emissions)\ \{\ emissions\_\ =\ emissions;\ \}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ setSpeed(\textcolor{keywordtype}{int}\ speed)\ \{\ speed\_\ =\ speed;\ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ addJob(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_job}{Job}}\&\ job);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ std::vector<Job>\ jobs\_;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{class_job}{Job}}\&\ getCurrentJob()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ jobs\_.front();}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ std::vector<Job>\ getJobQueue()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ jobs\_;}
+\DoxyCodeLine{00045\ \ \ \ \ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \ \ std::string\ name\_;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{int}\ emissions\_;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{int}\ speed\_;}
+\DoxyCodeLine{00051\ \};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_job}{Job}}\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \ \ \mbox{\hyperlink{class_job_a35b685e9c52316510a3caeac02f7b7d6}{Job}}(\textcolor{keywordtype}{int}\ jobNumber,\ \textcolor{keywordtype}{int}\ pageCount,\ \textcolor{keyword}{const}\ std::string\&\ userName)\ :}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ jobNumber\_(jobNumber),\ pageCount\_(pageCount),\ userName\_(userName)\ \{\}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{int}\ getJobNumber()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ jobNumber\_;\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{int}\ getPageCount()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ pageCount\_;\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ getUserName()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ userName\_;\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{bool}\ processPage()\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pageCount\_\ >\ 0)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ -\/-\/pageCount\_;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{bool}\ isCompleted()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pageCount\_\ ==\ 0;}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{int}\ jobNumber\_;}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{int}\ pageCount\_;}
+\DoxyCodeLine{00085\ \ \ \ \ std::string\ userName\_;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{enum\ class}\ LoadError\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ NO\_ERROR,}
+\DoxyCodeLine{00090\ \ \ \ \ MISSING\_SYSTEM,}
+\DoxyCodeLine{00091\ \ \ \ \ MISSING\_DEVICE,}
+\DoxyCodeLine{00092\ \ \ \ \ MISSING\_NAME,}
+\DoxyCodeLine{00093\ \ \ \ \ MISSING\_EMISSIONS,}
+\DoxyCodeLine{00094\ \ \ \ \ MISSING\_SPEED,}
+\DoxyCodeLine{00095\ \ \ \ \ MISSING\_JOB,}
+\DoxyCodeLine{00096\ \ \ \ \ MISSING\_JOB\_NUMBER,}
+\DoxyCodeLine{00097\ \ \ \ \ MISSING\_PAGE\_COUNT,}
+\DoxyCodeLine{00098\ \ \ \ \ MISSING\_USER\_NAME,}
+\DoxyCodeLine{00099\ \ \ \ \ NEGATIVE\_VALUE\_SPEED,}
+\DoxyCodeLine{00100\ \ \ \ \ NEGATIVE\_VALUE\_EMISSIONS,}
+\DoxyCodeLine{00101\ \ \ \ \ NEGATIVE\_VALUE\_JOB\_NUMBER,}
+\DoxyCodeLine{00102\ \ \ \ \ NEGATIVE\_VALUE\_PAGE\_COUNT,}
+\DoxyCodeLine{00103\ \ \ \ \ FAILED\_TO\_OPEN\_FILE}
+\DoxyCodeLine{00104\ \};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_printing_system}{PrintingSystem}}\ \{}
+\DoxyCodeLine{00107\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ LoadError\ \mbox{\hyperlink{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}{loadFromFile}}(\textcolor{keyword}{const}\ std::string\&\ filename)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ LoadError\ loadError\ =\ LoadError::NO\_ERROR;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ DeviceSeen\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ JobSeen\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_document}{TiXmlDocument}}\ doc;}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!doc.\mbox{\hyperlink{class_ti_xml_document_a4c852a889c02cf251117fd1d9fe1845f}{LoadFile}}(filename.c\_str()))\{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::FAILED\_TO\_OPEN\_FILE;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ systemElement\ =\ doc.\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}SYSTEM"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!systemElement)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_SYSTEM;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ element\ =\ systemElement-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}();}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ std::string\ name\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ emissions\ =\ 0;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ speed\ =\ 0;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jobNumber\ =\ 0;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pageCount\ =\ 0;}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ userName\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (element\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ elementName\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a3b260dd22313f310c0acb2e68ada6f5b}{Value}}();}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ nameElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}name"{}});}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ emissionsElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}emissions"{}});}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ speedElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}speed"{}});}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (strcmp(elementName,\ \textcolor{stringliteral}{"{}DEVICE"{}})\ ==\ 0)\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!nameElement)\{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_NAME;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nameElement)\{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ nameElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}();}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!emissionsElement)\{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_EMISSIONS;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (emissionsElement)\{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ emissions\ =\ std::atoi(emissionsElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}());}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (emissions\ <\ 0)\{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::NEGATIVE\_VALUE\_EMISSIONS;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!speedElement)\{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_SPEED;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (speedElement)\{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ speed\ =\ std::atoi(speedElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}());}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (speed\ <\ 0)\{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::NEGATIVE\_VALUE\_SPEED;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_printer}{Printer}}\ printer(name,\ emissions,\ speed);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ printers\_.push\_back(printer);}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DeviceSeen\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (strcmp(elementName,\ \textcolor{stringliteral}{"{}JOB"{}})\ ==\ 0)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ jobNumberElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}jobNumber"{}});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ pageCountElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}pageCount"{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_ti_xml_element}{TiXmlElement}}*\ userNameElement\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_a12c973e1da9e90a178924b8ea5a5f4d1}{FirstChildElement}}(\textcolor{stringliteral}{"{}userName"{}});}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!jobNumberElement)\{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_JOB\_NUMBER;}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (jobNumberElement)\{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jobNumber\ =\ std::atoi(jobNumberElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}());}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (jobNumber\ <\ 0)\{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::NEGATIVE\_VALUE\_JOB\_NUMBER;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pageCountElement)\{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_PAGE\_COUNT;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pageCountElement)\{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pageCount\ =\ std::atoi(pageCountElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}());}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pageCount\ <\ 0)\{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::NEGATIVE\_VALUE\_PAGE\_COUNT;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!userNameElement)\{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_USER\_NAME;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (userNameElement)\{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ userName\ =\ userNameElement-\/>\mbox{\hyperlink{class_ti_xml_element_af0f814ecbd43d50d4cdbdf4354d3da39}{GetText}}();}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_job}{Job}}\ job(jobNumber,\ pageCount,\ userName);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jobs\_.push\_back(job);}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ JobSeen\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ element\ =\ element-\/>\mbox{\hyperlink{class_ti_xml_node_ac6105781c913a42aa7f3f17bd1964f7c}{NextSiblingElement}}();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!DeviceSeen)\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_DEVICE;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!JobSeen)\ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ loadError\ =\ LoadError::MISSING\_JOB;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ loadError;}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ std::string\ \mbox{\hyperlink{class_printing_system_a7b3e7e5c08bc17ce857f902d3ece6022}{getLoadErrorMessage}}(LoadError\ error)\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (error)\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_SYSTEM:}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}System\ missing"{}};}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_DEVICE:}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Device\ missing"{}};}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_NAME:}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Name\ missing"{}};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_EMISSIONS:}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Emissions\ missing"{}};}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_SPEED:}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Speed\ missing"{}};}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_JOB:}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Job\ missing"{}};}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_JOB\_NUMBER:}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Job\ number\ missing"{}};}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_PAGE\_COUNT:}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Page\ count\ missing"{}};}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::MISSING\_USER\_NAME:}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}User\ name\ missing"{}};}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::NEGATIVE\_VALUE\_SPEED:}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Negative\ value\ for\ speed"{}};}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::NEGATIVE\_VALUE\_EMISSIONS:}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Negative\ value\ for\ emissions"{}};}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::NEGATIVE\_VALUE\_JOB\_NUMBER:}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Negative\ value\ for\ job\ number"{}};}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::NEGATIVE\_VALUE\_PAGE\_COUNT:}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Negative\ value\ for\ page\ count"{}};}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LoadError::NO\_ERROR:}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}No\ error"{}};}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00277\ \ \ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keywordtype}{bool}\ generateStatusReport(\textcolor{keyword}{const}\ std::string\&\ filename)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ maak\ output\ bestand}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ std::ofstream\ outputFile(filename);}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ of\ output\ bestand\ is\ geopend,\ als\ niet:\ print\ foutmelding\ en\ return\ false}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!outputFile.is\_open())\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ output\ file:\ "{}}\ <<\ filename\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ voor\ elke\ printer\ in\ het\ systeem}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ printer\ :\ printers\_)\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ print\ printer\ info}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}Printer\ "{}}\ <<\ printer.getName()\ <<\ \textcolor{stringliteral}{"{}\ (CO2:\ "{}}\ <<\ printer.getEmissions()\ <<\ \textcolor{stringliteral}{"{}g/page):\(\backslash\)n"{}};}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ als\ er\ een\ huidige\ job\ is,\ print\ de\ details}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!printer.getCurrentJob().isCompleted())\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{class_job}{Job}}\&\ currentJob\ =\ printer.getCurrentJob();}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}*\ Current:\(\backslash\)n"{}};}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}\ \ [\#"{}}\ <<\ currentJob.getJobNumber()\ <<\ \textcolor{stringliteral}{"{}|"{}}\ <<\ currentJob.getUserName()\ <<\ \textcolor{stringliteral}{"{}]\(\backslash\)n"{}};}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ print\ de\ jobs\ in\ de\ wachtrij}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}*\ Queue:\(\backslash\)n"{}};}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ job\ :\ printer.getJobQueue())\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}\ \ [\#"{}}\ <<\ job.getJobNumber()\ <<\ \textcolor{stringliteral}{"{}|"{}}\ <<\ job.getUserName()\ <<\ \textcolor{stringliteral}{"{}]\(\backslash\)n"{}};}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ outputFile\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00309\ }
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sluit\ output\ bestand\ en\ return\ true}}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ outputFile.close();}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \ \ \textcolor{keywordtype}{void}\ processJob(\textcolor{keyword}{const}\ std::string\&\ printerName)\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Zoek\ de\ printer\ met\ de\ gegeven\ naam}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ printer\ :\ printers\_)\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (printer.getName()\ ==\ printerName)\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Als\ de\ printer\ een\ job\ in\ de\ wachtrij\ heeft}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!printer.jobs\_.empty())\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_job}{Job}}\&\ job\ =\ printer.jobs\_.front();\ \textcolor{comment}{//\ Haal\ de\ eerste\ job\ uit\ de\ wachtrij}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ printen\ alle\ pagina's}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (job.processPage())\ \{\}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Verwijder\ \ job\ uit\ \ wachtrij,\ want\ die\ is\ klaar}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ printer.jobs\_.erase(printer.jobs\_.begin());}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ printer.completedJobs\_.push\_back(job);\ \textcolor{comment}{//\ Voeg\ de\ voltooide\ job\ toe\ aan\ de\ lijst\ met\ voltooide\ jobs}}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ bericht\ op\ scherm\ met\ details\ van\ de\ job\ die\ is\ uitgevoerd}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Printer\ \(\backslash\)"{}"{}}\ <<\ printer.getName()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)"{}\ finished\ job:\(\backslash\)n"{}};}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Number:\ "{}}\ <<\ job.getJobNumber()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Submitted\ by\ \(\backslash\)"{}"{}}\ <<\ job.getUserName()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ job.getPageCount()\ <<\ \textcolor{stringliteral}{"{}\ pages\(\backslash\)n"{}};}
+\DoxyCodeLine{00337\ }
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Als\ er\ geen\ job\ is\ gevonden\ voor\ de\ gegeven\ printer,\ print\ een\ foutmelding}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}No\ jobs\ found\ for\ printer:\ "{}}\ <<\ printerName\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{keywordtype}{int}\ getPrinterCount()\textcolor{keyword}{\ const\ }\{\ \textcolor{comment}{//\ Keep\ count\ of\ how\ many\ printers\ there\ are}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ printers\_.size();}
+\DoxyCodeLine{00351\ \ \ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \ \ \textcolor{keywordtype}{int}\ getJobCount()\textcolor{keyword}{\ const\ }\{\ \textcolor{comment}{//\ Keep\ count\ of\ how\ many\ jobs\ there\ are}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ jobs\_.size();}
+\DoxyCodeLine{00355\ \ \ \ \ \}}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ std::vector<Printer>\ printers\_;}
+\DoxyCodeLine{00358\ std::vector<Job>\ jobs\_;}
+\DoxyCodeLine{00359\ \};}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//PROJECTTITLE\_MAIN\_H}}
+
+\end{DoxyCode}

@@ -10,13 +10,23 @@
         <speed>50</speed>
     </DEVICE>
     <JOB>
-        <jobNumber>89751</jobNumber>
-        <pageCount>2</pageCount>
-        <userName>SergeDemeyer</userName>
+        <jobNumber>1</jobNumber>
+        <pageCount>1</pageCount>
+        <userName>Gebruiker1</userName>
     </JOB>
     <JOB>
-        <jobNumber>2189</jobNumber>
-        <pageCount>3</pageCount>
-        <userName>anonymous_user</userName>
+        <jobNumber>2</jobNumber>
+        <pageCount>1</pageCount>
+        <userName>Gebruiker2</userName>
+    </JOB>
+    <JOB>
+        <jobNumber>3</jobNumber>
+        <pageCount>1</pageCount>
+        <userName>Gebruiker3</userName>
+    </JOB>
+    <JOB>
+        <jobNumber>4</jobNumber>
+        <pageCount>1</pageCount>
+        <userName>Gebruiker4</userName>
     </JOB>
 </SYSTEM>

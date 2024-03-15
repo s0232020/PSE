@@ -2,6 +2,7 @@
 #define PROJECTTITLE_MAIN_H
 #include "Include.h"
 class Job;
+class PrintingSystem;
 class Printer {
     /**
      * This is a class with getter functions like getName, getEmissions and getSpeed which will be usefull for
@@ -31,17 +32,27 @@ public:
 
     void setSpeed(int speed) { speed_ = speed; }
 
-    void addJob(const Job& job);
+    void setName(std::string name) { name_ = name; }
 
-    std::vector<Job> jobs_;
+    std::vector<Job> printerjobs_;
 
-
-    const Job& getCurrentJob() const {
-        return jobs_.front();
+    void addJob(const Job& job){
+        printerjobs_.emplace_back(job);
     }
 
+    void removeCurrentJob() {
+        if (!printerjobs_.empty()) {
+            printerjobs_.erase(printerjobs_.begin());
+        }
+    }
+
+    const Job& getCurrentJob() const {
+        return printerjobs_.front();
+    }
+
+
     std::vector<Job> getJobQueue() const {
-        return jobs_;
+        return printerjobs_;
     }
 
 private:
@@ -56,6 +67,9 @@ class Job {
      * testing the validity and consistency of our printer and xml parser.
      **/
 public:
+
+    Job(){}
+
     Job(int jobNumber, int pageCount, const std::string& userName) :
             jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName) {}
 
@@ -74,7 +88,12 @@ public:
     }
 
     bool isCompleted() const {
-        return pageCount_ == 0;
+        if (pageCount_ == 0){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 
@@ -105,7 +124,6 @@ enum class LoadError {
 
 class PrintingSystem {
 public:
-
     LoadError loadFromFile(const std::string& filename) {
         /**
          * This function loads the printing system configuration from an XML file.
@@ -219,6 +237,8 @@ public:
 
                 Job job(jobNumber, pageCount, userName);
                 jobs_.push_back(job);
+                auto& printer = printers_.front();
+                printer.addJob(job);
 
                 JobSeen = true;
 
@@ -276,9 +296,18 @@ public:
         }
     }
 
-    bool generateStatusReport(const std::string& filename) const {
-        // maak output bestand
-        std::ofstream outputFile(filename);
+    bool generateStatusReport(const std::string& filename) {
+        std::ofstream outputFile;
+        int fileIndex = 1;
+        std::string outputFilename = filename;
+
+        // Check if file already exists and append a number to the filename if necessary
+        while (std::ifstream(outputFilename)) {
+            outputFilename = filename + "_" + std::to_string(fileIndex++) + ".txt";
+        }
+
+        // Open output file with new filename
+        outputFile.open(outputFilename);
 
         // check of output bestand is geopend, als niet: print foutmelding en return false
         if (!outputFile.is_open()) {
@@ -288,22 +317,20 @@ public:
 
         // voor elke printer in het systeem
         for (const auto& printer : printers_) {
-            // print printer info
             outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
+            const Job& currentJob = printer.getCurrentJob();
 
-            // als er een huidige job is, print de details
-            if (!printer.getCurrentJob().isCompleted()) {
-                const Job& currentJob = printer.getCurrentJob();
-                outputFile << "* Current:\n";
-                outputFile << "  [#" << currentJob.getJobNumber() << "|" << currentJob.getUserName() << "]\n";
-            }
-
-            // print de jobs in de wachtrij
-            outputFile << "* Queue:\n";
-            for (const auto& job : printer.getJobQueue()) {
-                outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
-            }
-
+                for(const auto& job : printer.getJobQueue()) {
+                    if(job.getJobNumber() == currentJob.getJobNumber()) {
+                        // This is the first job, print "Current"
+                        outputFile << "* Current:\n";
+                        outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
+                        outputFile << "* Queue:\n";
+                    } else {
+                        // This is not the first job, print "Queue"
+                        outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
+                    }
+                }
             outputFile << "\n";
         }
 
@@ -313,44 +340,30 @@ public:
     }
 
 
-
-
-
     void processJob(const std::string& printerName) {
-        // Zoek de printer met de gegeven naam
+        // find printer with given name
         for (auto& printer : printers_) {
             if (printer.getName() == printerName) {
-                // Als de printer een job in de wachtrij heeft
-                if (!printer.jobs_.empty()) {
-                    Job& job = printer.jobs_.front(); // Haal de eerste job uit de wachtrij
-
-                    // printen alle pagina's
-                    while (job.processPage()) {}
-
-                    // Verwijder  job uit  wachtrij, want die is klaar
-                    printer.jobs_.erase(printer.jobs_.begin());
-
-                    printer.completedJobs_.push_back(job); // Voeg de voltooide job toe aan de lijst met voltooide jobs
-
-
-                    // show bericht op scherm met details van de job die is uitgevoerd
+                while (!printer.printerjobs_.empty()){
+                    Job& job = printer.printerjobs_.front();
+                    int pageCount = job.getPageCount();
+                    // print all pages of job
+                    while (job.getPageCount() > 0) {
+                        job.processPage();
+                    }
+                    // print message to screen with job details
                     std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
                     std::cout << "Number: " << job.getJobNumber() << "\n";
                     std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
-                    std::cout << job.getPageCount() << " pages\n";
+                    std::cout << pageCount << " pages\n" << std::endl;
 
-
-
-                    return;
+                    // remove job from queue and add to completed jobs
+                    printer.completedJobs_.push_back(job);
+                    printer.printerjobs_.erase(printer.printerjobs_.begin());
                 }
             }
         }
-
-        // Als er geen job is gevonden voor de gegeven printer, print een foutmelding
-        std::cout << "No jobs found for printer: " << printerName << "\n";
     }
-
-
 
     int getPrinterCount() const { // Keep count of how many printers there are
         return printers_.size();

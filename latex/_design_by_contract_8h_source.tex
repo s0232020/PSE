@@ -1,0 +1,24 @@
+\doxysection{Design\+By\+Contract.\+h}
+\hypertarget{_design_by_contract_8h_source}{}\label{_design_by_contract_8h_source}\index{src/DesignByContract.h@{src/DesignByContract.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ PROJECTTITLE\_DESIGNBYCONTRACT\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ PROJECTTITLE\_DESIGNBYCONTRACT\_H}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//============================================================================}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Name\ \ \ \ \ \ \ \ :\ DesignByContract.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Author\ \ \ \ \ \ :\ Serge\ Demeyer,\ modified\ by\ Kasper\ Engelen}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ Version\ \ \ \ \ :}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ Copyright\ \ \ :\ Project\ Software\ Engineering\ -\/\ BA1\ Informatica\ -\/\ Serge\ Demeyer\ -\/\ University\ of\ Antwerp}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ Description\ :\ Declarations\ for\ design\ by\ contract\ in\ C++,\ compatible\ with\ Windows-\/based\ C++\ buildsystems}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//============================================================================}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#define\ REQUIRE(assertion,\ what)\ \(\backslash\)}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\ \ \ \ if\ (!(assertion))\ \_assert\ (what,\ \_\_FILE\_\_,\ \_\_LINE\_\_)}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ ENSURE(assertion,\ what)\ \(\backslash\)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\ \ \ \ if\ (!(assertion))\ \_assert\ (what,\ \_\_FILE\_\_,\ \_\_LINE\_\_)}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//PROJECTTITLE\_DESIGNBYCONTRACT\_H}}
+
+\end{DoxyCode}

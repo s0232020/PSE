@@ -1,0 +1,50 @@
+\doxysection{Printing\+System Class Reference}
+\hypertarget{class_printing_system}{}\label{class_printing_system}\index{PrintingSystem@{PrintingSystem}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Load\+Error \mbox{\hyperlink{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}{load\+From\+File}} (const std\+::string \&filename)
+\item 
+std\+::string \mbox{\hyperlink{class_printing_system_a7b3e7e5c08bc17ce857f902d3ece6022}{get\+Load\+Error\+Message}} (Load\+Error error)
+\item 
+\Hypertarget{class_printing_system_a512dd94580ad0fa6d39642e606412331}\label{class_printing_system_a512dd94580ad0fa6d39642e606412331} 
+bool {\bfseries generate\+Status\+Report} (const std\+::string \&filename) const
+\item 
+\Hypertarget{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba}\label{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba} 
+void {\bfseries process\+Job} (const std\+::string \&printer\+Name)
+\item 
+\Hypertarget{class_printing_system_ad4f8e012061a7ce76024f0004e7d44ad}\label{class_printing_system_ad4f8e012061a7ce76024f0004e7d44ad} 
+int {\bfseries get\+Printer\+Count} () const
+\item 
+\Hypertarget{class_printing_system_aeac6f8930df6176f71934f1f1fe75ec1}\label{class_printing_system_aeac6f8930df6176f71934f1f1fe75ec1} 
+int {\bfseries get\+Job\+Count} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_printing_system_abd3f9dd5238b8a47bbc366412fd88d97}\label{class_printing_system_abd3f9dd5238b8a47bbc366412fd88d97} 
+std\+::vector$<$ \mbox{\hyperlink{class_printer}{Printer}} $>$ {\bfseries printers\+\_\+}
+\item 
+\Hypertarget{class_printing_system_ae1504b55d6fe9f01d1a14e848ebc2358}\label{class_printing_system_ae1504b55d6fe9f01d1a14e848ebc2358} 
+std\+::vector$<$ \mbox{\hyperlink{class_job}{Job}} $>$ {\bfseries jobs\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_printing_system_a7b3e7e5c08bc17ce857f902d3ece6022}\label{class_printing_system_a7b3e7e5c08bc17ce857f902d3ece6022} 
+\index{PrintingSystem@{PrintingSystem}!getLoadErrorMessage@{getLoadErrorMessage}}
+\index{getLoadErrorMessage@{getLoadErrorMessage}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{getLoadErrorMessage()}{getLoadErrorMessage()}}
+{\footnotesize\ttfamily std\+::string Printing\+System\+::get\+Load\+Error\+Message (\begin{DoxyParamCaption}\item[{Load\+Error}]{error }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+This function takes a Load\+Error enumeration value and returns a corresponding human-\/readable error message as a string. This can be used to display or log errors when loading the printing system configuration from an XML file.\Hypertarget{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}\label{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776} 
+\index{PrintingSystem@{PrintingSystem}!loadFromFile@{loadFromFile}}
+\index{loadFromFile@{loadFromFile}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{loadFromFile()}{loadFromFile()}}
+{\footnotesize\ttfamily Load\+Error Printing\+System\+::load\+From\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+This function loads the printing system configuration from an XML file. It parses the file, extracts the data for printers and jobs, and stores them in the respective objects. If the file is not valid or there\textquotesingle{}s an issue with its content, it returns an appropriate Load\+Error. Otherwise, it returns Load\+Error\+::\+NO\+\_\+\+ERROR to indicate successful loading.
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main.\+h\end{DoxyCompactItemize}
