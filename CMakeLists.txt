@@ -18,22 +18,23 @@ link_directories(gtest/lib InputTests)
 # Only add cpp files, no h files!
 # Only add files with functionality here, no test files!
 set(RELEASE_SOURCE_FILES src/main.cpp
-        src/tinystr.cpp
-        src/tinyxmlerror.cpp
-        src/tinyxml.cpp
-        src/tinyxmlparser.cpp
-        src/tinyxml.cpp
+        TinyXML/tinystr.cpp
+        TinyXML/tinyxmlerror.cpp
+        TinyXML/tinyxml.cpp
+        TinyXML/tinyxmlparser.cpp
+        src/PrintingSystem.cpp
+        src/main.cpp
 )
 
 # Set source files for DEBUG target
 # Only add cpp files, no h files!
-set(DEBUG_SOURCE_FILES src/tinystr.cpp
-        src/tinyxmlerror.cpp
-        src/tinyxml.cpp
-        src/tinyxmlparser.cpp
+set(DEBUG_SOURCE_FILES TinyXML/tinystr.cpp
+        TinyXML/tinyxmlerror.cpp
+        TinyXML/tinyxml.cpp
+        TinyXML/tinyxmlparser.cpp
         src/PrintingSystemTests.cpp
         src/tests.cpp
-        src/tinyxml.cpp)
+        src/PrintingSystem.cpp)
 
 # Create RELEASE target
 add_executable(release_target ${RELEASE_SOURCE_FILES})

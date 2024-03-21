@@ -1,5 +1,5 @@
 #include "Include.h"
-
+#include "PrintingSystem.h"
 
 int main() {
     PrintingSystem system;
