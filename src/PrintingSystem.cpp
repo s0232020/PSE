@@ -119,9 +119,8 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             }
 
             Job job(jobNumber, pageCount, userName);
-            addJob(job);
             auto printer = getPrinters().front();
-            printer.addJobToPrinter(job);
+            addJob(job, printer);
 
             JobSeen = true;
 

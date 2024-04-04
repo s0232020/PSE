@@ -1,4 +1,7 @@
 #include "PrintingSystem.h"
+#include <gtest/gtest.h>
+#include <fstream>
+
 
 
 class PrintingSystemTest : public ::testing::Test {

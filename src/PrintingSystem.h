@@ -5,7 +5,7 @@
 #include <vector>
 
 const char* getLoadErrorMessage(LoadError error);
-
+class Printer;
 class PrintingSystem{
 public:
     LoadError loadFromFile(const std::string& filename);
@@ -31,11 +31,11 @@ public:
         //ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
     }
 
-    void addJob(Job &job)
+    void addJob(Job &job, Printer &printer)
     {
         //REQUIRE (job.getUserName() != "", "Invalid user name");
         jobs_.emplace_back(job);
-        Printer::addJobToPrinter(job);
+        printer.addJobToPrinter(job);
         //ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
     }
 
