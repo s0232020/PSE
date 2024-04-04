@@ -1,4 +1,7 @@
 #include "PrintingSystem.h"
+#include "../TinyXML/tinyxml.h"
+#include "main.h"
+
 LoadError PrintingSystem::loadFromFile(const std::string &filename) {
     /**
      * This function loads the printing system configuration from an XML file.

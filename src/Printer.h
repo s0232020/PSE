@@ -1,6 +1,10 @@
 #ifndef PROJECTTITLE_PRINTER_H
 #define PROJECTTITLE_PRINTER_H
-#include "Include.h"
+#include "LoadError.h"
+#include <iostream>
+#include "DesignByContract.h"
+#include "Job.h"
+#include <vector>
 class Printer {
     /**
      * This is a class with getter functions like getName, getEmissions and getSpeed which will be usefull for
@@ -12,23 +16,44 @@ public:
     Printer(const std::string& name, int emissions, int speed) :
             name_(name), emissions_(emissions), speed_(speed) {}
 
-    std::string getName() const {
+    std::string getName() const
+    {
+        REQUIRE (!name_.empty(), "Invalid name value");
         return name_;
     }
 
-    int getEmissions() const {
+    int getEmissions() const
+    {
+        REQUIRE (emissions_ >= 0, "Invalid emissions value");
         return emissions_;
     }
 
-    int getSpeed() const {
+    int getSpeed() const
+    {
+        REQUIRE (speed_ >= 0, "Invalid speed value");
         return speed_;
     }
 
-    void setEmissions(int emissions) { emissions_ = emissions; }
+    void setEmissions(int emissions)
+    {
+        REQUIRE(emissions >= 0, "Invalid emissions value");
+        emissions_ = emissions;
+        ENSURE(emissions == getEmissions(), "Emissions value not updated correctly");
+    }
 
-    void setSpeed(int speed) { speed_ = speed; }
+    void setSpeed(int speed)
+    {
+        REQUIRE (speed >= 0, "Invalid speed value");
+        speed_ = speed;
+        ENSURE (speed == getSpeed(), "Speed value not updated correctly");
+    }
 
-    void setName(std::string name) { name_ = name; }
+    void setName(std::string name)
+    {
+        REQUIRE (!name.empty(), "Invalid name value");
+        name_ = name;
+        ENSURE (name == getName(), "Name value not updated correctly");
+    }
 
 
     void addJob(const Job& job){

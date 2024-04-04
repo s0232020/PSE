@@ -1,6 +1,6 @@
 #ifndef PROJECTTITLE_JOB_H
 #define PROJECTTITLE_JOB_H
-#include "Include.h"
+
 class Job {
     /**
      * This is a class with getter functions like getJobNumber, getPageCount and getUserrName which will be usefull for
@@ -13,25 +13,42 @@ public:
     Job(int jobNumber, int pageCount, const std::string& userName) :
             jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName) {}
 
-    int getJobNumber() const { return jobNumber_; }
+    int getJobNumber() const
+    {
+        REQUIRE (jobNumber_ >= 0, "Invalid job number value");
+        return jobNumber_;
+    }
 
-    int getPageCount() const { return pageCount_; }
+    int getPageCount() const
+    {
+        REQUIRE (pageCount_ >= 0, "Invalid page count value");
+        return pageCount_;
+    }
 
-    const std::string& getUserName() const { return userName_; }
+    const std::string& getUserName() const
+    {
+        REQUIRE (!userName_.empty(), "Invalid user name value");
+        return userName_;
+    }
 
-    bool processPage() {
-        if (pageCount_ > 0) {
+    bool processPage()
+    {
+        if (pageCount_ > 0) // Might change this to if (getPageCount() > 0)
+        {
             --pageCount_;
             return true;
         }
         return false;
     }
 
-    bool isCompleted() const {
-        if (pageCount_ == 0){
+    bool isCompleted() const
+    {
+        if (pageCount_ == 0)
+        {
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
