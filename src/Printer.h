@@ -1,5 +1,6 @@
 #ifndef PROJECTTITLE_PRINTER_H
 #define PROJECTTITLE_PRINTER_H
+#include "DesignByContract.h"
 #include "Include.h"
 class Printer {
     /**
@@ -13,10 +14,13 @@ public:
             name_(name), emissions_(emissions), speed_(speed) {}
 
     std::string getName() const {
+        REQUIRE (name_.length() >= 0);
         return name_;
     }
 
-    int getEmissions() const {
+    int getEmissions() const
+    {
+        REQUIRE (emissions >= 0);
         return emissions_;
     }
 
@@ -24,7 +28,12 @@ public:
         return speed_;
     }
 
-    void setEmissions(int emissions) { emissions_ = emissions; }
+        void setEmissions(int emissions)
+        {
+            REQUIRE (emissions >= 0);
+            emissions_ = emissions;
+            ENSURE (emissions == getEmissions());
+        }
 
     void setSpeed(int speed) { speed_ = speed; }
 

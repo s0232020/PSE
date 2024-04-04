@@ -1,6 +1,5 @@
 #ifndef PROJECTTITLE_PRINTINGSYSTEM_H
 #define PROJECTTITLE_PRINTINGSYSTEM_H
-#include "Include.h"
 #include "Printer.h"
 
 class PrintingSystem{

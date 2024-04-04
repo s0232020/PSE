@@ -7,7 +7,6 @@
 #include <string>
 #include <sstream>
 #include "Exceptions.h"
-#include "DesignByContract.h"
 #include "../TinyXML/tinyxml.h"
 #include "main.h"
 #include <gtest/gtest.h>
