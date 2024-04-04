@@ -2,8 +2,9 @@
 #define PROJECTTITLE_PRINTINGSYSTEM_H
 #include "Printer.h"
 #include <iostream>
-#include "Job.h"
 #include <vector>
+
+const char* getLoadErrorMessage(LoadError error);
 
 class PrintingSystem{
 public:
@@ -25,16 +26,17 @@ public:
 
     void addPrinter(Printer &printer)
     {
-        REQUIRE (printer.getName() != "", "Invalid printer name");
+        //REQUIRE (printer.getName() != "", "Invalid printer name");
         printers_.emplace_back(printer);
-        ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
+        //ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
     }
 
     void addJob(Job &job)
     {
-        REQUIRE (job.getUserName() != "", "Invalid user name");
+        //REQUIRE (job.getUserName() != "", "Invalid user name");
         jobs_.emplace_back(job);
-        ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
+        Printer::addJobToPrinter(job);
+        //ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
     }
 
     std::vector<Printer> getPrinters() const

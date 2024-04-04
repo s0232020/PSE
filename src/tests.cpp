@@ -23,17 +23,14 @@ public:
 
         // Read characters from each file and compare them
         char expectedChar, Char;
-        int position = 0;
         while (expectedFile.get(expectedChar) && validFile.get(Char)) {
             if (expectedChar != Char) {
                 return false;
             }
-            position++;
         }
-
-        return true;
         expectedFile.close();
         validFile.close();
+        return true;
     }
 
 protected:

@@ -2,7 +2,8 @@
 #include "../TinyXML/tinyxml.h"
 #include "main.h"
 
-LoadError PrintingSystem::loadFromFile(const std::string &filename) {
+LoadError PrintingSystem::loadFromFile(const std::string &filename)
+{
     /**
      * This function loads the printing system configuration from an XML file.
      * It parses the file, extracts the data for printers and jobs, and stores them in the respective objects.
@@ -16,13 +17,15 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename) {
 
     TiXmlDocument doc;
 
-    if (!doc.LoadFile(filename.c_str())){
+    if (!doc.LoadFile(filename.c_str()))
+    {
         loadError = LoadError::FAILED_TO_OPEN_FILE;
         std::cerr << "Failed to open file" << std::endl;
     }
 
     TiXmlElement* systemElement = doc.FirstChildElement("SYSTEM");
-    if (!systemElement) {
+    if (!systemElement)
+    {
         loadError = LoadError::MISSING_SYSTEM;
     }
 
@@ -35,7 +38,8 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename) {
     int pageCount = 0;
     const char* userName = "";
 
-    while (element != nullptr) {
+    while (element != nullptr)
+    {
         const char* elementName = element->Value();
 
         TiXmlElement* nameElement = element->FirstChildElement("name");
@@ -117,7 +121,7 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename) {
             Job job(jobNumber, pageCount, userName);
             addJob(job);
             auto printer = getPrinters().front();
-            printer.addJob(job);
+            printer.addJobToPrinter(job);
 
             JobSeen = true;
 
@@ -136,7 +140,7 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename) {
 
 }
 
-std::string getLoadErrorMessage(LoadError error) {
+const char* getLoadErrorMessage(LoadError error) {
     /**
      * This function takes a LoadError enumeration value and returns a corresponding
      * human-readable error message as a string. This can be used to display or log errors
@@ -191,7 +195,12 @@ bool PrintingSystem::generateStatusReport(const std::string &filename) const {
     // voor elke printer in het systeem
     for (const auto& printer : getPrinters()) {
         outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
-        const Job& currentJob = printer.getCurrentJob();
+        Job currentJob = Job(0, 0, "");
+
+        if (!printer.getPrinterJobs().empty())
+        {
+            currentJob = printer.getCurrentJob();
+        }
 
         for(const auto& job : printer.getJobQueue()) {
             if(job.getJobNumber() == currentJob.getJobNumber()) {

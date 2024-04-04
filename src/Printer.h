@@ -56,7 +56,8 @@ public:
     }
 
 
-    void addJob(const Job& job){
+    void addJobToPrinter(const Job& job)
+    {
         printerjobs_.emplace_back(job);
     }
 
@@ -66,12 +67,18 @@ public:
         }
     }
 
-    const Job& getCurrentJob() const {
+    const Job& getCurrentJob() const
+    {
+        REQUIRE (!printerjobs_.empty(), "No current job");
         return printerjobs_.front();
+        ENSURE (printerjobs_.front().getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
     }
 
-    std::vector<Job> getJobQueue() const {
+    std::vector<Job> getJobQueue() const
+    {
+        REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
         return printerjobs_;
+        ENSURE (printerjobs_.size() == getJobQueue().size(), "Job queue not returned correctly");
     }
 
     std::vector<Job> getPrinterJobs() const {
