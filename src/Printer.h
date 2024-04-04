@@ -41,6 +41,7 @@ public:
         ENSURE(emissions == getEmissions(), "Emissions value not updated correctly");
     }
 
+
     void setSpeed(int speed)
     {
         REQUIRE (speed >= 0, "Invalid speed value");
