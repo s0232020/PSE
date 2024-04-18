@@ -119,8 +119,7 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             }
 
             Job job(jobNumber, pageCount, userName);
-            auto printer = getPrinters().front();
-            addJob(job, printer);
+            addJob(job);
 
             JobSeen = true;
 
@@ -178,7 +177,8 @@ const char* getLoadErrorMessage(LoadError error) {
     }
 }
 
-bool PrintingSystem::generateStatusReport(const std::string &filename) const {
+bool PrintingSystem::generateStatusReport(const std::string &filename)
+{
     std::ofstream outputFile;
     std::string outputFilename = filename;
 
@@ -192,7 +192,8 @@ bool PrintingSystem::generateStatusReport(const std::string &filename) const {
     }
 
     // voor elke printer in het systeem
-    for (const auto& printer : getPrinters()) {
+    for (const auto &printer : getPrinters())
+    {
         outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
         Job currentJob = Job(0, 0, "");
 
@@ -220,7 +221,8 @@ bool PrintingSystem::generateStatusReport(const std::string &filename) const {
     return true;
 }
 
-void PrintingSystem::processJob(const std::string &printerName) {
+void PrintingSystem::processJob(const std::string &printerName)
+{
     // find printer with given name
     for (auto& printer : getPrinters()) {
         if (printer.getName() == printerName) {
@@ -241,5 +243,15 @@ void PrintingSystem::processJob(const std::string &printerName) {
                 printer.addCompletedJob(job);
             }
         }
+    }
+}
+
+void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
+{
+    Printer &printer = system.getPrinters().front();
+    for (Job &job : system.getJobs())
+    {
+        printer.addJobToPrinter(job);
+        system.deleteJob(job.getJobNumber());
     }
 }

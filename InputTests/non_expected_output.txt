@@ -6,5 +6,4 @@ Printer Office_Printer5 (CO2: 3g/page):
   [#3|Gebruiker3]
   [#4|Gebruiker4]
 
-
-Printer Office_Printer6 (CO2: 5g/page):
+Printer Office_Printer6 (CO2: g/page):

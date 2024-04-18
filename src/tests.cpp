@@ -1,6 +1,7 @@
 #include "PrintingSystem.h"
 #include <gtest/gtest.h>
 #include <fstream>
+#include <filesystem>
 
 
 
@@ -12,10 +13,15 @@ public:
     bool matchFiles(std::string expectedFileName, std::string filename){
         std::ifstream expectedFile(expectedFileName);
         std::string filenametxt = filename + ".txt";
-        if(!std::ifstream(filenametxt)){
-            systemTest.loadFromFile(filename);
-            systemTest.generateStatusReport(filenametxt);
-        }
+        systemTest.loadFromFile(filename);
+        systemTest.addJobsToPrinters(systemTest);
+//        if (std::filesystem::exists(filenametxt))
+//        {
+//            std::ifstream validFile(filenametxt);
+//            validFile.close();
+//            std::filesystem::remove(filenametxt);
+//        }
+        systemTest.generateStatusReport(filenametxt);
         std::ifstream validFile(filenametxt);
 
         // Check if both files are open
@@ -27,11 +33,15 @@ public:
         char expectedChar, Char;
         while (expectedFile.get(expectedChar) && validFile.get(Char)) {
             if (expectedChar != Char) {
+                expectedFile.close();
+                validFile.close();
+                std::filesystem::remove(filenametxt);
                 return false;
             }
         }
         expectedFile.close();
         validFile.close();
+        std::filesystem::remove(filenametxt);
         return true;
     }
 
