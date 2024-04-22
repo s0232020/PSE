@@ -70,6 +70,17 @@ public:
         return pageCount_ == 0;
     }
 
+    // Additional method for scanning jobs
+    bool scanPage() {
+        if (pageCount_ > 0) {
+            --pageCount_;
+            std::cout << "Scanning page " << (getTotalPages() - getPagesRemaining()) << "/" << getTotalPages() << "...\n";
+            return true; // Succesvol gescand
+        }
+        return false; // Geen pagina's meer om te scannen
+    }
+
+
 private:
     int jobNumber_;
     int pageCount_;

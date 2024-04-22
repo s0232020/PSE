@@ -180,6 +180,13 @@ const char* getLoadErrorMessage(LoadError error) {
 
 bool PrintingSystem::generateStatusReport(const std::string &filename)
 {
+    /**
+     * This function generates a status report for the printing system.
+     * It includes information about the devices (printers), jobs, and climate compensation initiatives.
+     * The report is saved to a file with the given filename.
+     * If the report is successfully generated, it returns true; otherwise, it returns false.
+     **/
+
     std::ofstream outputFile;
     std::string outputFilename = filename;
 
@@ -254,34 +261,33 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
 }
 
 
-void PrintingSystem::processJob(const std::string &printerName)
-
-{
-    // Find printer with the given name
+void PrintingSystem::processJob(const std::string &printerName) {
+    /**
+     * This function processes the jobs in the printer job queue.
+     * It processes each page of the job based on the job type (color, bw, scan).
+     * After processing all pages, it moves the job to the completed job queue.
+     **/
     for (auto& printer : getPrinters()) {
         if (printer.getName() == printerName) {
-            while (!printer.getPrinterJobs().empty()){
+            while (!printer.getPrinterJobs().empty()) {
                 Job job = printer.getPrinterJobs().front();
                 int pageCount = job.getPageCount();
 
-                // Print all pages of the job
+                // Process each page based on the job type
                 while (job.getPageCount() > 0) {
-
-                    if (job.getType() == "color") {
+                    if (job.getType() == "color" || job.getType() == "bw") {
+                        // For printing jobs
                         job.processPage();
-
-                    } else if (job.getType() == "bw") {
-                        job.processPage();
+                    } else if (job.getType() == "scan") {
+                        // For scanning jobs
+                        job.scanPage();
                     }
-
                 }
-
 
                 std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
                 std::cout << pageCount << " pages\n" << std::endl;
-
 
                 printer.addCompletedJob(job);
             }
@@ -290,8 +296,15 @@ void PrintingSystem::processJob(const std::string &printerName)
 }
 
 
+
+
 void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
 {
+    /**
+     * This function adds all jobs in the system to the first printer in the system.
+     * It then deletes the jobs from the system.
+     **/
+
     Printer &printer = system.getPrinters().front();
     for (Job &job : system.getJobs())
     {
