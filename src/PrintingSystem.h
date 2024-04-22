@@ -1,6 +1,7 @@
 #ifndef PROJECTTITLE_PRINTINGSYSTEM_H
 #define PROJECTTITLE_PRINTINGSYSTEM_H
 #include "Printer.h"
+#include "ClimateCompensationInitiative.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -40,11 +41,33 @@ public:
         //ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
     }
 
+
+
     std::vector<Printer> &getPrinters()
     {
         REQUIRE (printers_.size() >= 0, "Invalid printer count");
         return printers_;
     };
+
+    std::vector<Job> &getJobs()
+    {
+        REQUIRE (jobs_.size() >= 0, "Invalid job count");
+        return jobs_;
+    };
+
+    std::vector<Printer> getPrinters() const
+    {
+        REQUIRE (printers_.size() >= 0, "Invalid printer count");
+        return printers_;
+    }
+
+    std::vector<ClimateCompensationInitiative> getClimateCompensationInitiatives() const
+    {
+        REQUIRE (climateCompensationInitiatives_.size() >= 0, "Invalid climate compensation initiative count");
+        return climateCompensationInitiatives_;
+    }
+
+
 
     std::vector<Job> getJobs() const
     {
