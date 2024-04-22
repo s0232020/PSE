@@ -266,26 +266,23 @@ void PrintingSystem::processJob(const std::string &printerName)
 
                 // Print all pages of the job
                 while (job.getPageCount() > 0) {
-                    // Process each page based on the job type
+
                     if (job.getType() == "color") {
-                        // For color printing jobs
-                        // Process each page accordingly
                         job.processPage();
+
                     } else if (job.getType() == "bw") {
-                        // For black and white printing jobs
-                        // Process each page accordingly
                         job.processPage();
                     }
 
                 }
 
-                // Print message to screen with job details
+
                 std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
                 std::cout << pageCount << " pages\n" << std::endl;
 
-                // Remove job from queue and add to completed jobs
+
                 printer.addCompletedJob(job);
             }
         }
