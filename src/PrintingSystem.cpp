@@ -185,16 +185,31 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
     // Open output file with new filename
     outputFile.open(outputFilename);
 
-    // check of output bestand is geopend, als niet: print foutmelding en return false
+    // Check if output file is opened, if not, print error message and return false
     if (!outputFile.is_open()) {
         std::cout << "Failed to create output file: " << filename << "\n";
         return false;
     }
 
-    // voor elke printer in het systeem
+    // Print header
+    outputFile << "# === [System Status] === #\n\n";
+
+    // Print device information
+    outputFile << "--== Devices ==--\n";
     for (const auto &printer : getPrinters())
     {
-        outputFile << "Printer " << printer.getName() << " (CO2: " << printer.getEmissions() << "g/page):\n";
+        outputFile << printer.getName() << ":\n";
+        outputFile << "* CO2: " << printer.getEmissions() << "g/page\n";
+        outputFile << "* Pages per minute: " << printer.getPagesPerMinute() << "\n";
+        outputFile << "* Type: " << printer.getType() << "\n";
+        outputFile << "* Cost per page: " << printer.getCostPerPage() << " cents\n\n";
+    }
+
+    // Print job information
+    outputFile << "--== Jobs ==--\n";
+    for (const auto &printer : getPrinters())
+    {
+        outputFile << "Printer " << printer.getName() << ":\n";
         Job currentJob = Job(0, 0, "");
 
         if (!printer.getPrinterJobs().empty())
@@ -206,20 +221,37 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
             if(job.getJobNumber() == currentJob.getJobNumber()) {
                 // This is the first job, print "Current"
                 outputFile << "* Current:\n";
-                outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
-                outputFile << "* Queue:\n";
+                outputFile << "  [Job #" << job.getJobNumber() << "]\n";
+                outputFile << "  * Owner: " << job.getUserName() << "\n";
+                outputFile << "  * Status: " << job.getStatus() << "\n";
+                outputFile << "  * Total pages: " << job.getTotalPages() << " pages\n\n";
             } else {
                 // This is not the first job, print "Queue"
-                outputFile << "  [#" << job.getJobNumber() << "|" << job.getUserName() << "]\n";
+                outputFile << "* Queue:\n";
+                outputFile << "  [Job #" << job.getJobNumber() << "]\n";
+                outputFile << "  * Owner: " << job.getUserName() << "\n";
+                outputFile << "  * Status: " << job.getStatus() << "\n";
+                outputFile << "  * Total pages: " << job.getTotalPages() << " pages\n\n";
             }
         }
-        outputFile << "\n";
     }
 
-    // sluit output bestand en return true
+    // Print climate compensation initiatives
+    outputFile << "--== Co2 Compensation initiatives ==--\n";
+    // Assuming you have a method to retrieve initiatives
+    for (const auto &initiative : getClimateCompensationInitiatives())
+    {
+        outputFile << initiative.getName() << " [#" << initiative.getID() << "]\n";
+    }
+
+    // Close output file
+    outputFile << "# ======================= #\n";
     outputFile.close();
+
+    // Return true indicating successful generation of the report
     return true;
 }
+
 
 void PrintingSystem::processJob(const std::string &printerName)
 {
