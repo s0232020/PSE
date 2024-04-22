@@ -220,6 +220,7 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
         outputFile << "Printer " << printer.getName() << ":\n";
         Job currentJob = Job(0, 0, "");
 
+
         if (!printer.getPrinterJobs().empty())
         {
             currentJob = printer.getCurrentJob();
