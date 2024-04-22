@@ -70,7 +70,6 @@ public:
         return pageCount_ == 0;
     }
 
-    // Additional method for scanning jobs
     bool scanPage() {
         if (pageCount_ > 0) {
             --pageCount_;
