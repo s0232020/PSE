@@ -67,12 +67,21 @@ public:
         return climateCompensationInitiatives_;
     }
 
-
+    std::vector<ClimateCompensationInitiative>setClimateCompensationInitiatives()
+    {
+        REQUIRE (climateCompensationInitiatives_.size() >= 0, "Invalid climate compensation initiative count");
+        return climateCompensationInitiatives_;
+    }
 
     std::vector<Job> getJobs() const
     {
         REQUIRE (jobs_.size() >= 0, "Invalid job count");
         return jobs_;
+    }
+
+    void addClimateCompensationInitiative(ClimateCompensationInitiative &initiative)
+    {
+        climateCompensationInitiatives_.emplace_back(initiative);
     }
 
     void deleteJob(int jobNumber)
@@ -88,10 +97,24 @@ public:
         }
     }
 
+    void deletePrinter(const std::string &printerName)
+    {
+        // Find the printer with the specified name
+        auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer& printer) {
+            return printer.getName() == printerName;
+        });
+
+        // If the printer was found, delete it
+        if (it != printers_.end()) {
+            printers_.erase(it);
+        }
+    }
 
 private:
     std::vector<Printer> printers_;
     std::vector<Job> jobs_;
+    std::vector<ClimateCompensationInitiative> climateCompensationInitiatives_;
+
 
 };
 #endif //PROJECTTITLE_PRINTINGSYSTEM_H
