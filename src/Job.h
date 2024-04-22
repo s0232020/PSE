@@ -1,109 +1,80 @@
 #ifndef PROJECTTITLE_JOB_H
 #define PROJECTTITLE_JOB_H
 
+#include <string>
+
 class Job {
-    /**
-     * This is a class with getter functions like getJobNumber, getPageCount and getUserrName which will be usefull for
-     * testing the validity and consistency of our printer and xml parser.
-     **/
 public:
+    Job() {}
 
-    Job(){}
+    Job(int jobNumber, int pageCount, const std::string& userName, const std::string& type) :
+            jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName), type_(type) {}
 
-    Job(int jobNumber, int pageCount, const std::string& userName) :
-            jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName) {}
-
-    int getJobNumber() const
-    {
-        REQUIRE (jobNumber_ >= 0, "Invalid job number value");
+    int getJobNumber() const {
         return jobNumber_;
     }
 
-    int getPageCount() const
-    {
-        REQUIRE (pageCount_ >= 0, "Invalid page count value");
+    int getPageCount() const {
         return pageCount_;
     }
 
-
-    const std::string& getUserName() const
-    {
-        REQUIRE (!userName_.empty(), "Invalid user name value");
+    const std::string& getUserName() const {
         return userName_;
     }
 
-    const std::string& getStatus() const
-    {
-        if (pageCount_ == 0)
-        {
+    const std::string& getType() const {
+        return type_;
+    }
+
+    const std::string& getStatus() const {
+        if (pageCount_ == 0) {
             return "Completed";
-        }
-        else
-        {
+        } else {
             return "In progress";
         }
     }
 
-    int getTotalPages() const
-    {
+    int getTotalPages() const {
         return pageCount_;
     }
 
-    void setJobNumber(int jobNumber)
-    {
-        REQUIRE(jobNumber >= 0, "Invalid job number value");
+    void setJobNumber(int jobNumber) {
         jobNumber_ = jobNumber;
-        ENSURE(jobNumber == getJobNumber(), "Job number value not updated correctly");
     }
 
-    void setPageCount(int pageCount)
-    {
-        REQUIRE(pageCount >= 0, "Invalid page count value");
+    void setPageCount(int pageCount) {
         pageCount_ = pageCount;
-        ENSURE(pageCount == getPageCount(), "Page count value not updated correctly");
     }
 
-    void setUserName(const std::string& userName)
-    {
-        REQUIRE(!userName.empty(), "Invalid user name value");
+    void setUserName(const std::string& userName) {
         userName_ = userName;
-        ENSURE(userName == getUserName(), "User name value not updated correctly");
     }
 
-    int getPagesRemaining() const
-    {
+    void setType(const std::string& type) {
+        type_ = type;
+    }
+
+    int getPagesRemaining() const {
         return pageCount_;
     }
 
-
-    bool processPage()
-    {
-        if (pageCount_ > 0) // Might change this to if (getPageCount() > 0)
-        {
+    bool processPage() {
+        if (pageCount_ > 0) {
             --pageCount_;
             return true;
         }
         return false;
     }
 
-    bool isCompleted() const
-    {
-        if (pageCount_ == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    bool isCompleted() const {
+        return pageCount_ == 0;
     }
-
-
 
 private:
     int jobNumber_;
     int pageCount_;
     std::string userName_;
+    std::string type_;
 };
 
 #endif //PROJECTTITLE_JOB_H

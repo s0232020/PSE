@@ -55,10 +55,6 @@ public:
         ENSURE(cost == getCostPerPage(), "Cost value not updated correctly");
     }
 
-    void setType(std::string type)
-    {
-        type_ = type;
-    }
 
     void setEmissions(int emissions)
     {
@@ -92,6 +88,15 @@ public:
         if (!printerjobs_.empty()) {
             printerjobs_.erase(printerjobs_.begin());
         }
+    }
+
+    void setTypes(const std::string &type) {
+        type_ = type;
+    }
+
+    void getTypes() {
+        REQUIRE (!type_.empty(), "Invalid type value");
+        ENSURE (type_ == getType(), "Type value not returned correctly");
     }
 
     const Job& getCurrentJob() const
