@@ -39,14 +39,25 @@ public:
         return speed_;
     }
 
-    std::string getType() const
-    {
-        return "Printer";
+    std::string getType() const {
+        return type_;
     }
 
     int getCostPerPage() const
     {
-        return 0;
+        return cost_;
+    }
+
+    void setCostPerPage(int cost)
+    {
+        REQUIRE(cost >= 0, "Invalid cost value");
+        cost_ = cost;
+        ENSURE(cost == getCostPerPage(), "Cost value not updated correctly");
+    }
+
+    void setType(std::string type)
+    {
+        type_ = type;
     }
 
     void setEmissions(int emissions)
@@ -112,5 +123,7 @@ private:
     std::string name_;
     int emissions_;
     int speed_;
+    int cost_;
+    std::string type_;
 };
 #endif //PROJECTTITLE_PRINTER_H
