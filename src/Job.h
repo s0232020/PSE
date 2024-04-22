@@ -25,11 +25,56 @@ public:
         return pageCount_;
     }
 
+
     const std::string& getUserName() const
     {
         REQUIRE (!userName_.empty(), "Invalid user name value");
         return userName_;
     }
+
+    const std::string& getStatus() const
+    {
+        if (pageCount_ == 0)
+        {
+            return "Completed";
+        }
+        else
+        {
+            return "In progress";
+        }
+    }
+
+    int getTotalPages() const
+    {
+        return pageCount_;
+    }
+
+    void setJobNumber(int jobNumber)
+    {
+        REQUIRE(jobNumber >= 0, "Invalid job number value");
+        jobNumber_ = jobNumber;
+        ENSURE(jobNumber == getJobNumber(), "Job number value not updated correctly");
+    }
+
+    void setPageCount(int pageCount)
+    {
+        REQUIRE(pageCount >= 0, "Invalid page count value");
+        pageCount_ = pageCount;
+        ENSURE(pageCount == getPageCount(), "Page count value not updated correctly");
+    }
+
+    void setUserName(const std::string& userName)
+    {
+        REQUIRE(!userName.empty(), "Invalid user name value");
+        userName_ = userName;
+        ENSURE(userName == getUserName(), "User name value not updated correctly");
+    }
+
+    int getPagesRemaining() const
+    {
+        return pageCount_;
+    }
+
 
     bool processPage()
     {

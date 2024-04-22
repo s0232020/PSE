@@ -34,6 +34,21 @@ public:
         return speed_;
     }
 
+    int getPagesPerMinute() const
+    {
+        return speed_;
+    }
+
+    std::string getType() const
+    {
+        return "Printer";
+    }
+
+    int getCostPerPage() const
+    {
+        return 0;
+    }
+
     void setEmissions(int emissions)
     {
         REQUIRE(emissions >= 0, "Invalid emissions value");
