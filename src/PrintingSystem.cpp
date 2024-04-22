@@ -245,6 +245,9 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
         outputFile << initiative.getName() << " [#" << initiative.getID() << "]\n";
     }
 
+    // Indicate that the system has created a text file
+    outputFile << "\nThe system has created a text file (ASCII) that contains all the necessary information about the system.\n";
+
     // Close output file
     outputFile << "# ======================= #\n";
     outputFile.close();
