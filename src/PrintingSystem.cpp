@@ -255,29 +255,43 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
 
 
 void PrintingSystem::processJob(const std::string &printerName)
+
 {
-    // find printer with given name
+    // Find printer with the given name
     for (auto& printer : getPrinters()) {
         if (printer.getName() == printerName) {
             while (!printer.getPrinterJobs().empty()){
                 Job job = printer.getPrinterJobs().front();
                 int pageCount = job.getPageCount();
-                // print all pages of job
+
+                // Print all pages of the job
                 while (job.getPageCount() > 0) {
-                    job.processPage();
+                    // Process each page based on the job type
+                    if (job.getType() == "color") {
+                        // For color printing jobs
+                        // Process each page accordingly
+                        job.processPage();
+                    } else if (job.getType() == "bw") {
+                        // For black and white printing jobs
+                        // Process each page accordingly
+                        job.processPage();
+                    }
+
                 }
-                // print message to screen with job details
+
+                // Print message to screen with job details
                 std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
                 std::cout << pageCount << " pages\n" << std::endl;
 
-                // remove job from queue and add to completed jobs
+                // Remove job from queue and add to completed jobs
                 printer.addCompletedJob(job);
             }
         }
     }
 }
+
 
 void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
 {
