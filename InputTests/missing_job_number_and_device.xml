@@ -1,0 +1,7 @@
+<!-- missing_job_number.xml -->
+<SYSTEM>
+    <JOB>
+        <pageCount>10</pageCount>
+        <userName>Alice</userName>
+    </JOB>
+</SYSTEM>

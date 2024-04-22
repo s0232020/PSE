@@ -296,8 +296,6 @@ void PrintingSystem::processJob(const std::string &printerName) {
 }
 
 
-
-
 void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
 {
     /**
