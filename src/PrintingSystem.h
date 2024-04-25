@@ -99,10 +99,16 @@ public:
         }
     }
 
+    void addUncompletedJob(Job& job)
+    {
+        uncompletedJobs.emplace_back(job);
+    }
+
 private:
     std::vector<Printer> printers_;
     std::vector<Job> jobs_;
     std::vector<ClimateCompensationInitiative> climateCompensationInitiatives_;
+    std::vector<Job> uncompletedJobs;
 
 
 };

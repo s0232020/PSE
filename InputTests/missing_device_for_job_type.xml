@@ -1,0 +1,23 @@
+<!-- negative_speed.xml -->
+<SYSTEM>
+    <DEVICE>
+        <name>Printer1</name>
+        <emissions>50</emissions>
+        <type>color</type>
+        <speed>15</speed>
+        <cost>20</cost>
+    </DEVICE>
+    <JOB>
+        <jobNumber>1</jobNumber>
+        <pageCount>10</pageCount>
+        <type>bw</type>
+        <userName>Alice</userName>
+    </JOB>
+    <JOB>
+        <jobNumber>2</jobNumber>
+        <pageCount>10</pageCount>
+        <type>color</type>
+        <userName>Alice</userName>
+    </JOB>
+</SYSTEM>
+
