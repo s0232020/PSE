@@ -336,51 +336,23 @@ void PrintingSystem::processJob(const std::string &printerName) {
 
 void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
 {
+    /**
+     * This function adds all jobs in the system to the first printer in the system.
+     * It then deletes the jobs from the system.
+     **/
+
+
     while (system.getJobCount() > 0)
     {
         Job job = system.getJobs().front();
-        std::vector<Printer*> suitablePrinters;
         for (Printer& printer : system.getPrinters())
         {
             if (printer.getType() == job.getType())
             {
-                suitablePrinters.push_back(&printer);
+                printer.addJobToPrinter(job);
+                system.deleteJob(job.getJobNumber());
+                break;
             }
-        }
-
-        Printer* chosenPrinter = nullptr;
-        if (suitablePrinters.size() > 1)
-        {
-            int minPages = INT_MAX;
-            for (Printer* printer : suitablePrinters)
-            {
-                int totalPages = 0;
-                for (Job queuedJob : printer->getPrinterJobs())
-                {
-                    totalPages += queuedJob.getPageCount();
-                }
-                if (totalPages < minPages)
-                {
-                    minPages = totalPages;
-                    chosenPrinter = printer;
-                }
-            }
-        }
-        else if (suitablePrinters.size() == 1)
-        {
-            chosenPrinter = suitablePrinters[0];
-        }
-
-        if (chosenPrinter != nullptr)
-        {
-            chosenPrinter->addJobToPrinter(job);
-            system.deleteJob(job.getJobNumber());
-        }
-        else
-        {
-            std::cout << "Error: No device exists for the job type " << job.getType() << ". The job could not be printed." << std::endl;
-            system.addUncompletedJob(job);
-            system.deleteJob(job.getJobNumber());
         }
     }
 }

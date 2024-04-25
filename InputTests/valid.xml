@@ -7,13 +7,6 @@
         <cost>20</cost>
     </DEVICE>
     <DEVICE>
-        <name>Office_Printer7</name>
-        <emissions>3</emissions>
-        <type>color</type>
-        <speed>40</speed>
-        <cost>20</cost>
-    </DEVICE>
-    <DEVICE>
         <name>Office_Printer6</name>
         <emissions>3</emissions>
         <type>bw</type>
@@ -22,21 +15,9 @@
     </DEVICE>
     <JOB>
         <jobNumber>89751</jobNumber>
-        <pageCount>8</pageCount>
+        <pageCount>2</pageCount>
         <type>color</type>
         <userName>SergeDemeyer</userName>
-    </JOB>
-    <JOB>
-        <jobNumber>89752</jobNumber>
-        <pageCount>6</pageCount>
-        <type>color</type>
-        <userName>user1</userName>
-    </JOB>
-    <JOB>
-        <jobNumber>89753</jobNumber>
-        <pageCount>13</pageCount>
-        <type>color</type>
-        <userName>user2</userName>
     </JOB>
     <JOB>
         <jobNumber>2189</jobNumber>
