@@ -3,20 +3,25 @@
     <DEVICE>
         <name>Printer1</name>
         <emissions>50</emissions>
+        <type>color</type>
         <speed>20</speed>
+        <cost>20</cost>
     </DEVICE>
     <DEVICE>
         <name>Printer2</name>
         <emissions>30</emissions>
+        <type>color</type>
     </DEVICE>
     <JOB>
         <jobNumber>1</jobNumber>
         <pageCount>10</pageCount>
+        <type>color</type>
         <userName>Alice</userName>
     </JOB>
     <JOB>
         <jobNumber>2</jobNumber>
         <pageCount>20</pageCount>
+        <type>color</type>
         <userName>Bob</userName>
     </JOB>
 </SYSTEM>

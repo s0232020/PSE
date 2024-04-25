@@ -15,12 +15,12 @@ public:
         std::string filenametxt = filename + ".txt";
         systemTest.loadFromFile(filename);
         systemTest.addJobsToPrinters(systemTest);
-//        if (std::filesystem::exists(filenametxt))
-//        {
-//            std::ifstream validFile(filenametxt);
-//            validFile.close();
-//            std::filesystem::remove(filenametxt);
-//        }
+        if (std::filesystem::exists(filenametxt))
+        {
+            std::ifstream validFile(filenametxt);
+            validFile.close();
+            std::filesystem::remove(filenametxt);
+        }
         systemTest.generateStatusReport(filenametxt);
         std::ifstream validFile(filenametxt);
 
@@ -41,7 +41,6 @@ public:
         }
         expectedFile.close();
         validFile.close();
-        std::filesystem::remove(filenametxt);
         return true;
     }
 

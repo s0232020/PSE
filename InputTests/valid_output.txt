@@ -1,10 +1,45 @@
-Printer Office_Printer5 (CO2: 3g/page):
+# === [System Status] === #
+
+--== Devices ==--
+Office_Printer5:
+* CO2: 3g/page
+* Pages per minute: 40
+* Type: color
+* Cost per page: 20 cents
+
+Office_Printer6:
+* CO2: 3g/page
+* Pages per minute: 40
+* Type: bw
+* Cost per page: 20 cents
+
+Default Scanner:
+* CO2: 8g/page
+* Pages per minute: 11
+* Type: scan
+* Cost per page: 110 cents
+
+--== Jobs ==--
+Printer Office_Printer5:
 * Current:
-  [#1|Gebruiker1]
+  [Job #89751]
+  * Owner: SergeDemeyer
+  * Status: In progress
+  * Total pages: 2 pages
+
 * Queue:
-  [#2|Gebruiker2]
-  [#3|Gebruiker3]
-  [#4|Gebruiker4]
+  [Job #98632]
+  * Owner: Peter Selie
+  * Status: In progress
+  * Total pages: 10 pages
 
-Printer Office_Printer6 (CO2: 5g/page):
+* Queue:
+  [Job #98632]
+  * Owner: 
+  * Status: In progress
+  * Total pages: 10 pages
 
+Printer Office_Printer6:
+Printer Default Scanner:
+--== Co2 Compensation initiatives ==--
+# ======================= #

@@ -13,8 +13,8 @@ class Printer {
      * The speeds are specified in the following unit: pages per minute
      * **/
 public:
-    Printer(const std::string& name, int emissions, int speed) :
-            name_(name), emissions_(emissions), speed_(speed) {}
+    Printer(const std::string& name, int emissions, int speed, float cost, std::string& type) :
+            name_(name), emissions_(emissions), speed_(speed), cost_(cost), type_(type) {}
 
     std::string getName() const
     {
@@ -94,9 +94,10 @@ public:
         type_ = type;
     }
 
-    void getTypes() {
+    std::string getTypes() {
         REQUIRE (!type_.empty(), "Invalid type value");
         ENSURE (type_ == getType(), "Type value not returned correctly");
+        return type_;
     }
 
     const Job& getCurrentJob() const
@@ -128,7 +129,7 @@ private:
     std::string name_;
     int emissions_;
     int speed_;
-    int cost_;
+    float cost_;
     std::string type_;
 };
 #endif //PROJECTTITLE_PRINTER_H

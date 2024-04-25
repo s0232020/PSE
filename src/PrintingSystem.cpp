@@ -2,6 +2,7 @@
 #include "ClimateCompensationInitiative.h"
 #include "../TinyXML/tinyxml.h"
 #include "main.h"
+#include "Job.h"
 
 LoadError PrintingSystem::loadFromFile(const std::string &filename)
 {
@@ -35,9 +36,12 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
     std::string name = "";
     int emissions = 0;
     int speed = 0;
+    float cost = 0;
+    std::string printerType = "";
     int jobNumber = 0;
     int pageCount = 0;
     const char* userName = "";
+    std::string jobType = "";
 
     while (element != nullptr)
     {
@@ -46,6 +50,10 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
         TiXmlElement* nameElement = element->FirstChildElement("name");
         TiXmlElement* emissionsElement = element->FirstChildElement("emissions");
         TiXmlElement* speedElement = element->FirstChildElement("speed");
+        TiXmlElement* costElement = element->FirstChildElement("cost");
+        TiXmlElement* printerTypeElement = element->FirstChildElement("type");
+
+
 
         if (strcmp(elementName, "DEVICE") == 0) {
             if (!nameElement){
@@ -71,14 +79,35 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 loadError = LoadError::MISSING_SPEED;
             }
 
-            if (speedElement){
+            if (speedElement)
+            {
                 speed = std::atoi(speedElement->GetText());
                 if (speed < 0){
                     loadError = LoadError::NEGATIVE_VALUE_SPEED;
                 }
             }
 
-            Printer printer(name, emissions, speed);
+            if (!costElement)
+            {
+                loadError = LoadError::MISSING_COST;
+            }
+
+            if (costElement)
+            {
+                cost = std::atof(costElement->GetText());
+            }
+
+            if (!printerTypeElement)
+            {
+                loadError = LoadError::MISSING_PRINTERTYPE;
+            }
+
+            if (printerTypeElement)
+            {
+                printerType = printerTypeElement->GetText();
+            }
+
+            Printer printer(name, emissions, speed, cost, printerType);
             addPrinter(printer);
 
             DeviceSeen = true;
@@ -88,6 +117,8 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             TiXmlElement* jobNumberElement = element->FirstChildElement("jobNumber");
             TiXmlElement* pageCountElement = element->FirstChildElement("pageCount");
             TiXmlElement* userNameElement = element->FirstChildElement("userName");
+            TiXmlElement* jobTypeElement = element->FirstChildElement("type");
+
 
             if (!jobNumberElement){
                 loadError = LoadError::MISSING_JOB_NUMBER;
@@ -119,7 +150,17 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 userName = userNameElement->GetText();
             }
 
-            Job job(jobNumber, pageCount, userName);
+            if(!jobTypeElement)
+            {
+                loadError = LoadError::MISSING_JOBTYPE;
+            }
+
+            if(jobTypeElement)
+            {
+                jobType = jobTypeElement->GetText();
+            }
+
+            Job job(jobNumber, pageCount, userName, jobType);
             addJob(job);
 
             JobSeen = true;
@@ -172,6 +213,12 @@ const char* getLoadErrorMessage(LoadError error) {
             return "Negative value for job number";
         case LoadError::NEGATIVE_VALUE_PAGE_COUNT:
             return "Negative value for page count";
+        case LoadError::MISSING_COST:
+            return "Cost missing";
+        case LoadError::MISSING_PRINTERTYPE:
+            return "Printer type missing";
+        case LoadError::MISSING_JOBTYPE:
+            return "Job type missing";
         case LoadError::NO_ERROR:
         default:
             return "No error";
@@ -218,7 +265,7 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
     for (const auto &printer : getPrinters())
     {
         outputFile << "Printer " << printer.getName() << ":\n";
-        Job currentJob = Job(0, 0, "");
+        Job currentJob = Job(0, 0, "", "");
 
 
         if (!printer.getPrinterJobs().empty())
@@ -233,14 +280,14 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
                 outputFile << "  [Job #" << job.getJobNumber() << "]\n";
                 outputFile << "  * Owner: " << job.getUserName() << "\n";
                 outputFile << "  * Status: " << job.getStatus() << "\n";
-                outputFile << "  * Total pages: " << job.getTotalPages() << " pages\n\n";
+                outputFile << "  * Total pages: " << job.getPageCount() << " pages\n\n";
             } else {
                 // This is not the first job, print "Queue"
                 outputFile << "* Queue:\n";
                 outputFile << "  [Job #" << job.getJobNumber() << "]\n";
                 outputFile << "  * Owner: " << job.getUserName() << "\n";
                 outputFile << "  * Status: " << job.getStatus() << "\n";
-                outputFile << "  * Total pages: " << job.getTotalPages() << " pages\n\n";
+                outputFile << "  * Total pages: " << job.getPageCount() << " pages\n\n";
             }
         }
     }
@@ -273,7 +320,6 @@ void PrintingSystem::processJob(const std::string &printerName) {
             while (!printer.getPrinterJobs().empty()) {
                 Job job = printer.getPrinterJobs().front();
                 int pageCount = job.getPageCount();
-
                 // Process each page based on the job type
                 while (job.getPageCount() > 0) {
                     if (job.getType() == "color" || job.getType() == "bw") {
@@ -303,6 +349,10 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
      * This function adds all jobs in the system to the first printer in the system.
      * It then deletes the jobs from the system.
      **/
+
+    // First we match the jobs to the printers
+
+
 
     Printer &printer = system.getPrinters().front();
     for (Job &job : system.getJobs())

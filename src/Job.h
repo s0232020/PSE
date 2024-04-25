@@ -26,16 +26,12 @@ public:
         return type_;
     }
 
-    const std::string& getStatus() const {
+    std::string getStatus() const {
         if (pageCount_ == 0) {
             return "Completed";
         } else {
             return "In progress";
         }
-    }
-
-    int getTotalPages() const {
-        return pageCount_;
     }
 
     void setJobNumber(int jobNumber) {
@@ -54,10 +50,6 @@ public:
         type_ = type;
     }
 
-    int getPagesRemaining() const {
-        return pageCount_;
-    }
-
     bool processPage() {
         if (pageCount_ > 0) {
             --pageCount_;
@@ -73,7 +65,7 @@ public:
     bool scanPage() {
         if (pageCount_ > 0) {
             --pageCount_;
-            std::cout << "Scanning page " << (getTotalPages() - getPagesRemaining()) << "/" << getTotalPages() << "...\n";
+            std::cout << "Pages left: " << getPageCount() << std::endl;
             return true; // Succesvol gescand
         }
         return false; // Geen pagina's meer om te scannen

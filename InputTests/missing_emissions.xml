@@ -2,11 +2,14 @@
 <SYSTEM>
     <DEVICE>
         <name>Nokke bokke</name>
+        <type>color</type>
         <speed>20</speed>
+        <cost>20</cost>
     </DEVICE>
     <JOB>
         <jobNumber>1</jobNumber>
         <pageCount>10</pageCount>
+        <type>color</type>
         <userName>Alice</userName>
     </JOB>
 </SYSTEM>

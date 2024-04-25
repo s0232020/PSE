@@ -3,11 +3,13 @@
     <JOB>
         <jobNumber>1</jobNumber>
         <pageCount>10</pageCount>
+        <type>color</type>
         <userName>Alice</userName>
     </JOB>
     <JOB>
         <jobNumber>2</jobNumber>
         <pageCount>20</pageCount>
+        <type>color</type>
         <userName>Bob</userName>
     </JOB>
 </SYSTEM>

@@ -2,6 +2,7 @@
 <SYSTEM>
     <JOB>
         <pageCount>10</pageCount>
+        <type>color</type>
         <userName>Alice</userName>
     </JOB>
 </SYSTEM>
