@@ -14,6 +14,7 @@ public:
     bool generateStatusReport(const std::string &filename);
     void processJob(const std::string &printerName);
     void addJobsToPrinters(PrintingSystem &system);
+    void processAutomatically(PrintingSystem& system);
 
     int getPrinterCount() const
     { // Keep count of how many printers there are
@@ -43,23 +44,17 @@ public:
 
 
 
-    std::vector<Printer> &getPrinters()
+    std::vector<Printer>& getPrinters()
     {
-        REQUIRE (printers_.size() >= 0, "Invalid printer count");
+        REQUIRE (printers_.size() > 0, "Invalid printer count");
         return printers_;
     };
 
-    std::vector<Job> &getJobs()
+    std::vector<Job>& getJobs()
     {
-        REQUIRE (jobs_.size() >= 0, "Invalid job count");
+        REQUIRE (jobs_.size() > 0, "Invalid job count");
         return jobs_;
     };
-
-    std::vector<Printer> getPrinters() const
-    {
-        REQUIRE (printers_.size() >= 0, "Invalid printer count");
-        return printers_;
-    }
 
     std::vector<ClimateCompensationInitiative> getClimateCompensationInitiatives() const
     {
@@ -71,12 +66,6 @@ public:
     {
         REQUIRE (climateCompensationInitiatives_.size() >= 0, "Invalid climate compensation initiative count");
         return climateCompensationInitiatives_;
-    }
-
-    std::vector<Job> getJobs() const
-    {
-        REQUIRE (jobs_.size() >= 0, "Invalid job count");
-        return jobs_;
     }
 
     void addClimateCompensationInitiative(ClimateCompensationInitiative &initiative)

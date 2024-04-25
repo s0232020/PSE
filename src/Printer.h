@@ -39,10 +39,6 @@ public:
         return speed_;
     }
 
-    std::string getType() const {
-        return type_;
-    }
-
     int getCostPerPage() const
     {
         return cost_;
@@ -94,9 +90,9 @@ public:
         type_ = type;
     }
 
-    std::string getTypes() {
+    std::string getType() const
+    {
         REQUIRE (!type_.empty(), "Invalid type value");
-        ENSURE (type_ == getType(), "Type value not returned correctly");
         return type_;
     }
 
@@ -122,6 +118,41 @@ public:
         completedJobs_.emplace_back(job);
         printerjobs_.erase(printerjobs_.begin());
     }
+
+    std::string getStatus(const Job& job) const
+    {
+        if (getCurrentJob().getJobNumber() == job.getJobNumber())
+        {
+            return "Job is currently being processed";
+        } else {
+            return "Job is currently in queue #" + std::to_string(getQueueNumber(job));
+        }
+    }
+
+    int getQueueNumber(const Job& jobR) const
+    {
+        int result = 0;
+        for (Job job : getJobQueue())
+        {
+            if (job.getJobNumber() == jobR.getJobNumber())
+            {
+                return result;
+            } else {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    int calculateCO2(Job job)
+    {
+        return job.getTotalPages() * emissions_;
+    }
+
+    std::string calculateCost(Job job)
+    {
+        int result = job.getTotalPages() * cost_;
+        return std::to_string(result) + " cents";}
 
 private:
     std::vector<Job> completedJobs_;

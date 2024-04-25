@@ -6,5 +6,6 @@ int main() {
     system.addJobsToPrinters(system);
     system.generateStatusReport("valid_output.txt");
     system.processJob("Office_Printer5");
+    system.processAutomatically(system);
     return 0;
 }

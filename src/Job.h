@@ -22,16 +22,10 @@ public:
         return userName_;
     }
 
-    const std::string& getType() const {
+    std::string getType() const
+    {
+        REQUIRE (!type_.empty(), "Invalid type value");
         return type_;
-    }
-
-    std::string getStatus() const {
-        if (pageCount_ == 0) {
-            return "Completed";
-        } else {
-            return "In progress";
-        }
     }
 
     void setJobNumber(int jobNumber) {
@@ -62,14 +56,33 @@ public:
         return pageCount_ == 0;
     }
 
-    bool scanPage() {
-        if (pageCount_ > 0) {
-            --pageCount_;
-            std::cout << "Pages left: " << getPageCount() << std::endl;
-            return true; // Succesvol gescand
-        }
-        return false; // Geen pagina's meer om te scannen
+    void processScanPage()
+    {
+        --pageCount_;
     }
+
+    void processColorPage()
+    {
+        --pageCount_;
+    }
+
+    void processBWPage()
+    {
+        --pageCount_;
+    }
+
+    void setTotalPages(int Totalpages)
+    {
+        totalpages_ = Totalpages;
+        ENSURE (totalpages_ == Totalpages, "Totalpages not updated correctly");
+    }
+
+    int getTotalPages()
+    {
+        REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
+        return totalpages_;
+    }
+
 
 
 private:
@@ -77,6 +90,7 @@ private:
     int pageCount_;
     std::string userName_;
     std::string type_;
+    int totalpages_;
 };
 
 #endif //PROJECTTITLE_JOB_H

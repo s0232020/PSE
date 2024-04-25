@@ -47,15 +47,17 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
     {
         const char* elementName = element->Value();
 
-        TiXmlElement* nameElement = element->FirstChildElement("name");
-        TiXmlElement* emissionsElement = element->FirstChildElement("emissions");
-        TiXmlElement* speedElement = element->FirstChildElement("speed");
-        TiXmlElement* costElement = element->FirstChildElement("cost");
-        TiXmlElement* printerTypeElement = element->FirstChildElement("type");
 
 
 
-        if (strcmp(elementName, "DEVICE") == 0) {
+
+        if (strcmp(elementName, "DEVICE") == 0)
+        {
+            TiXmlElement* nameElement = element->FirstChildElement("name");
+            TiXmlElement* emissionsElement = element->FirstChildElement("emissions");
+            TiXmlElement* speedElement = element->FirstChildElement("speed");
+            TiXmlElement* costElement = element->FirstChildElement("cost");
+            TiXmlElement* printerTypeElement = element->FirstChildElement("type");
             if (!nameElement){
                 loadError = LoadError::MISSING_NAME;
             }
@@ -161,6 +163,7 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             }
 
             Job job(jobNumber, pageCount, userName, jobType);
+            job.setTotalPages(pageCount);
             addJob(job);
 
             JobSeen = true;
@@ -262,33 +265,17 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
 
     // Print job information
     outputFile << "--== Jobs ==--\n";
-    for (const auto &printer : getPrinters())
+    for (Printer &printer : getPrinters())
     {
-        outputFile << "Printer " << printer.getName() << ":\n";
-        Job currentJob = Job(0, 0, "", "");
-
-
-        if (!printer.getPrinterJobs().empty())
+        for (Job job : printer.getJobQueue())
         {
-            currentJob = printer.getCurrentJob();
-        }
-
-        for(const auto& job : printer.getJobQueue()) {
-            if(job.getJobNumber() == currentJob.getJobNumber()) {
-                // This is the first job, print "Current"
-                outputFile << "* Current:\n";
-                outputFile << "  [Job #" << job.getJobNumber() << "]\n";
-                outputFile << "  * Owner: " << job.getUserName() << "\n";
-                outputFile << "  * Status: " << job.getStatus() << "\n";
-                outputFile << "  * Total pages: " << job.getPageCount() << " pages\n\n";
-            } else {
-                // This is not the first job, print "Queue"
-                outputFile << "* Queue:\n";
-                outputFile << "  [Job #" << job.getJobNumber() << "]\n";
-                outputFile << "  * Owner: " << job.getUserName() << "\n";
-                outputFile << "  * Status: " << job.getStatus() << "\n";
-                outputFile << "  * Total pages: " << job.getPageCount() << " pages\n\n";
-            }
+            outputFile << "[Job #" << job.getJobNumber() << "]\n";
+            outputFile << "* Owner: " << job.getUserName() << std::endl;
+            outputFile << "* Device: " << printer.getName() << std::endl;
+            outputFile << "* Status: " << printer.getStatus(job) << std::endl;
+            outputFile << "* Total pages: " << job.getTotalPages() << std::endl;
+            outputFile << "* Total CO2: " << printer.calculateCO2(job) << "g CO2\n";
+            outputFile << "Total cost: " << printer.calculateCost(job) << "\n\n";
         }
     }
 
@@ -321,17 +308,21 @@ void PrintingSystem::processJob(const std::string &printerName) {
                 Job job = printer.getPrinterJobs().front();
                 int pageCount = job.getPageCount();
                 // Process each page based on the job type
-                while (job.getPageCount() > 0) {
-                    if (job.getType() == "color" || job.getType() == "bw") {
-                        // For printing jobs
-                        job.processPage();
-                    } else if (job.getType() == "scan") {
-                        // For scanning jobs
-                        job.scanPage();
+                if (job.getType() == "color") {
+                    while (job.getPageCount() > 0) {
+                        job.processColorPage();
+                    }
+                } else if (job.getType() == "bw") {
+                    while (job.getPageCount() > 0) {
+                        job.processBWPage();
+                    }
+                } else if (job.getType() == "scan") {
+                    while (job.getPageCount() > 0) {
+                        job.processScanPage();
                     }
                 }
 
-                std::cout << "Printer \"" << printer.getName() << "\" finished job:\n";
+                std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
                 std::cout << pageCount << " pages\n" << std::endl;
@@ -343,21 +334,57 @@ void PrintingSystem::processJob(const std::string &printerName) {
 }
 
 
-void PrintingSystem::addJobsToPrinters(PrintingSystem &system)
+void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
 {
     /**
      * This function adds all jobs in the system to the first printer in the system.
      * It then deletes the jobs from the system.
      **/
 
-    // First we match the jobs to the printers
 
-
-
-    Printer &printer = system.getPrinters().front();
-    for (Job &job : system.getJobs())
+    while (system.getJobCount() > 0)
     {
-        printer.addJobToPrinter(job);
-        system.deleteJob(job.getJobNumber());
+        Job job = system.getJobs().front();
+        for (Printer& printer : system.getPrinters())
+        {
+            if (printer.getType() == job.getType())
+            {
+                printer.addJobToPrinter(job);
+                system.deleteJob(job.getJobNumber());
+                break;
+            }
+        }
+    }
+}
+
+
+void PrintingSystem::processAutomatically(PrintingSystem& system)
+{
+    for (auto& printer : getPrinters()) {
+            while (!printer.getPrinterJobs().empty()) {
+                Job job = printer.getPrinterJobs().front();
+                int pageCount = job.getPageCount();
+                // Process each page based on the job type
+                if (job.getType() == "color") {
+                    while (job.getPageCount() > 0) {
+                        job.processColorPage();
+                    }
+                } else if (job.getType() == "bw") {
+                    while (job.getPageCount() > 0) {
+                        job.processBWPage();
+                    }
+                } else if (job.getType() == "scan") {
+                    while (job.getPageCount() > 0) {
+                        job.processScanPage();
+                    }
+                }
+
+                        std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
+                std::cout << "Number: " << job.getJobNumber() << "\n";
+                std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
+                std::cout << pageCount << " pages\n" << std::endl;
+
+                printer.addCompletedJob(job);
+            }
     }
 }

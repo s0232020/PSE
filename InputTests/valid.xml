@@ -34,8 +34,14 @@
     </DEVICE>
     <JOB>
         <jobNumber>98632</jobNumber>
-        <pageCount>10</pageCount>
+        <pageCount>11</pageCount>
         <type>scan</type>
         <userName>Peter Selie</userName>
+    </JOB>
+    <JOB>
+        <jobNumber>98633</jobNumber>
+        <pageCount>6</pageCount>
+        <type>scan</type>
+        <userName>Bob</userName>
     </JOB>
 </SYSTEM>
