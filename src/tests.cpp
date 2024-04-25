@@ -44,6 +44,14 @@ public:
         return true;
     }
 
+    int calculateExpectedAddedPages() {
+        int total_pages = 0;
+        for (const Job& job : systemTest.getJobs()) {
+            total_pages += job.getPageCount();
+        }
+        return total_pages;
+    }
+
 protected:
     virtual void SetUp() override {}
     virtual void TearDown() override {}
@@ -93,4 +101,31 @@ TEST_F(PrintingSystemTest, HappyDay) {
     // Assert whether files match or not
     EXPECT_TRUE(matchFiles("expected_output.txt", "valid.xml"));
     EXPECT_FALSE(matchFiles("non_expected_output.txt", "valid.xml"));
+}
+
+TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingEmissionsErrorForFileWithoutEmissions) {
+    LoadError error = systemTest.loadFromFile("missing_emissions.xml");
+    EXPECT_EQ(LoadError::MISSING_EMISSIONS, error);
+}
+
+TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingCostErrorForFileWithoutCost) {
+    LoadError error = systemTest.loadFromFile("missing_cost.xml");
+    EXPECT_EQ(LoadError::MISSING_COST, error);
+}
+
+TEST_F(PrintingSystemTest, AddJobsToPrintersDoesNotAddJobToPrinterWithExceededCO2Limit) {
+    systemTest.loadFromFile("valid.xml");
+    Printer& printer = systemTest.getPrinters().back();
+    int initialQueuePages = printer.getQueuePages();
+    int expectedAddedPages = calculateExpectedAddedPages();
+    systemTest.addJobsToPrinters(systemTest);
+    EXPECT_EQ(printer.getQueuePages(), initialQueuePages + expectedAddedPages);
+}
+
+TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitablePrinter) {
+    systemTest.loadFromFile("valid.xml");
+    testing::internal::CaptureStdout();
+    systemTest.addJobsToPrinters(systemTest);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_NE(output.find("Correct Error Message"), std::string::npos);
 }

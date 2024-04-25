@@ -99,10 +99,26 @@ public:
         }
     }
 
+    int calculateTotalCO2Emissions()
+    {
+        for (Printer& printer : printers_)
+        {
+            CO2_emissions += printer.getCO2Emissions();
+        }
+        return CO2_emissions;
+    }
+
+    void addUncompletedJob(Job& job)
+    {
+        uncompletedJobs_.emplace_back(job);
+    }
+
 private:
     std::vector<Printer> printers_;
     std::vector<Job> jobs_;
+    std::vector<Job> uncompletedJobs_;
     std::vector<ClimateCompensationInitiative> climateCompensationInitiatives_;
+    int CO2_emissions = 0;
 
 
 };

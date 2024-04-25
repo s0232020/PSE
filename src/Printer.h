@@ -152,7 +152,26 @@ public:
     std::string calculateCost(Job job)
     {
         int result = job.getTotalPages() * cost_;
-        return std::to_string(result) + " cents";}
+        return std::to_string(result) + " cents";
+    }
+
+    void incrementCO2Emissions()
+    {
+        CO2_emissions += emissions_;
+    }
+
+    int getCO2Emissions()
+    {
+        return CO2_emissions;
+    }
+
+    int getQueuePages() {
+        int total_pages = 0;
+        for (const Job& job : printerjobs_) {
+            total_pages += job.getPageCount();
+        }
+        return total_pages;
+    }
 
 private:
     std::vector<Job> completedJobs_;
@@ -162,5 +181,6 @@ private:
     int speed_;
     float cost_;
     std::string type_;
+    int CO2_emissions = 0;
 };
 #endif //PROJECTTITLE_PRINTER_H

@@ -311,21 +311,26 @@ void PrintingSystem::processJob(const std::string &printerName) {
                 if (job.getType() == "color") {
                     while (job.getPageCount() > 0) {
                         job.processColorPage();
+                        printer.incrementCO2Emissions();
                     }
                 } else if (job.getType() == "bw") {
                     while (job.getPageCount() > 0) {
                         job.processBWPage();
+                        printer.incrementCO2Emissions();
                     }
                 } else if (job.getType() == "scan") {
                     while (job.getPageCount() > 0) {
                         job.processScanPage();
+                        printer.incrementCO2Emissions();
                     }
                 }
 
                 std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
-                std::cout << pageCount << " pages\n" << std::endl;
+                std::cout << pageCount << " pages\n";
+                std::cout << "CO2 emissions: " << printer.getCO2Emissions() << "\n\n";
+
 
                 printer.addCompletedJob(job);
             }
@@ -345,6 +350,7 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
     while (system.getJobCount() > 0)
     {
         Job job = system.getJobs().front();
+        std::vector<Printer*> suitablePrinters;
         for (Printer& printer : system.getPrinters())
         {
             if (printer.getType() == job.getType())
@@ -352,7 +358,43 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
                 printer.addJobToPrinter(job);
                 system.deleteJob(job.getJobNumber());
                 break;
+                suitablePrinters.push_back(&printer);
             }
+        }
+
+        Printer* chosenPrinter = nullptr;
+        if (suitablePrinters.size() > 1)
+        {
+            int minPages = INT_MAX;
+            for (Printer* printer : suitablePrinters)
+            {
+                int totalPages = 0;
+                for (Job queuedJob : printer->getPrinterJobs())
+                {
+                    totalPages += queuedJob.getPageCount();
+                }
+                if (totalPages < minPages)
+                {
+                    minPages = totalPages;
+                    chosenPrinter = printer;
+                }
+            }
+        }
+        else if (suitablePrinters.size() == 1)
+        {
+            chosenPrinter = suitablePrinters[0];
+        }
+
+        if (chosenPrinter != nullptr)
+        {
+            chosenPrinter->addJobToPrinter(job);
+            system.deleteJob(job.getJobNumber());
+        }
+        else
+        {
+            std::cout << "Error: No device exists for the job type " << job.getType() << ". The job could not be printed." << std::endl;
+            system.addUncompletedJob(job);
+            system.deleteJob(job.getJobNumber());
         }
     }
 }
@@ -368,23 +410,28 @@ void PrintingSystem::processAutomatically(PrintingSystem& system)
                 if (job.getType() == "color") {
                     while (job.getPageCount() > 0) {
                         job.processColorPage();
+                        printer.incrementCO2Emissions();
                     }
                 } else if (job.getType() == "bw") {
                     while (job.getPageCount() > 0) {
                         job.processBWPage();
+                        printer.incrementCO2Emissions();
                     }
                 } else if (job.getType() == "scan") {
                     while (job.getPageCount() > 0) {
                         job.processScanPage();
+                        printer.incrementCO2Emissions();
                     }
                 }
 
-                        std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
+                std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
                 std::cout << "Number: " << job.getJobNumber() << "\n";
                 std::cout << "Submitted by \"" << job.getUserName() << "\"\n";
-                std::cout << pageCount << " pages\n" << std::endl;
+                std::cout << pageCount << " pages\n";
+                std::cout << "CO2 emissions: " << printer.getCO2Emissions() << "\n\n";
 
                 printer.addCompletedJob(job);
             }
     }
+    std::cout << "Total CO2 emissions: " << calculateTotalCO2Emissions() << std::endl;
 }

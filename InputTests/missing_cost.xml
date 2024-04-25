@@ -10,8 +10,8 @@
     <DEVICE>
         <name>Printer2</name>
         <emissions>30</emissions>
+        <speed>20</speed>
         <type>color</type>
-        <cost>20</cost>
     </DEVICE>
     <JOB>
         <jobNumber>1</jobNumber>
