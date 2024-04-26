@@ -59,6 +59,33 @@ public:
         return total_pages;
     }
 
+    bool matchFilesReleaseTarget(std::string expected_output, std::string actual_output)
+    {
+        std::ifstream expected_outputtxt(expected_output);
+        std::ifstream actual_outputtxt(actual_output);
+
+        if (!expected_outputtxt.is_open() || !actual_outputtxt.is_open())
+        {
+            std::cerr << "Failed to open file: line 69" << std::endl;
+        }
+
+        char expectedChar, actualChar;
+        while (expected_outputtxt.get(expectedChar) && actual_outputtxt.get(actualChar))
+        {
+            if (expectedChar != actualChar)
+            {
+                expected_outputtxt.close();
+                actual_outputtxt.close();
+                return false;
+            }
+        }
+
+        expected_outputtxt.close();
+        actual_outputtxt.close();
+        return true;
+
+    }
+
 protected:
     std::streambuf* orig_cout;
     std::ofstream out_file;
@@ -196,26 +223,25 @@ TEST_F(PrintingSystemTest, AddJobsToPrintersIncreasesQueuePagesForValidJobs)
     EXPECT_GT(printer.getQueuePages(), initialQueuePages);
 }
 
-//TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
-//{
-//  Not fully functional yet
-//    // Save the old buffer
-//    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-//
-//    // Open your file
-//    std::ofstream out("release_target_actual_output.txt");
-//
-//    // Redirect std::cout to your file
-//    std::cout.rdbuf(out.rdbuf());
-//
-//    // Now, everything you print to std::cout will go to output.txt
-//    systemTest.loadFromFile("valid.xml");
-//    systemTest.addJobsToPrinters(systemTest);
-//    systemTest.processAutomatically(systemTest);
-//
-//    // When done, restore the old std::cout buffer
-//    std::cout.rdbuf(oldCoutBuffer);
-//
-//    bool result = matchFiles("release_target_expected_output.txt", "release_target_actual_output.txt");
-//    EXPECT_TRUE(result);
-//}
+TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
+{
+    // Save the old buffer
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+
+    // Open your file
+    std::ofstream out("release_target_actual_output.txt");
+
+    // Redirect std::cout to your file
+    std::cout.rdbuf(out.rdbuf());
+
+    // Now, everything you print to std::cout will go to output.txt
+    systemTest.loadFromFile("valid.xml");
+    systemTest.addJobsToPrinters(systemTest);
+    systemTest.processAutomatically(systemTest);
+
+    // When done, restore the old std::cout buffer
+    std::cout.rdbuf(oldCoutBuffer);
+
+    bool result = matchFilesReleaseTarget("release_target_expected_output.txt", "release_target_actual_output.txt");
+    EXPECT_TRUE(result);
+}
