@@ -1,0 +1,97 @@
+\doxysection{Printing\+System\+Test Class Reference}
+\hypertarget{class_printing_system_test}{}\label{class_printing_system_test}\index{PrintingSystemTest@{PrintingSystemTest}}
+Inheritance diagram for Printing\+System\+Test\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_printing_system_test}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_printing_system_test_abb17fc2f8d505e9c8371098faf6a5b50}{match\+Files}} (std\+::string expected\+File\+Name, std\+::string filename)
+\item 
+\Hypertarget{class_printing_system_test_a01d4ec8eaacd9ad5043826eeac6348b2}\label{class_printing_system_test_a01d4ec8eaacd9ad5043826eeac6348b2} 
+int {\bfseries calculate\+Expected\+Added\+Pages} ()
+\item 
+\Hypertarget{class_printing_system_test_a912265dabe84484b67f9409c68d5fbb2}\label{class_printing_system_test_a912265dabe84484b67f9409c68d5fbb2} 
+bool {\bfseries match\+Files\+Release\+Target} (std\+::string expected\+\_\+output, std\+::string actual\+\_\+output)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{class_printing_system_test_acc78bd2dc9351418fe215176a5389517}{Set\+Up}} () override
+\item 
+virtual void \mbox{\hyperlink{class_printing_system_test_aa6ed5229e539789a232df572d058f4b3}{Tear\+Down}} () override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_printing_system_test_ab11f3cf564b068a8bcac11f6e2d177b9}\label{class_printing_system_test_ab11f3cf564b068a8bcac11f6e2d177b9} 
+std\+::streambuf \texorpdfstring{$\ast$}{*} {\bfseries orig\+\_\+cout}
+\item 
+\Hypertarget{class_printing_system_test_a575f74910df822a1259aabbf6f80abc9}\label{class_printing_system_test_a575f74910df822a1259aabbf6f80abc9} 
+std\+::ofstream {\bfseries out\+\_\+file}
+\item 
+\Hypertarget{class_printing_system_test_a7afa334deaa6ac95cc9806c2eb0d6584}\label{class_printing_system_test_a7afa334deaa6ac95cc9806c2eb0d6584} 
+\mbox{\hyperlink{class_printing_system}{Printing\+System}} {\bfseries system\+Test}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Types inherited from \mbox{\hyperlink{classtesting_1_1_test}{testing\+::\+Test}}}
+\begin{DoxyCompactItemize}
+\item 
+typedef internal\+::\+Set\+Up\+Test\+Case\+Func {\bfseries Set\+Up\+Test\+Case\+Func}
+\item 
+typedef internal\+::\+Tear\+Down\+Test\+Case\+Func {\bfseries Tear\+Down\+Test\+Case\+Func}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions inherited from \mbox{\hyperlink{classtesting_1_1_test}{testing\+::\+Test}}}
+\begin{DoxyCompactItemize}
+\item 
+static void {\bfseries Set\+Up\+Test\+Case} ()
+\item 
+static void {\bfseries Tear\+Down\+Test\+Case} ()
+\item 
+static bool {\bfseries Has\+Fatal\+Failure} ()
+\item 
+static bool {\bfseries Has\+Nonfatal\+Failure} ()
+\item 
+static bool {\bfseries Has\+Failure} ()
+\item 
+static void {\bfseries Record\+Property} (const std\+::string \&key, const std\+::string \&value)
+\item 
+static void {\bfseries Record\+Property} (const std\+::string \&key, int value)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_printing_system_test_abb17fc2f8d505e9c8371098faf6a5b50}\label{class_printing_system_test_abb17fc2f8d505e9c8371098faf6a5b50} 
+\index{PrintingSystemTest@{PrintingSystemTest}!matchFiles@{matchFiles}}
+\index{matchFiles@{matchFiles}!PrintingSystemTest@{PrintingSystemTest}}
+\doxysubsubsection{\texorpdfstring{matchFiles()}{matchFiles()}}
+{\footnotesize\ttfamily bool Printing\+System\+Test\+::match\+Files (\begin{DoxyParamCaption}\item[{std\+::string}]{expected\+File\+Name,  }\item[{std\+::string}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+This is a class for testing the xml files \Hypertarget{class_printing_system_test_acc78bd2dc9351418fe215176a5389517}\label{class_printing_system_test_acc78bd2dc9351418fe215176a5389517} 
+\index{PrintingSystemTest@{PrintingSystemTest}!SetUp@{SetUp}}
+\index{SetUp@{SetUp}!PrintingSystemTest@{PrintingSystemTest}}
+\doxysubsubsection{\texorpdfstring{SetUp()}{SetUp()}}
+{\footnotesize\ttfamily virtual void Printing\+System\+Test\+::\+Set\+Up (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classtesting_1_1_test}{testing\+::\+Test}}.
+
+\Hypertarget{class_printing_system_test_aa6ed5229e539789a232df572d058f4b3}\label{class_printing_system_test_aa6ed5229e539789a232df572d058f4b3} 
+\index{PrintingSystemTest@{PrintingSystemTest}!TearDown@{TearDown}}
+\index{TearDown@{TearDown}!PrintingSystemTest@{PrintingSystemTest}}
+\doxysubsubsection{\texorpdfstring{TearDown()}{TearDown()}}
+{\footnotesize\ttfamily virtual void Printing\+System\+Test\+::\+Tear\+Down (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classtesting_1_1_test}{testing\+::\+Test}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/tests.\+cpp\end{DoxyCompactItemize}

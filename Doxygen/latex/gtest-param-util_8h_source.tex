@@ -1,0 +1,625 @@
+\doxysection{gtest-\/param-\/util.h}
+\hypertarget{gtest-param-util_8h_source}{}\label{gtest-param-util_8h_source}\index{gtest/include/gtest/internal/gtest-\/param-\/util.h@{gtest/include/gtest/internal/gtest-\/param-\/util.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ Copyright\ 2008\ Google\ Inc.}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ All\ Rights\ Reserved.}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Redistribution\ and\ use\ in\ source\ and\ binary\ forms,\ with\ or\ without}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ modification,\ are\ permitted\ provided\ that\ the\ following\ conditions\ are}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ met:}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ of\ source\ code\ must\ retain\ the\ above\ copyright}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer.}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ in\ binary\ form\ must\ reproduce\ the\ above}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ copyright\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ in\ the\ documentation\ and/or\ other\ materials\ provided\ with\ the}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ distribution.}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ \ \ \ \ *\ Neither\ the\ name\ of\ Google\ Inc.\ nor\ the\ names\ of\ its}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//\ contributors\ may\ be\ used\ to\ endorse\ or\ promote\ products\ derived\ from}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//\ this\ software\ without\ specific\ prior\ written\ permission.}}
+\DoxyCodeLine{00017\ \textcolor{comment}{//}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//\ THIS\ SOFTWARE\ IS\ PROVIDED\ BY\ THE\ COPYRIGHT\ HOLDERS\ AND\ CONTRIBUTORS}}
+\DoxyCodeLine{00019\ \textcolor{comment}{//\ "{}AS\ IS"{}\ AND\ ANY\ EXPRESS\ OR\ IMPLIED\ WARRANTIES,\ INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00020\ \textcolor{comment}{//\ LIMITED\ TO,\ THE\ IMPLIED\ WARRANTIES\ OF\ MERCHANTABILITY\ AND\ FITNESS\ FOR}}
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ A\ PARTICULAR\ PURPOSE\ ARE\ DISCLAIMED.\ IN\ NO\ EVENT\ SHALL\ THE\ COPYRIGHT}}
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ OWNER\ OR\ CONTRIBUTORS\ BE\ LIABLE\ FOR\ ANY\ DIRECT,\ INDIRECT,\ INCIDENTAL,}}
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ SPECIAL,\ EXEMPLARY,\ OR\ CONSEQUENTIAL\ DAMAGES\ (INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ LIMITED\ TO,\ PROCUREMENT\ OF\ SUBSTITUTE\ GOODS\ OR\ SERVICES;\ LOSS\ OF\ USE,}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ DATA,\ OR\ PROFITS;\ OR\ BUSINESS\ INTERRUPTION)\ HOWEVER\ CAUSED\ AND\ ON\ ANY}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ THEORY\ OF\ LIABILITY,\ WHETHER\ IN\ CONTRACT,\ STRICT\ LIABILITY,\ OR\ TORT}}
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ (INCLUDING\ NEGLIGENCE\ OR\ OTHERWISE)\ ARISING\ IN\ ANY\ WAY\ OUT\ OF\ THE\ USE}}
+\DoxyCodeLine{00028\ \textcolor{comment}{//\ OF\ THIS\ SOFTWARE,\ EVEN\ IF\ ADVISED\ OF\ THE\ POSSIBILITY\ OF\ SUCH\ DAMAGE.}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ Author:\ vladl@google.com\ (Vlad\ Losev)}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{//\ Type\ and\ function\ utilities\ for\ implementing\ parameterized\ tests.}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#ifndef\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PARAM\_UTIL\_H\_}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PARAM\_UTIL\_H\_}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ <iterator>}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{//\ scripts/fuse\_gtest.py\ depends\ on\ gtest's\ own\ header\ being\ \#included}}
+\DoxyCodeLine{00042\ \textcolor{comment}{//\ *unconditionally*.\ \ Therefore\ these\ \#includes\ cannot\ be\ moved}}
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ inside\ \#if\ GTEST\_HAS\_PARAM\_TEST.}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ "{}gtest/internal/gtest-\/internal.h"{}}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ "{}gtest/internal/gtest-\/linked\_ptr.h"{}}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}gtest/internal/gtest-\/port.h"{}}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#include\ "{}gtest/gtest-\/printers.h"{}}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_PARAM\_TEST}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{namespace\ }testing\ \{}
+\DoxyCodeLine{00052\ \textcolor{keyword}{namespace\ }internal\ \{}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00055\ \textcolor{comment}{//}}
+\DoxyCodeLine{00056\ \textcolor{comment}{//\ Outputs\ a\ message\ explaining\ invalid\ registration\ of\ different}}
+\DoxyCodeLine{00057\ \textcolor{comment}{//\ fixture\ class\ for\ the\ same\ test\ case.\ This\ may\ happen\ when}}
+\DoxyCodeLine{00058\ \textcolor{comment}{//\ TEST\_P\ macro\ is\ used\ to\ define\ two\ tests\ with\ the\ same\ name}}
+\DoxyCodeLine{00059\ \textcolor{comment}{//\ but\ in\ different\ namespaces.}}
+\DoxyCodeLine{00060\ GTEST\_API\_\ \textcolor{keywordtype}{void}\ ReportInvalidTestCaseType(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ test\_case\_name,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file,\ \textcolor{keywordtype}{int}\ line);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}>\ \textcolor{keyword}{class\ }ParamGeneratorInterface;}
+\DoxyCodeLine{00064\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}>\ \textcolor{keyword}{class\ }ParamGenerator;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{comment}{//\ Interface\ for\ iterating\ over\ elements\ provided\ by\ an\ implementation}}
+\DoxyCodeLine{00067\ \textcolor{comment}{//\ of\ ParamGeneratorInterface<T>.}}
+\DoxyCodeLine{00068\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00069\ \textcolor{keyword}{class\ }ParamIteratorInterface\ \{}
+\DoxyCodeLine{00070\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00071\ \ \ \textcolor{keyword}{virtual}\ \string~ParamIteratorInterface()\ \{\}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ A\ pointer\ to\ the\ base\ generator\ instance.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ Used\ only\ for\ the\ purposes\ of\ iterator\ comparison}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{//\ to\ make\ sure\ that\ two\ iterators\ belong\ to\ the\ same\ generator.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ BaseGenerator()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{//\ Advances\ iterator\ to\ point\ to\ the\ next\ element}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ provided\ by\ the\ generator.\ The\ caller\ is\ responsible}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ for\ not\ calling\ Advance()\ on\ an\ iterator\ equal\ to}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{//\ BaseGenerator()-\/>End().}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ Advance()\ =\ 0;}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ Clones\ the\ iterator\ object.\ Used\ for\ implementing\ copy\ semantics}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\ of\ ParamIterator<T>.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface*\ Clone()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{//\ Dereferences\ the\ current\ iterator\ and\ provides\ (read-\/only)\ access}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ to\ the\ pointed\ value.\ It\ is\ the\ caller's\ responsibility\ not\ to\ call}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ Current()\ on\ an\ iterator\ equal\ to\ BaseGenerator()-\/>End().}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{//\ Used\ for\ implementing\ ParamGenerator<T>::operator*().}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ T*\ Current()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ Determines\ whether\ the\ given\ iterator\ and\ other\ point\ to\ the\ same}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{//\ element\ in\ the\ sequence\ generated\ by\ the\ generator.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{//\ Used\ for\ implementing\ ParamGenerator<T>::operator==().}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ Equals(\textcolor{keyword}{const}\ ParamIteratorInterface\&\ other)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00093\ \};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{comment}{//\ Class\ iterating\ over\ elements\ provided\ by\ an\ implementation\ of}}
+\DoxyCodeLine{00096\ \textcolor{comment}{//\ ParamGeneratorInterface<T>.\ It\ wraps\ ParamIteratorInterface<T>}}
+\DoxyCodeLine{00097\ \textcolor{comment}{//\ and\ implements\ the\ const\ forward\ iterator\ concept.}}
+\DoxyCodeLine{00098\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00099\ \textcolor{keyword}{class\ }ParamIterator\ \{}
+\DoxyCodeLine{00100\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{typedef}\ T\ value\_type;}
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{const}\ T\&\ reference;}
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{typedef}\ ptrdiff\_t\ difference\_type;}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{//\ ParamIterator\ assumes\ ownership\ of\ the\ impl\_\ pointer.}}
+\DoxyCodeLine{00106\ \ \ ParamIterator(\textcolor{keyword}{const}\ ParamIterator\&\ other)\ :\ impl\_(other.impl\_-\/>Clone())\ \{\}}
+\DoxyCodeLine{00107\ \ \ ParamIterator\&\ operator=(\textcolor{keyword}{const}\ ParamIterator\&\ other)\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ !=\ \&other)}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ impl\_.reset(other.impl\_-\/>Clone());}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{const}\ T\&\ operator*()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *impl\_-\/>Current();\ \}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keyword}{const}\ T*\ operator-\/>()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ impl\_-\/>Current();\ \}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{//\ Prefix\ version\ of\ operator++.}}
+\DoxyCodeLine{00116\ \ \ ParamIterator\&\ operator++()\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ impl\_-\/>Advance();}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{//\ Postfix\ version\ of\ operator++.}}
+\DoxyCodeLine{00121\ \ \ ParamIterator\ operator++(\textcolor{keywordtype}{int}\ \textcolor{comment}{/*unused*/})\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ ParamIteratorInterface<T>*\ clone\ =\ impl\_-\/>Clone();}
+\DoxyCodeLine{00123\ \ \ \ \ impl\_-\/>Advance();}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{return}\ ParamIterator(clone);}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ ParamIterator\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{return}\ impl\_.get()\ ==\ other.impl\_.get()\ ||\ impl\_-\/>Equals(*other.impl\_);}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ ParamIterator\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ ==\ other);}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00134\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }ParamGenerator<T>;}
+\DoxyCodeLine{00135\ \ \ \textcolor{keyword}{explicit}\ ParamIterator(ParamIteratorInterface<T>*\ impl)\ :\ impl\_(impl)\ \{\}}
+\DoxyCodeLine{00136\ \ \ scoped\_ptr<ParamIteratorInterface<T>\ >\ impl\_;}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{comment}{//\ ParamGeneratorInterface<T>\ is\ the\ binary\ interface\ to\ access\ generators}}
+\DoxyCodeLine{00140\ \textcolor{comment}{//\ defined\ in\ other\ translation\ units.}}
+\DoxyCodeLine{00141\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00142\ \textcolor{keyword}{class\ }ParamGeneratorInterface\ \{}
+\DoxyCodeLine{00143\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00144\ \ \ \textcolor{keyword}{typedef}\ T\ ParamType;}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{virtual}\ \string~ParamGeneratorInterface()\ \{\}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{//\ Generator\ interface\ definition}}
+\DoxyCodeLine{00149\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ Begin()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ End()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00151\ \};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \textcolor{comment}{//\ Wraps\ ParamGeneratorInterface<T>\ and\ provides\ general\ generator\ syntax}}
+\DoxyCodeLine{00154\ \textcolor{comment}{//\ compatible\ with\ the\ STL\ Container\ concept.}}
+\DoxyCodeLine{00155\ \textcolor{comment}{//\ This\ class\ implements\ copy\ initialization\ semantics\ and\ the\ contained}}
+\DoxyCodeLine{00156\ \textcolor{comment}{//\ ParamGeneratorInterface<T>\ instance\ is\ shared\ among\ all\ copies}}
+\DoxyCodeLine{00157\ \textcolor{comment}{//\ of\ the\ original\ object.\ This\ is\ possible\ because\ that\ instance\ is\ immutable.}}
+\DoxyCodeLine{00158\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00159\ \textcolor{keyword}{class\ }ParamGenerator\ \{}
+\DoxyCodeLine{00160\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00161\ \ \ \textcolor{keyword}{typedef}\ ParamIterator<T>\ iterator;}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{keyword}{explicit}\ ParamGenerator(ParamGeneratorInterface<T>*\ impl)\ :\ impl\_(impl)\ \{\}}
+\DoxyCodeLine{00164\ \ \ ParamGenerator(\textcolor{keyword}{const}\ ParamGenerator\&\ other)\ :\ impl\_(other.impl\_)\ \{\}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ ParamGenerator\&\ operator=(\textcolor{keyword}{const}\ ParamGenerator\&\ other)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ impl\_\ =\ other.impl\_;}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ iterator\ begin()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ iterator(impl\_-\/>Begin());\ \}}
+\DoxyCodeLine{00172\ \ \ iterator\ end()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ iterator(impl\_-\/>End());\ \}}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00175\ \ \ linked\_ptr<const\ ParamGeneratorInterface<T>\ >\ impl\_;}
+\DoxyCodeLine{00176\ \};}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{comment}{//\ Generates\ values\ from\ a\ range\ of\ two\ comparable\ values.\ Can\ be\ used\ to}}
+\DoxyCodeLine{00179\ \textcolor{comment}{//\ generate\ sequences\ of\ user-\/defined\ types\ that\ implement\ operator+()\ and}}
+\DoxyCodeLine{00180\ \textcolor{comment}{//\ operator<().}}
+\DoxyCodeLine{00181\ \textcolor{comment}{//\ This\ class\ is\ used\ in\ the\ Range()\ function.}}
+\DoxyCodeLine{00182\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ IncrementT>}
+\DoxyCodeLine{00183\ \textcolor{keyword}{class\ }RangeGenerator\ :\ \textcolor{keyword}{public}\ ParamGeneratorInterface<T>\ \{}
+\DoxyCodeLine{00184\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00185\ \ \ RangeGenerator(T\ begin,\ T\ end,\ IncrementT\ step)}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ :\ begin\_(begin),\ end\_(end),}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ step\_(step),\ end\_index\_(CalculateEndIndex(begin,\ end,\ step))\ \{\}}
+\DoxyCodeLine{00188\ \ \ \textcolor{keyword}{virtual}\ \string~RangeGenerator()\ \{\}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ Begin()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(\textcolor{keyword}{this},\ begin\_,\ 0,\ step\_);}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ End()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(\textcolor{keyword}{this},\ end\_,\ end\_index\_,\ step\_);}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{class\ }Iterator\ :\ \textcolor{keyword}{public}\ ParamIteratorInterface<T>\ \{}
+\DoxyCodeLine{00199\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00200\ \ \ \ \ Iterator(\textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ base,\ T\ value,\ \textcolor{keywordtype}{int}\ index,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncrementT\ step)}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ :\ base\_(base),\ value\_(value),\ index\_(index),\ step\_(step)\ \{\}}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~Iterator()\ \{\}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ BaseGenerator()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base\_;}
+\DoxyCodeLine{00207\ \ \ \ \ \}}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ Advance()\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ value\_\ =\ value\_\ +\ step\_;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ index\_++;}
+\DoxyCodeLine{00211\ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ Clone()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ T*\ Current()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \&value\_;\ \}}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ Equals(\textcolor{keyword}{const}\ ParamIteratorInterface<T>\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \textcolor{comment}{//\ Having\ the\ same\ base\ generator\ guarantees\ that\ the\ other}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \textcolor{comment}{//\ iterator\ is\ of\ the\ same\ type\ and\ we\ can\ downcast.}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ GTEST\_CHECK\_(BaseGenerator()\ ==\ other.BaseGenerator())}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}The\ program\ attempted\ to\ compare\ iterators\ "{}}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}from\ different\ generators."{}}\ <<\ std::endl;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ other\_index\ =}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ CheckedDowncastToActualType<const\ Iterator>(\&other)-\/>index\_;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ index\_\ ==\ other\_index;}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00228\ \ \ \ \ Iterator(\textcolor{keyword}{const}\ Iterator\&\ other)}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ :\ ParamIteratorInterface<T>(),}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ base\_(other.base\_),\ value\_(other.value\_),\ index\_(other.index\_),}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ step\_(other.step\_)\ \{\}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{comment}{//\ No\ implementation\ -\/\ assignment\ is\ unsupported.}}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordtype}{void}\ operator=(\textcolor{keyword}{const}\ Iterator\&\ other);}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ \textcolor{keyword}{const}\ base\_;}
+\DoxyCodeLine{00237\ \ \ \ \ T\ value\_;}
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keywordtype}{int}\ index\_;}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keyword}{const}\ IncrementT\ step\_;}
+\DoxyCodeLine{00240\ \ \ \};\ \ \textcolor{comment}{//\ class\ RangeGenerator::Iterator}}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ CalculateEndIndex(\textcolor{keyword}{const}\ T\&\ begin,}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ T\&\ end,}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ IncrementT\&\ step)\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keywordtype}{int}\ end\_index\ =\ 0;}
+\DoxyCodeLine{00246\ \ \ \ \ \textcolor{keywordflow}{for}\ (T\ i\ =\ begin;\ i\ <\ end;\ i\ =\ i\ +\ step)}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ end\_index++;}
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{keywordflow}{return}\ end\_index;}
+\DoxyCodeLine{00249\ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \textcolor{comment}{//\ No\ implementation\ -\/\ assignment\ is\ unsupported.}}
+\DoxyCodeLine{00252\ \ \ \textcolor{keywordtype}{void}\ operator=(\textcolor{keyword}{const}\ RangeGenerator\&\ other);}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \textcolor{keyword}{const}\ T\ begin\_;}
+\DoxyCodeLine{00255\ \ \ \textcolor{keyword}{const}\ T\ end\_;}
+\DoxyCodeLine{00256\ \ \ \textcolor{keyword}{const}\ IncrementT\ step\_;}
+\DoxyCodeLine{00257\ \ \ \textcolor{comment}{//\ The\ index\ for\ the\ end()\ iterator.\ All\ the\ elements\ in\ the\ generated}}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{//\ sequence\ are\ indexed\ (0-\/based)\ to\ aid\ iterator\ comparison.}}
+\DoxyCodeLine{00259\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ end\_index\_;}
+\DoxyCodeLine{00260\ \};\ \ \textcolor{comment}{//\ class\ RangeGenerator}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \textcolor{comment}{//\ Generates\ values\ from\ a\ pair\ of\ STL-\/style\ iterators.\ Used\ in\ the}}
+\DoxyCodeLine{00264\ \textcolor{comment}{//\ ValuesIn()\ function.\ The\ elements\ are\ copied\ from\ the\ source\ range}}
+\DoxyCodeLine{00265\ \textcolor{comment}{//\ since\ the\ source\ can\ be\ located\ on\ the\ stack,\ and\ the\ generator}}
+\DoxyCodeLine{00266\ \textcolor{comment}{//\ is\ likely\ to\ persist\ beyond\ that\ stack\ frame.}}
+\DoxyCodeLine{00267\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00268\ \textcolor{keyword}{class\ }ValuesInIteratorRangeGenerator\ :\ \textcolor{keyword}{public}\ ParamGeneratorInterface<T>\ \{}
+\DoxyCodeLine{00269\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00270\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ForwardIterator>}
+\DoxyCodeLine{00271\ \ \ ValuesInIteratorRangeGenerator(ForwardIterator\ begin,\ ForwardIterator\ end)}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ :\ container\_(begin,\ end)\ \{\}}
+\DoxyCodeLine{00273\ \ \ \textcolor{keyword}{virtual}\ \string~ValuesInIteratorRangeGenerator()\ \{\}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ Begin()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(\textcolor{keyword}{this},\ container\_.begin());}
+\DoxyCodeLine{00277\ \ \ \}}
+\DoxyCodeLine{00278\ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ End()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(\textcolor{keyword}{this},\ container\_.end());}
+\DoxyCodeLine{00280\ \ \ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{typedef}\ typename\ ::std::vector<T>\ ContainerType;}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \textcolor{keyword}{class\ }Iterator\ :\ \textcolor{keyword}{public}\ ParamIteratorInterface<T>\ \{}
+\DoxyCodeLine{00286\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00287\ \ \ \ \ Iterator(\textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ base,}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ ContainerType::const\_iterator\ iterator)}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ :\ base\_(base),\ iterator\_(iterator)\ \{\}}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~Iterator()\ \{\}}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ BaseGenerator()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ base\_;}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ Advance()\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ ++iterator\_;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ value\_.reset();}
+\DoxyCodeLine{00298\ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keyword}{virtual}\ ParamIteratorInterface<T>*\ Clone()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Iterator(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00301\ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{comment}{//\ We\ need\ to\ use\ cached\ value\ referenced\ by\ iterator\_\ because\ *iterator\_}}
+\DoxyCodeLine{00303\ \ \ \ \ \textcolor{comment}{//\ can\ return\ a\ temporary\ object\ (and\ of\ type\ other\ then\ T),\ so\ just}}
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{comment}{//\ having\ "{}return\ \&*iterator\_;"{}\ doesn't\ work.}}
+\DoxyCodeLine{00305\ \ \ \ \ \textcolor{comment}{//\ value\_\ is\ updated\ here\ and\ not\ in\ Advance()\ because\ Advance()}}
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{comment}{//\ can\ advance\ iterator\_\ beyond\ the\ end\ of\ the\ range,\ and\ we\ cannot}}
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{comment}{//\ detect\ that\ fact.\ The\ client\ code,\ on\ the\ other\ hand,\ is}}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{comment}{//\ responsible\ for\ not\ calling\ Current()\ on\ an\ out-\/of-\/range\ iterator.}}
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ T*\ Current()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value\_.get()\ ==\ NULL)}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ value\_.reset(\textcolor{keyword}{new}\ T(*iterator\_));}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ value\_.get();}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ Equals(\textcolor{keyword}{const}\ ParamIteratorInterface<T>\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \textcolor{comment}{//\ Having\ the\ same\ base\ generator\ guarantees\ that\ the\ other}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \textcolor{comment}{//\ iterator\ is\ of\ the\ same\ type\ and\ we\ can\ downcast.}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ GTEST\_CHECK\_(BaseGenerator()\ ==\ other.BaseGenerator())}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}The\ program\ attempted\ to\ compare\ iterators\ "{}}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}from\ different\ generators."{}}\ <<\ std::endl;}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ iterator\_\ ==}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ CheckedDowncastToActualType<const\ Iterator>(\&other)-\/>iterator\_;}
+\DoxyCodeLine{00322\ \ \ \ \ \}}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00325\ \ \ \ \ Iterator(\textcolor{keyword}{const}\ Iterator\&\ other)}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ explicit\ constructor\ call\ suppresses\ a\ false\ warning}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ emitted\ by\ gcc\ when\ supplied\ with\ the\ -\/Wextra\ option.}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ :\ ParamIteratorInterface<T>(),}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ base\_(other.base\_),}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ iterator\_(other.iterator\_)\ \{\}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \textcolor{keyword}{const}\ ParamGeneratorInterface<T>*\ \textcolor{keyword}{const}\ base\_;}
+\DoxyCodeLine{00333\ \ \ \ \ \textcolor{keyword}{typename}\ ContainerType::const\_iterator\ iterator\_;}
+\DoxyCodeLine{00334\ \ \ \ \ \textcolor{comment}{//\ A\ cached\ value\ of\ *iterator\_.\ We\ keep\ it\ here\ to\ allow\ access\ by}}
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{comment}{//\ pointer\ in\ the\ wrapping\ iterator's\ operator-\/>().}}
+\DoxyCodeLine{00336\ \ \ \ \ \textcolor{comment}{//\ value\_\ needs\ to\ be\ mutable\ to\ be\ accessed\ in\ Current().}}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{comment}{//\ Use\ of\ scoped\_ptr\ helps\ manage\ cached\ value's\ lifetime,}}
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{comment}{//\ which\ is\ bound\ by\ the\ lifespan\ of\ the\ iterator\ itself.}}
+\DoxyCodeLine{00339\ \ \ \ \ \textcolor{keyword}{mutable}\ scoped\_ptr<const\ T>\ value\_;}
+\DoxyCodeLine{00340\ \ \ \};\ \ \textcolor{comment}{//\ class\ ValuesInIteratorRangeGenerator::Iterator}}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \textcolor{comment}{//\ No\ implementation\ -\/\ assignment\ is\ unsupported.}}
+\DoxyCodeLine{00343\ \ \ \textcolor{keywordtype}{void}\ operator=(\textcolor{keyword}{const}\ ValuesInIteratorRangeGenerator\&\ other);}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \ \ \textcolor{keyword}{const}\ ContainerType\ container\_;}
+\DoxyCodeLine{00346\ \};\ \ \textcolor{comment}{//\ class\ ValuesInIteratorRangeGenerator}}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00349\ \textcolor{comment}{//}}
+\DoxyCodeLine{00350\ \textcolor{comment}{//\ Stores\ a\ parameter\ value\ and\ later\ creates\ tests\ parameterized\ with\ that}}
+\DoxyCodeLine{00351\ \textcolor{comment}{//\ value.}}
+\DoxyCodeLine{00352\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ TestClass>}
+\DoxyCodeLine{00353\ \textcolor{keyword}{class\ }ParameterizedTestFactory\ :\ \textcolor{keyword}{public}\ TestFactoryBase\ \{}
+\DoxyCodeLine{00354\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00355\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{typename}\ TestClass::ParamType\ ParamType;}
+\DoxyCodeLine{00356\ \ \ \textcolor{keyword}{explicit}\ ParameterizedTestFactory(ParamType\ parameter)\ :}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ parameter\_(parameter)\ \{\}}
+\DoxyCodeLine{00358\ \ \ \textcolor{keyword}{virtual}\ Test*\ CreateTest()\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ TestClass::SetParam(\&parameter\_);}
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ TestClass();}
+\DoxyCodeLine{00361\ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{const}\ ParamType\ parameter\_;}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00366\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ParameterizedTestFactory);}
+\DoxyCodeLine{00367\ \};}
+\DoxyCodeLine{00368\ }
+\DoxyCodeLine{00369\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00370\ \textcolor{comment}{//}}
+\DoxyCodeLine{00371\ \textcolor{comment}{//\ TestMetaFactoryBase\ is\ a\ base\ class\ for\ meta-\/factories\ that\ create}}
+\DoxyCodeLine{00372\ \textcolor{comment}{//\ test\ factories\ for\ passing\ into\ MakeAndRegisterTestInfo\ function.}}
+\DoxyCodeLine{00373\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ ParamType>}
+\DoxyCodeLine{00374\ \textcolor{keyword}{class\ }TestMetaFactoryBase\ \{}
+\DoxyCodeLine{00375\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00376\ \ \ \textcolor{keyword}{virtual}\ \string~TestMetaFactoryBase()\ \{\}}
+\DoxyCodeLine{00377\ }
+\DoxyCodeLine{00378\ \ \ \textcolor{keyword}{virtual}\ TestFactoryBase*\ CreateTestFactory(ParamType\ parameter)\ =\ 0;}
+\DoxyCodeLine{00379\ \};}
+\DoxyCodeLine{00380\ }
+\DoxyCodeLine{00381\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00382\ \textcolor{comment}{//}}
+\DoxyCodeLine{00383\ \textcolor{comment}{//\ TestMetaFactory\ creates\ test\ factories\ for\ passing\ into}}
+\DoxyCodeLine{00384\ \textcolor{comment}{//\ MakeAndRegisterTestInfo\ function.\ Since\ MakeAndRegisterTestInfo\ receives}}
+\DoxyCodeLine{00385\ \textcolor{comment}{//\ ownership\ of\ test\ factory\ pointer,\ same\ factory\ object\ cannot\ be\ passed}}
+\DoxyCodeLine{00386\ \textcolor{comment}{//\ into\ that\ method\ twice.\ But\ ParameterizedTestCaseInfo\ is\ going\ to\ call}}
+\DoxyCodeLine{00387\ \textcolor{comment}{//\ it\ for\ each\ Test/Parameter\ value\ combination.\ Thus\ it\ needs\ meta\ factory}}
+\DoxyCodeLine{00388\ \textcolor{comment}{//\ creator\ class.}}
+\DoxyCodeLine{00389\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ TestCase>}
+\DoxyCodeLine{00390\ \textcolor{keyword}{class\ }TestMetaFactory}
+\DoxyCodeLine{00391\ \ \ \ \ :\ \textcolor{keyword}{public}\ TestMetaFactoryBase<typename\ TestCase::ParamType>\ \{}
+\DoxyCodeLine{00392\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00393\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{typename}\ TestCase::ParamType\ ParamType;}
+\DoxyCodeLine{00394\ }
+\DoxyCodeLine{00395\ \ \ TestMetaFactory()\ \{\}}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \ \ \textcolor{keyword}{virtual}\ TestFactoryBase*\ CreateTestFactory(ParamType\ parameter)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ ParameterizedTestFactory<TestCase>(parameter);}
+\DoxyCodeLine{00399\ \ \ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00402\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(TestMetaFactory);}
+\DoxyCodeLine{00403\ \};}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00406\ \textcolor{comment}{//}}
+\DoxyCodeLine{00407\ \textcolor{comment}{//\ ParameterizedTestCaseInfoBase\ is\ a\ generic\ interface}}
+\DoxyCodeLine{00408\ \textcolor{comment}{//\ to\ ParameterizedTestCaseInfo\ classes.\ ParameterizedTestCaseInfoBase}}
+\DoxyCodeLine{00409\ \textcolor{comment}{//\ accumulates\ test\ information\ provided\ by\ TEST\_P\ macro\ invocations}}
+\DoxyCodeLine{00410\ \textcolor{comment}{//\ and\ generators\ provided\ by\ INSTANTIATE\_TEST\_CASE\_P\ macro\ invocations}}
+\DoxyCodeLine{00411\ \textcolor{comment}{//\ and\ uses\ that\ information\ to\ register\ all\ resulting\ test\ instances}}
+\DoxyCodeLine{00412\ \textcolor{comment}{//\ in\ RegisterTests\ method.\ The\ ParameterizeTestCaseRegistry\ class\ holds}}
+\DoxyCodeLine{00413\ \textcolor{comment}{//\ a\ collection\ of\ pointers\ to\ the\ ParameterizedTestCaseInfo\ objects}}
+\DoxyCodeLine{00414\ \textcolor{comment}{//\ and\ calls\ RegisterTests()\ on\ each\ of\ them\ when\ asked.}}
+\DoxyCodeLine{00415\ \textcolor{keyword}{class\ }ParameterizedTestCaseInfoBase\ \{}
+\DoxyCodeLine{00416\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00417\ \ \ \textcolor{keyword}{virtual}\ \string~ParameterizedTestCaseInfoBase()\ \{\}}
+\DoxyCodeLine{00418\ }
+\DoxyCodeLine{00419\ \ \ \textcolor{comment}{//\ Base\ part\ of\ test\ case\ name\ for\ display\ purposes.}}
+\DoxyCodeLine{00420\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\&\ GetTestCaseName()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00421\ \ \ \textcolor{comment}{//\ Test\ case\ id\ to\ verify\ identity.}}
+\DoxyCodeLine{00422\ \ \ \textcolor{keyword}{virtual}\ TypeId\ GetTestCaseTypeId()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00423\ \ \ \textcolor{comment}{//\ UnitTest\ class\ invokes\ this\ method\ to\ register\ tests\ in\ this}}
+\DoxyCodeLine{00424\ \ \ \textcolor{comment}{//\ test\ case\ right\ before\ running\ them\ in\ RUN\_ALL\_TESTS\ macro.}}
+\DoxyCodeLine{00425\ \ \ \textcolor{comment}{//\ This\ method\ should\ not\ be\ called\ more\ then\ once\ on\ any\ single}}
+\DoxyCodeLine{00426\ \ \ \textcolor{comment}{//\ instance\ of\ a\ ParameterizedTestCaseInfoBase\ derived\ class.}}
+\DoxyCodeLine{00427\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ RegisterTests()\ =\ 0;}
+\DoxyCodeLine{00428\ }
+\DoxyCodeLine{00429\ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00430\ \ \ ParameterizedTestCaseInfoBase()\ \{\}}
+\DoxyCodeLine{00431\ }
+\DoxyCodeLine{00432\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00433\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ParameterizedTestCaseInfoBase);}
+\DoxyCodeLine{00434\ \};}
+\DoxyCodeLine{00435\ }
+\DoxyCodeLine{00436\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00437\ \textcolor{comment}{//}}
+\DoxyCodeLine{00438\ \textcolor{comment}{//\ ParameterizedTestCaseInfo\ accumulates\ tests\ obtained\ from\ TEST\_P}}
+\DoxyCodeLine{00439\ \textcolor{comment}{//\ macro\ invocations\ for\ a\ particular\ test\ case\ and\ generators}}
+\DoxyCodeLine{00440\ \textcolor{comment}{//\ obtained\ from\ INSTANTIATE\_TEST\_CASE\_P\ macro\ invocations\ for\ that}}
+\DoxyCodeLine{00441\ \textcolor{comment}{//\ test\ case.\ It\ registers\ tests\ with\ all\ values\ generated\ by\ all}}
+\DoxyCodeLine{00442\ \textcolor{comment}{//\ generators\ when\ asked.}}
+\DoxyCodeLine{00443\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ TestCase>}
+\DoxyCodeLine{00444\ \textcolor{keyword}{class\ }ParameterizedTestCaseInfo\ :\ \textcolor{keyword}{public}\ ParameterizedTestCaseInfoBase\ \{}
+\DoxyCodeLine{00445\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00446\ \ \ \textcolor{comment}{//\ ParamType\ and\ GeneratorCreationFunc\ are\ private\ types\ but\ are\ required}}
+\DoxyCodeLine{00447\ \ \ \textcolor{comment}{//\ for\ declarations\ of\ public\ methods\ AddTestPattern()\ and}}
+\DoxyCodeLine{00448\ \ \ \textcolor{comment}{//\ AddTestCaseInstantiation().}}
+\DoxyCodeLine{00449\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{typename}\ TestCase::ParamType\ ParamType;}
+\DoxyCodeLine{00450\ \ \ \textcolor{comment}{//\ A\ function\ that\ returns\ an\ instance\ of\ appropriate\ generator\ type.}}
+\DoxyCodeLine{00451\ \ \ \textcolor{keyword}{typedef}\ ParamGenerator<ParamType>(GeneratorCreationFunc)();}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \textcolor{keyword}{explicit}\ ParameterizedTestCaseInfo(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name)}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ :\ test\_case\_name\_(name)\ \{\}}
+\DoxyCodeLine{00455\ }
+\DoxyCodeLine{00456\ \ \ \textcolor{comment}{//\ Test\ case\ base\ name\ for\ display\ purposes.}}
+\DoxyCodeLine{00457\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\&\ GetTestCaseName()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ test\_case\_name\_;\ \}}
+\DoxyCodeLine{00458\ \ \ \textcolor{comment}{//\ Test\ case\ id\ to\ verify\ identity.}}
+\DoxyCodeLine{00459\ \ \ \textcolor{keyword}{virtual}\ TypeId\ GetTestCaseTypeId()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ GetTypeId<TestCase>();\ \}}
+\DoxyCodeLine{00460\ \ \ \textcolor{comment}{//\ TEST\_P\ macro\ uses\ AddTestPattern()\ to\ record\ information}}
+\DoxyCodeLine{00461\ \ \ \textcolor{comment}{//\ about\ a\ single\ test\ in\ a\ LocalTestInfo\ structure.}}
+\DoxyCodeLine{00462\ \ \ \textcolor{comment}{//\ test\_case\_name\ is\ the\ base\ name\ of\ the\ test\ case\ (without\ invocation}}
+\DoxyCodeLine{00463\ \ \ \textcolor{comment}{//\ prefix).\ test\_base\_name\ is\ the\ name\ of\ an\ individual\ test\ without}}
+\DoxyCodeLine{00464\ \ \ \textcolor{comment}{//\ parameter\ index.\ For\ the\ test\ SequenceA/FooTest.DoBar/1\ FooTest\ is}}
+\DoxyCodeLine{00465\ \ \ \textcolor{comment}{//\ test\ case\ base\ name\ and\ DoBar\ is\ test\ base\ name.}}
+\DoxyCodeLine{00466\ \ \ \textcolor{keywordtype}{void}\ AddTestPattern(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ test\_case\_name,}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ test\_base\_name,}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TestMetaFactoryBase<ParamType>*\ meta\_factory)\ \{}
+\DoxyCodeLine{00469\ \ \ \ \ tests\_.push\_back(linked\_ptr<TestInfo>(\textcolor{keyword}{new}\ TestInfo(test\_case\_name,}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ test\_base\_name,}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meta\_factory)));}
+\DoxyCodeLine{00472\ \ \ \}}
+\DoxyCodeLine{00473\ \ \ \textcolor{comment}{//\ INSTANTIATE\_TEST\_CASE\_P\ macro\ uses\ AddGenerator()\ to\ record\ information}}
+\DoxyCodeLine{00474\ \ \ \textcolor{comment}{//\ about\ a\ generator.}}
+\DoxyCodeLine{00475\ \ \ \textcolor{keywordtype}{int}\ AddTestCaseInstantiation(\textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\&\ instantiation\_name,}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GeneratorCreationFunc*\ func,}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \textcolor{comment}{/*\ file\ */},}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \textcolor{comment}{/*\ line\ */})\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ instantiations\_.push\_back(::std::make\_pair(instantiation\_name,\ func));}
+\DoxyCodeLine{00480\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \ \textcolor{comment}{//\ Return\ value\ used\ only\ to\ run\ this\ method\ in\ namespace\ scope.}}
+\DoxyCodeLine{00481\ \ \ \}}
+\DoxyCodeLine{00482\ \ \ \textcolor{comment}{//\ UnitTest\ class\ invokes\ this\ method\ to\ register\ tests\ in\ this\ test\ case}}
+\DoxyCodeLine{00483\ \ \ \textcolor{comment}{//\ test\ cases\ right\ before\ running\ tests\ in\ RUN\_ALL\_TESTS\ macro.}}
+\DoxyCodeLine{00484\ \ \ \textcolor{comment}{//\ This\ method\ should\ not\ be\ called\ more\ then\ once\ on\ any\ single}}
+\DoxyCodeLine{00485\ \ \ \textcolor{comment}{//\ instance\ of\ a\ ParameterizedTestCaseInfoBase\ derived\ class.}}
+\DoxyCodeLine{00486\ \ \ \textcolor{comment}{//\ UnitTest\ has\ a\ guard\ to\ prevent\ from\ calling\ this\ method\ more\ then\ once.}}
+\DoxyCodeLine{00487\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ RegisterTests()\ \{}
+\DoxyCodeLine{00488\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{typename}\ TestInfoContainer::iterator\ test\_it\ =\ tests\_.begin();}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ test\_it\ !=\ tests\_.end();\ ++test\_it)\ \{}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ linked\_ptr<TestInfo>\ test\_info\ =\ *test\_it;}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{typename}\ InstantiationContainer::iterator\ gen\_it\ =}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ instantiations\_.begin();\ gen\_it\ !=\ instantiations\_.end();}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++gen\_it)\ \{}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\&\ instantiation\_name\ =\ gen\_it-\/>first;}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ ParamGenerator<ParamType>\ generator((*gen\_it-\/>second)());}
+\DoxyCodeLine{00496\ }
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{string}\ test\_case\_name;}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !instantiation\_name.empty()\ )}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ test\_case\_name\ =\ instantiation\_name\ +\ \textcolor{stringliteral}{"{}/"{}};}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ test\_case\_name\ +=\ test\_info-\/>test\_case\_base\_name;}
+\DoxyCodeLine{00501\ }
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i\ =\ 0;}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{typename}\ ParamGenerator<ParamType>::iterator\ param\_it\ =}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ generator.begin();}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ param\_it\ !=\ generator.end();\ ++param\_it,\ ++i)\ \{}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ Message\ test\_name\_stream;}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ test\_name\_stream\ <<\ test\_info-\/>test\_base\_name\ <<\ \textcolor{stringliteral}{"{}/"{}}\ <<\ i;}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ MakeAndRegisterTestInfo(}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ test\_case\_name.c\_str(),}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ test\_name\_stream.GetString().c\_str(),}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL,\ \ \textcolor{comment}{//\ No\ type\ parameter.}}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PrintToString(*param\_it).c\_str(),}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GetTestCaseTypeId(),}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TestCase::SetUpTestCase,}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TestCase::TearDownTestCase,}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ test\_info-\/>test\_meta\_factory-\/>CreateTestFactory(*param\_it));}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \}\ \ \textcolor{comment}{//\ for\ param\_it}}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \}\ \ \textcolor{comment}{//\ for\ gen\_it}}
+\DoxyCodeLine{00519\ \ \ \ \ \}\ \ \textcolor{comment}{//\ for\ test\_it}}
+\DoxyCodeLine{00520\ \ \ \}\ \ \textcolor{comment}{//\ RegisterTests}}
+\DoxyCodeLine{00521\ }
+\DoxyCodeLine{00522\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00523\ \ \ \textcolor{comment}{//\ LocalTestInfo\ structure\ keeps\ information\ about\ a\ single\ test\ registered}}
+\DoxyCodeLine{00524\ \ \ \textcolor{comment}{//\ with\ TEST\_P\ macro.}}
+\DoxyCodeLine{00525\ \ \ \textcolor{keyword}{struct\ }TestInfo\ \{}
+\DoxyCodeLine{00526\ \ \ \ \ TestInfo(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ a\_test\_case\_base\_name,}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ a\_test\_base\_name,}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ TestMetaFactoryBase<ParamType>*\ a\_test\_meta\_factory)\ :}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ test\_case\_base\_name(a\_test\_case\_base\_name),}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ test\_base\_name(a\_test\_base\_name),}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ test\_meta\_factory(a\_test\_meta\_factory)\ \{\}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\ test\_case\_base\_name;}
+\DoxyCodeLine{00534\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\ test\_base\_name;}
+\DoxyCodeLine{00535\ \ \ \ \ \textcolor{keyword}{const}\ scoped\_ptr<TestMetaFactoryBase<ParamType>\ >\ test\_meta\_factory;}
+\DoxyCodeLine{00536\ \ \ \};}
+\DoxyCodeLine{00537\ \ \ typedef\ ::std::vector<linked\_ptr<TestInfo>\ >\ TestInfoContainer;}
+\DoxyCodeLine{00538\ \ \ \textcolor{comment}{//\ Keeps\ pairs\ of\ <Instantiation\ name,\ Sequence\ generator\ creation\ function>}}
+\DoxyCodeLine{00539\ \ \ \textcolor{comment}{//\ received\ from\ INSTANTIATE\_TEST\_CASE\_P\ macros.}}
+\DoxyCodeLine{00540\ \ \ typedef\ ::std::vector<std::pair<string,\ GeneratorCreationFunc*>\ >}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ InstantiationContainer;}
+\DoxyCodeLine{00542\ }
+\DoxyCodeLine{00543\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{string}\ test\_case\_name\_;}
+\DoxyCodeLine{00544\ \ \ TestInfoContainer\ tests\_;}
+\DoxyCodeLine{00545\ \ \ InstantiationContainer\ instantiations\_;}
+\DoxyCodeLine{00546\ }
+\DoxyCodeLine{00547\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ParameterizedTestCaseInfo);}
+\DoxyCodeLine{00548\ \};\ \ \textcolor{comment}{//\ class\ ParameterizedTestCaseInfo}}
+\DoxyCodeLine{00549\ }
+\DoxyCodeLine{00550\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00551\ \textcolor{comment}{//}}
+\DoxyCodeLine{00552\ \textcolor{comment}{//\ ParameterizedTestCaseRegistry\ contains\ a\ map\ of\ ParameterizedTestCaseInfoBase}}
+\DoxyCodeLine{00553\ \textcolor{comment}{//\ classes\ accessed\ by\ test\ case\ names.\ TEST\_P\ and\ INSTANTIATE\_TEST\_CASE\_P}}
+\DoxyCodeLine{00554\ \textcolor{comment}{//\ macros\ use\ it\ to\ locate\ their\ corresponding\ ParameterizedTestCaseInfo}}
+\DoxyCodeLine{00555\ \textcolor{comment}{//\ descriptors.}}
+\DoxyCodeLine{00556\ \textcolor{keyword}{class\ }ParameterizedTestCaseRegistry\ \{}
+\DoxyCodeLine{00557\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00558\ \ \ ParameterizedTestCaseRegistry()\ \{\}}
+\DoxyCodeLine{00559\ \ \ \string~ParameterizedTestCaseRegistry()\ \{}
+\DoxyCodeLine{00560\ \ \ \ \ \textcolor{keywordflow}{for}\ (TestCaseInfoContainer::iterator\ it\ =\ test\_case\_infos\_.begin();}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ it\ !=\ test\_case\_infos\_.end();\ ++it)\ \{}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \textcolor{keyword}{delete}\ *it;}
+\DoxyCodeLine{00563\ \ \ \ \ \}}
+\DoxyCodeLine{00564\ \ \ \}}
+\DoxyCodeLine{00565\ }
+\DoxyCodeLine{00566\ \ \ \textcolor{comment}{//\ Looks\ up\ or\ creates\ and\ returns\ a\ structure\ containing\ information\ about}}
+\DoxyCodeLine{00567\ \ \ \textcolor{comment}{//\ tests\ and\ instantiations\ of\ a\ particular\ test\ case.}}
+\DoxyCodeLine{00568\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ TestCase>}
+\DoxyCodeLine{00569\ \ \ ParameterizedTestCaseInfo<TestCase>*\ GetTestCasePatternHolder(}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ test\_case\_name,}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file,}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ line)\ \{}
+\DoxyCodeLine{00573\ \ \ \ \ ParameterizedTestCaseInfo<TestCase>*\ typed\_test\_info\ =\ NULL;}
+\DoxyCodeLine{00574\ \ \ \ \ \textcolor{keywordflow}{for}\ (TestCaseInfoContainer::iterator\ it\ =\ test\_case\_infos\_.begin();}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ it\ !=\ test\_case\_infos\_.end();\ ++it)\ \{}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((*it)-\/>GetTestCaseName()\ ==\ test\_case\_name)\ \{}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((*it)-\/>GetTestCaseTypeId()\ !=\ GetTypeId<TestCase>())\ \{}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Complain\ about\ incorrect\ usage\ of\ Google\ Test\ facilities}}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ and\ terminate\ the\ program\ since\ we\ cannot\ guaranty\ correct}}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ test\ case\ setup\ and\ tear-\/down\ in\ this\ case.}}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ ReportInvalidTestCaseType(test\_case\_name,\ \ file,\ line);}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ posix::Abort();}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ At\ this\ point\ we\ are\ sure\ that\ the\ object\ we\ found\ is\ of\ the\ same}}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ type\ we\ are\ looking\ for,\ so\ we\ downcast\ it\ to\ that\ type}}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ without\ further\ checks.}}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ typed\_test\_info\ =\ CheckedDowncastToActualType<}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ParameterizedTestCaseInfo<TestCase>\ >(*it);}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00592\ \ \ \ \ \}}
+\DoxyCodeLine{00593\ \ \ \ \ \textcolor{keywordflow}{if}\ (typed\_test\_info\ ==\ NULL)\ \{}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ typed\_test\_info\ =\ \textcolor{keyword}{new}\ ParameterizedTestCaseInfo<TestCase>(test\_case\_name);}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ test\_case\_infos\_.push\_back(typed\_test\_info);}
+\DoxyCodeLine{00596\ \ \ \ \ \}}
+\DoxyCodeLine{00597\ \ \ \ \ \textcolor{keywordflow}{return}\ typed\_test\_info;}
+\DoxyCodeLine{00598\ \ \ \}}
+\DoxyCodeLine{00599\ \ \ \textcolor{keywordtype}{void}\ RegisterTests()\ \{}
+\DoxyCodeLine{00600\ \ \ \ \ \textcolor{keywordflow}{for}\ (TestCaseInfoContainer::iterator\ it\ =\ test\_case\_infos\_.begin();}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ it\ !=\ test\_case\_infos\_.end();\ ++it)\ \{}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ (*it)-\/>RegisterTests();}
+\DoxyCodeLine{00603\ \ \ \ \ \}}
+\DoxyCodeLine{00604\ \ \ \}}
+\DoxyCodeLine{00605\ }
+\DoxyCodeLine{00606\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00607\ \ \ typedef\ ::std::vector<ParameterizedTestCaseInfoBase*>\ TestCaseInfoContainer;}
+\DoxyCodeLine{00608\ }
+\DoxyCodeLine{00609\ \ \ TestCaseInfoContainer\ test\_case\_infos\_;}
+\DoxyCodeLine{00610\ }
+\DoxyCodeLine{00611\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ParameterizedTestCaseRegistry);}
+\DoxyCodeLine{00612\ \};}
+\DoxyCodeLine{00613\ }
+\DoxyCodeLine{00614\ \}\ \ \textcolor{comment}{//\ namespace\ internal}}
+\DoxyCodeLine{00615\ \}\ \ \textcolor{comment}{//\ namespace\ testing}}
+\DoxyCodeLine{00616\ }
+\DoxyCodeLine{00617\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ \ GTEST\_HAS\_PARAM\_TEST}}
+\DoxyCodeLine{00618\ }
+\DoxyCodeLine{00619\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PARAM\_UTIL\_H\_}}
+
+\end{DoxyCode}

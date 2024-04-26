@@ -1,0 +1,1018 @@
+\doxysection{gtest-\/tuple.h}
+\hypertarget{gtest-tuple_8h_source}{}\label{gtest-tuple_8h_source}\index{gtest/include/gtest/internal/gtest-\/tuple.h@{gtest/include/gtest/internal/gtest-\/tuple.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ This\ file\ was\ GENERATED\ by\ command:}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ \ \ \ \ pump.py\ gtest-\/tuple.h.pump}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ DO\ NOT\ EDIT\ BY\ HAND!!!}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Copyright\ 2009\ Google\ Inc.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ All\ Rights\ Reserved.}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ Redistribution\ and\ use\ in\ source\ and\ binary\ forms,\ with\ or\ without}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ modification,\ are\ permitted\ provided\ that\ the\ following\ conditions\ are}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ met:}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ of\ source\ code\ must\ retain\ the\ above\ copyright}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer.}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ in\ binary\ form\ must\ reproduce\ the\ above}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//\ copyright\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//\ in\ the\ documentation\ and/or\ other\ materials\ provided\ with\ the}}
+\DoxyCodeLine{00017\ \textcolor{comment}{//\ distribution.}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//\ \ \ \ \ *\ Neither\ the\ name\ of\ Google\ Inc.\ nor\ the\ names\ of\ its}}
+\DoxyCodeLine{00019\ \textcolor{comment}{//\ contributors\ may\ be\ used\ to\ endorse\ or\ promote\ products\ derived\ from}}
+\DoxyCodeLine{00020\ \textcolor{comment}{//\ this\ software\ without\ specific\ prior\ written\ permission.}}
+\DoxyCodeLine{00021\ \textcolor{comment}{//}}
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ THIS\ SOFTWARE\ IS\ PROVIDED\ BY\ THE\ COPYRIGHT\ HOLDERS\ AND\ CONTRIBUTORS}}
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ "{}AS\ IS"{}\ AND\ ANY\ EXPRESS\ OR\ IMPLIED\ WARRANTIES,\ INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ LIMITED\ TO,\ THE\ IMPLIED\ WARRANTIES\ OF\ MERCHANTABILITY\ AND\ FITNESS\ FOR}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ A\ PARTICULAR\ PURPOSE\ ARE\ DISCLAIMED.\ IN\ NO\ EVENT\ SHALL\ THE\ COPYRIGHT}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ OWNER\ OR\ CONTRIBUTORS\ BE\ LIABLE\ FOR\ ANY\ DIRECT,\ INDIRECT,\ INCIDENTAL,}}
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ SPECIAL,\ EXEMPLARY,\ OR\ CONSEQUENTIAL\ DAMAGES\ (INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00028\ \textcolor{comment}{//\ LIMITED\ TO,\ PROCUREMENT\ OF\ SUBSTITUTE\ GOODS\ OR\ SERVICES;\ LOSS\ OF\ USE,}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//\ DATA,\ OR\ PROFITS;\ OR\ BUSINESS\ INTERRUPTION)\ HOWEVER\ CAUSED\ AND\ ON\ ANY}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ THEORY\ OF\ LIABILITY,\ WHETHER\ IN\ CONTRACT,\ STRICT\ LIABILITY,\ OR\ TORT}}
+\DoxyCodeLine{00031\ \textcolor{comment}{//\ (INCLUDING\ NEGLIGENCE\ OR\ OTHERWISE)\ ARISING\ IN\ ANY\ WAY\ OUT\ OF\ THE\ USE}}
+\DoxyCodeLine{00032\ \textcolor{comment}{//\ OF\ THIS\ SOFTWARE,\ EVEN\ IF\ ADVISED\ OF\ THE\ POSSIBILITY\ OF\ SUCH\ DAMAGE.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{//}}
+\DoxyCodeLine{00034\ \textcolor{comment}{//\ Author:\ wan@google.com\ (Zhanyong\ Wan)}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{//\ Implements\ a\ subset\ of\ TR1\ tuple\ needed\ by\ Google\ Test\ and\ Google\ Mock.}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifndef\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_TUPLE\_H\_}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_TUPLE\_H\_}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ <utility>}\ \ \textcolor{comment}{//\ For\ ::std::pair.}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ The\ compiler\ used\ in\ Symbian\ has\ a\ bug\ that\ prevents\ us\ from\ declaring\ the}}
+\DoxyCodeLine{00044\ \textcolor{comment}{//\ tuple\ template\ as\ a\ friend\ (it\ complains\ that\ tuple\ is\ redefined).\ \ This}}
+\DoxyCodeLine{00045\ \textcolor{comment}{//\ hack\ bypasses\ the\ bug\ by\ declaring\ the\ members\ that\ should\ otherwise\ be}}
+\DoxyCodeLine{00046\ \textcolor{comment}{//\ private\ as\ public.}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\ Sun\ Studio\ versions\ <\ 12\ also\ have\ the\ above\ bug.}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#if\ defined(\_\_SYMBIAN32\_\_)\ ||\ (defined(\_\_SUNPRO\_CC)\ \&\&\ \_\_SUNPRO\_CC\ <\ 0x590)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#\ define\ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_\ public:}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#\ define\ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_\ \(\backslash\)}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\ \ \ \ template\ <GTEST\_10\_TYPENAMES\_(U)>\ friend\ class\ tuple;\ \(\backslash\)}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\ \ \ private:}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{//\ GTEST\_n\_TUPLE\_(T)\ is\ the\ type\ of\ an\ n-\/tuple.}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#define\ GTEST\_0\_TUPLE\_(T)\ tuple<>}}
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#define\ GTEST\_1\_TUPLE\_(T)\ tuple<T\#\#0,\ void,\ void,\ void,\ void,\ void,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#define\ GTEST\_2\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ void,\ void,\ void,\ void,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\#define\ GTEST\_3\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ void,\ void,\ void,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00063\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00064\ \textcolor{preprocessor}{\#define\ GTEST\_4\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ void,\ void,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00066\ \textcolor{preprocessor}{\#define\ GTEST\_5\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ void,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00067\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00068\ \textcolor{preprocessor}{\#define\ GTEST\_6\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ T\#\#5,\ void,\ \(\backslash\)}}
+\DoxyCodeLine{00069\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00070\ \textcolor{preprocessor}{\#define\ GTEST\_7\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ T\#\#5,\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\ \ \ \ void,\ void,\ void>}}
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\#define\ GTEST\_8\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ T\#\#5,\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00073\ \textcolor{preprocessor}{\ \ \ \ T\#\#7,\ void,\ void>}}
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#define\ GTEST\_9\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ T\#\#5,\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00075\ \textcolor{preprocessor}{\ \ \ \ T\#\#7,\ T\#\#8,\ void>}}
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#define\ GTEST\_10\_TUPLE\_(T)\ tuple<T\#\#0,\ T\#\#1,\ T\#\#2,\ T\#\#3,\ T\#\#4,\ T\#\#5,\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00077\ \textcolor{preprocessor}{\ \ \ \ T\#\#7,\ T\#\#8,\ T\#\#9>}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{//\ GTEST\_n\_TYPENAMES\_(T)\ declares\ a\ list\ of\ n\ typenames.}}
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#define\ GTEST\_0\_TYPENAMES\_(T)}}
+\DoxyCodeLine{00081\ \textcolor{preprocessor}{\#define\ GTEST\_1\_TYPENAMES\_(T)\ typename\ T\#\#0}}
+\DoxyCodeLine{00082\ \textcolor{preprocessor}{\#define\ GTEST\_2\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1}}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\#define\ GTEST\_3\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2}}
+\DoxyCodeLine{00084\ \textcolor{preprocessor}{\#define\ GTEST\_4\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00085\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3}}
+\DoxyCodeLine{00086\ \textcolor{preprocessor}{\#define\ GTEST\_5\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00087\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4}}
+\DoxyCodeLine{00088\ \textcolor{preprocessor}{\#define\ GTEST\_6\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00089\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4,\ typename\ T\#\#5}}
+\DoxyCodeLine{00090\ \textcolor{preprocessor}{\#define\ GTEST\_7\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4,\ typename\ T\#\#5,\ typename\ T\#\#6}}
+\DoxyCodeLine{00092\ \textcolor{preprocessor}{\#define\ GTEST\_8\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00093\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4,\ typename\ T\#\#5,\ typename\ T\#\#6,\ typename\ T\#\#7}}
+\DoxyCodeLine{00094\ \textcolor{preprocessor}{\#define\ GTEST\_9\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00095\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4,\ typename\ T\#\#5,\ typename\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00096\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#7,\ typename\ T\#\#8}}
+\DoxyCodeLine{00097\ \textcolor{preprocessor}{\#define\ GTEST\_10\_TYPENAMES\_(T)\ typename\ T\#\#0,\ typename\ T\#\#1,\ typename\ T\#\#2,\ \(\backslash\)}}
+\DoxyCodeLine{00098\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#3,\ typename\ T\#\#4,\ typename\ T\#\#5,\ typename\ T\#\#6,\ \(\backslash\)}}
+\DoxyCodeLine{00099\ \textcolor{preprocessor}{\ \ \ \ typename\ T\#\#7,\ typename\ T\#\#8,\ typename\ T\#\#9}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{comment}{//\ In\ theory,\ defining\ stuff\ in\ the\ ::std\ namespace\ is\ undefined}}
+\DoxyCodeLine{00102\ \textcolor{comment}{//\ behavior.\ \ We\ can\ do\ this\ as\ we\ are\ playing\ the\ role\ of\ a\ standard}}
+\DoxyCodeLine{00103\ \textcolor{comment}{//\ library\ vendor.}}
+\DoxyCodeLine{00104\ \textcolor{keyword}{namespace\ }std\ \{}
+\DoxyCodeLine{00105\ \textcolor{keyword}{namespace\ }tr1\ \{}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T0\ =\ void,\ \textcolor{keyword}{typename}\ T1\ =\ void,\ \textcolor{keyword}{typename}\ T2\ =\ void,}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{typename}\ T3\ =\ void,\ \textcolor{keyword}{typename}\ T4\ =\ void,\ \textcolor{keyword}{typename}\ T5\ =\ void,}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{typename}\ T6\ =\ void,\ \textcolor{keyword}{typename}\ T7\ =\ void,\ \textcolor{keyword}{typename}\ T8\ =\ void,}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{typename}\ T9\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00111\ \textcolor{keyword}{class\ }tuple;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{comment}{//\ Anything\ in\ namespace\ gtest\_internal\ is\ Google\ Test's\ INTERNAL}}
+\DoxyCodeLine{00114\ \textcolor{comment}{//\ IMPLEMENTATION\ DETAIL\ and\ MUST\ NOT\ BE\ USED\ DIRECTLY\ in\ user\ code.}}
+\DoxyCodeLine{00115\ \textcolor{keyword}{namespace\ }gtest\_internal\ \{}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{comment}{//\ ByRef<T>::type\ is\ T\ if\ T\ is\ a\ reference;\ otherwise\ it's\ const\ T\&.}}
+\DoxyCodeLine{00118\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00119\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_by_ref}{ByRef}}\ \{\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{const}\ T\&\ type;\ \};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00120\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00121\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_by_ref}{ByRef}}<T\&>\ \{\ \textcolor{keyword}{typedef}\ T\&\ type;\ \};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \textcolor{comment}{//\ A\ handy\ wrapper\ for\ ByRef.}}
+\DoxyCodeLine{00124\ \textcolor{preprocessor}{\#define\ GTEST\_BY\_REF\_(T)\ typename\ ::std::tr1::gtest\_internal::ByRef<T>::type}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \textcolor{comment}{//\ AddRef<T>::type\ is\ T\ if\ T\ is\ a\ reference;\ otherwise\ it's\ T\&.\ \ This}}
+\DoxyCodeLine{00127\ \textcolor{comment}{//\ is\ the\ same\ as\ tr1::add\_reference<T>::type.}}
+\DoxyCodeLine{00128\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00129\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_add_ref}{AddRef}}\ \{\ \textcolor{keyword}{typedef}\ T\&\ type;\ \};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00130\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00131\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_add_ref}{AddRef}}<T\&>\ \{\ \textcolor{keyword}{typedef}\ T\&\ type;\ \};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{comment}{//\ A\ handy\ wrapper\ for\ AddRef.}}
+\DoxyCodeLine{00134\ \textcolor{preprocessor}{\#define\ GTEST\_ADD\_REF\_(T)\ typename\ ::std::tr1::gtest\_internal::AddRef<T>::type}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \textcolor{comment}{//\ A\ helper\ for\ implementing\ get<k>().}}
+\DoxyCodeLine{00137\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{comment}{//\ A\ helper\ for\ implementing\ tuple\_element<k,\ T>.\ \ kIndexValid\ is\ true}}
+\DoxyCodeLine{00140\ \textcolor{comment}{//\ iff\ k\ <\ the\ number\ of\ fields\ in\ tuple\ type\ T.}}
+\DoxyCodeLine{00141\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{bool}\ kIndexVal\textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ kIndex,\ \textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00142\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00145\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 0,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{typedef}\ T0\ type;}
+\DoxyCodeLine{00147\ \};}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00150\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 1,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{typedef}\ T1\ type;}
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00155\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 2,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{typedef}\ T2\ type;}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00160\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 3,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00161\ \ \ \textcolor{keyword}{typedef}\ T3\ type;}
+\DoxyCodeLine{00162\ \};}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00165\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 4,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00166\ \ \ \textcolor{keyword}{typedef}\ T4\ type;}
+\DoxyCodeLine{00167\ \};}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00170\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 5,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00171\ \ \ \textcolor{keyword}{typedef}\ T5\ type;}
+\DoxyCodeLine{00172\ \};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00175\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 6,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00176\ \ \ \textcolor{keyword}{typedef}\ T6\ type;}
+\DoxyCodeLine{00177\ \};}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00180\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 7,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00181\ \ \ \textcolor{keyword}{typedef}\ T7\ type;}
+\DoxyCodeLine{00182\ \};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00185\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 8,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00186\ \ \ \textcolor{keyword}{typedef}\ T8\ type;}
+\DoxyCodeLine{00187\ \};}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00190\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{TupleElement}}<true,\ 9,\ GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00191\ \ \ \textcolor{keyword}{typedef}\ T9\ type;}
+\DoxyCodeLine{00192\ \};}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \}\ \ \textcolor{comment}{//\ namespace\ gtest\_internal}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00197\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}<>\ \{}
+\DoxyCodeLine{00198\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00199\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}()\ \{\}}
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ \textcolor{comment}{/*\ t\ */})\ \ \{\}}
+\DoxyCodeLine{00201\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ \textcolor{comment}{/*\ t\ */})\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00202\ \};}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00205\ \textcolor{keyword}{class\ }GTEST\_1\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00206\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00207\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{gtest\_internal::Get}};}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}()\ :\ f0\_()\ \{\}}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0)\ :\ f0\_(f0)\ \{\}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_)\ \{\}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00216\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_1\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_)\ \{\}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00221\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_1\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00223\ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00228\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_1\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00231\ \ \ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00234\ \};}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00237\ \textcolor{keyword}{class\ }GTEST\_2\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00238\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00239\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ tuple()\ :\ f0\_(),\ f1\_()\ \{\}}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1)\ :\ f0\_(f0),}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ f1\_(f1)\ \{\}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_)\ \{\}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00249\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_2\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_)\ \{\}}
+\DoxyCodeLine{00250\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U0,\ \textcolor{keyword}{typename}\ U1>}
+\DoxyCodeLine{00251\ \ \ tuple(const\ ::std::pair<U0,\ U1>\&\ p)\ :\ f0\_(p.first),\ f1\_(p.second)\ \{\}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00256\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_2\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00258\ \ \ \}}
+\DoxyCodeLine{00259\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U0,\ \textcolor{keyword}{typename}\ U1>}
+\DoxyCodeLine{00260\ \ \ tuple\&\ operator=(const\ ::std::pair<U0,\ U1>\&\ p)\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ f0\_\ =\ p.first;}
+\DoxyCodeLine{00262\ \ \ \ \ f1\_\ =\ p.second;}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00264\ \ \ \}}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00269\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_2\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00271\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00273\ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00276\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00277\ \};}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00280\ \textcolor{keyword}{class\ }GTEST\_3\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00281\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00282\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_()\ \{\}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2)\ \{\}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_)\ \{\}}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00292\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_3\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_)\ \{\}}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00297\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_3\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00299\ \ \ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \ \ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00304\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_3\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00306\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00307\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00309\ \ \ \}}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00312\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00313\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00314\ \};}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00317\ \textcolor{keyword}{class\ }GTEST\_4\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00318\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00319\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_()\ \{\}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ f3\_(f3)\ \{\}}
+\DoxyCodeLine{00326\ }
+\DoxyCodeLine{00327\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_)\ \{\}}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \ \ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00330\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_4\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ f3\_(t.f3\_)\ \{\}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \ \ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00336\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_4\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00338\ \ \ \}}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00343\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_4\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00344\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00345\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00346\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00347\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00348\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00349\ \ \ \}}
+\DoxyCodeLine{00350\ }
+\DoxyCodeLine{00351\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00352\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00353\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00354\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00355\ \};}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00358\ \textcolor{keyword}{class\ }GTEST\_5\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00359\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00360\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00362\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_()\ \{\}}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T4)\ f4)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),\ f3\_(f3),\ f4\_(f4)\ \{\}}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ f4\_(t.f4\_)\ \{\}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \ \ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00372\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_5\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_)\ \{\}}
+\DoxyCodeLine{00374\ }
+\DoxyCodeLine{00375\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \ \ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00378\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_5\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00380\ \ \ \}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \ \ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00385\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_5\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00387\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00388\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00389\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00390\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00391\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00392\ \ \ \}}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00395\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00396\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00397\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00398\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00399\ \};}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00402\ \textcolor{keyword}{class\ }GTEST\_6\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00403\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00404\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_(),\ f5\_()\ \{\}}
+\DoxyCodeLine{00407\ }
+\DoxyCodeLine{00408\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,\ GTEST\_BY\_REF\_(T4)\ f4,}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T5)\ f5)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),\ f3\_(f3),\ f4\_(f4),}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ f5\_(f5)\ \{\}}
+\DoxyCodeLine{00412\ }
+\DoxyCodeLine{00413\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ f4\_(t.f4\_),\ f5\_(t.f5\_)\ \{\}}
+\DoxyCodeLine{00415\ }
+\DoxyCodeLine{00416\ \ \ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00417\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_6\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_),\ f5\_(t.f5\_)\ \{\}}
+\DoxyCodeLine{00419\ }
+\DoxyCodeLine{00420\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \ \ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00423\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_6\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00425\ \ \ \}}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00428\ }
+\DoxyCodeLine{00429\ \ \ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00430\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_6\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00431\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00432\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00433\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00434\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00435\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00436\ \ \ \ \ f5\_\ =\ t.f5\_;}
+\DoxyCodeLine{00437\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00438\ \ \ \}}
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00441\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00442\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00443\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00444\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00445\ \ \ T5\ f5\_;}
+\DoxyCodeLine{00446\ \};}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00448\ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00449\ \textcolor{keyword}{class\ }GTEST\_7\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00450\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00451\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_(),\ f5\_(),\ f6\_()\ \{\}}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,\ GTEST\_BY\_REF\_(T4)\ f4,}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T5)\ f5,\ GTEST\_BY\_REF\_(T6)\ f6)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ f3\_(f3),\ f4\_(f4),\ f5\_(f5),\ f6\_(f6)\ \{\}}
+\DoxyCodeLine{00459\ }
+\DoxyCodeLine{00460\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_)\ \{\}}
+\DoxyCodeLine{00462\ }
+\DoxyCodeLine{00463\ \ \ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00464\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_7\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_)\ \{\}}
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \ \ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00470\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_7\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00471\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00472\ \ \ \}}
+\DoxyCodeLine{00473\ }
+\DoxyCodeLine{00474\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00477\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_7\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00478\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00479\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00480\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00481\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00482\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00483\ \ \ \ \ f5\_\ =\ t.f5\_;}
+\DoxyCodeLine{00484\ \ \ \ \ f6\_\ =\ t.f6\_;}
+\DoxyCodeLine{00485\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00486\ \ \ \}}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00488\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00489\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00490\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00491\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00492\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00493\ \ \ T5\ f5\_;}
+\DoxyCodeLine{00494\ \ \ T6\ f6\_;}
+\DoxyCodeLine{00495\ \};}
+\DoxyCodeLine{00496\ }
+\DoxyCodeLine{00497\ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00498\ \textcolor{keyword}{class\ }GTEST\_8\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00499\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00500\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00501\ }
+\DoxyCodeLine{00502\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_(),\ f5\_(),\ f6\_(),\ f7\_()\ \{\}}
+\DoxyCodeLine{00503\ }
+\DoxyCodeLine{00504\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,\ GTEST\_BY\_REF\_(T4)\ f4,}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T5)\ f5,\ GTEST\_BY\_REF\_(T6)\ f6,}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T7)\ f7)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),\ f3\_(f3),\ f4\_(f4),}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ f5\_(f5),\ f6\_(f6),\ f7\_(f7)\ \{\}}
+\DoxyCodeLine{00509\ }
+\DoxyCodeLine{00510\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_)\ \{\}}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \ \ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00514\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_8\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_)\ \{\}}
+\DoxyCodeLine{00516\ }
+\DoxyCodeLine{00517\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \ \ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00520\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_8\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00522\ \ \ \}}
+\DoxyCodeLine{00523\ }
+\DoxyCodeLine{00524\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00525\ }
+\DoxyCodeLine{00526\ \ \ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00527\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_8\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00528\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00529\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00530\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00531\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00532\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00533\ \ \ \ \ f5\_\ =\ t.f5\_;}
+\DoxyCodeLine{00534\ \ \ \ \ f6\_\ =\ t.f6\_;}
+\DoxyCodeLine{00535\ \ \ \ \ f7\_\ =\ t.f7\_;}
+\DoxyCodeLine{00536\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00537\ \ \ \}}
+\DoxyCodeLine{00538\ }
+\DoxyCodeLine{00539\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00540\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00541\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00542\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00543\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00544\ \ \ T5\ f5\_;}
+\DoxyCodeLine{00545\ \ \ T6\ f6\_;}
+\DoxyCodeLine{00546\ \ \ T7\ f7\_;}
+\DoxyCodeLine{00547\ \};}
+\DoxyCodeLine{00548\ }
+\DoxyCodeLine{00549\ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00550\ \textcolor{keyword}{class\ }GTEST\_9\_TUPLE\_(T)\ \{}
+\DoxyCodeLine{00551\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00552\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gtest\_internal::Get;}
+\DoxyCodeLine{00553\ }
+\DoxyCodeLine{00554\ \ \ tuple()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_(),\ f5\_(),\ f6\_(),\ f7\_(),\ f8\_()\ \{\}}
+\DoxyCodeLine{00555\ }
+\DoxyCodeLine{00556\ \ \ \textcolor{keyword}{explicit}\ tuple(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,\ GTEST\_BY\_REF\_(T4)\ f4,}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T5)\ f5,\ GTEST\_BY\_REF\_(T6)\ f6,\ GTEST\_BY\_REF\_(T7)\ f7,}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T8)\ f8)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),\ f3\_(f3),\ f4\_(f4),}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ f5\_(f5),\ f6\_(f6),\ f7\_(f7),\ f8\_(f8)\ \{\}}
+\DoxyCodeLine{00561\ }
+\DoxyCodeLine{00562\ \ \ tuple(\textcolor{keyword}{const}\ tuple\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_),\ f8\_(t.f8\_)\ \{\}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \ \ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00566\ \ \ tuple(\textcolor{keyword}{const}\ GTEST\_9\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_),\ f8\_(t.f8\_)\ \{\}}
+\DoxyCodeLine{00568\ }
+\DoxyCodeLine{00569\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00570\ }
+\DoxyCodeLine{00571\ \ \ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00572\ \ \ tuple\&\ operator=(\textcolor{keyword}{const}\ GTEST\_9\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00573\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00574\ \ \ \}}
+\DoxyCodeLine{00575\ }
+\DoxyCodeLine{00576\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00577\ }
+\DoxyCodeLine{00578\ \ \ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00579\ \ \ tuple\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_9\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00580\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00581\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00582\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00583\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00584\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00585\ \ \ \ \ f5\_\ =\ t.f5\_;}
+\DoxyCodeLine{00586\ \ \ \ \ f6\_\ =\ t.f6\_;}
+\DoxyCodeLine{00587\ \ \ \ \ f7\_\ =\ t.f7\_;}
+\DoxyCodeLine{00588\ \ \ \ \ f8\_\ =\ t.f8\_;}
+\DoxyCodeLine{00589\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00590\ \ \ \}}
+\DoxyCodeLine{00591\ }
+\DoxyCodeLine{00592\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00593\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00594\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00595\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00596\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00597\ \ \ T5\ f5\_;}
+\DoxyCodeLine{00598\ \ \ T6\ f6\_;}
+\DoxyCodeLine{00599\ \ \ T7\ f7\_;}
+\DoxyCodeLine{00600\ \ \ T8\ f8\_;}
+\DoxyCodeLine{00601\ \};}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00604\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\ \{}
+\DoxyCodeLine{00605\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00606\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>\ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{gtest\_internal::Get}};}
+\DoxyCodeLine{00607\ }
+\DoxyCodeLine{00608\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}()\ :\ f0\_(),\ f1\_(),\ f2\_(),\ f3\_(),\ f4\_(),\ f5\_(),\ f6\_(),\ f7\_(),\ f8\_(),}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ f9\_()\ \{\}}
+\DoxyCodeLine{00610\ }
+\DoxyCodeLine{00611\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}(GTEST\_BY\_REF\_(T0)\ f0,\ GTEST\_BY\_REF\_(T1)\ f1,}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T2)\ f2,\ GTEST\_BY\_REF\_(T3)\ f3,\ GTEST\_BY\_REF\_(T4)\ f4,}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T5)\ f5,\ GTEST\_BY\_REF\_(T6)\ f6,\ GTEST\_BY\_REF\_(T7)\ f7,}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ GTEST\_BY\_REF\_(T8)\ f8,\ GTEST\_BY\_REF\_(T9)\ f9)\ :\ f0\_(f0),\ f1\_(f1),\ f2\_(f2),}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ f3\_(f3),\ f4\_(f4),\ f5\_(f5),\ f6\_(f6),\ f7\_(f7),\ f8\_(f8),\ f9\_(f9)\ \{\}}
+\DoxyCodeLine{00616\ }
+\DoxyCodeLine{00617\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),\ f3\_(t.f3\_),}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_),\ f8\_(t.f8\_),\ f9\_(t.f9\_)\ \{\}}
+\DoxyCodeLine{00619\ }
+\DoxyCodeLine{00620\ \ \ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00621\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(U)\&\ t)\ :\ f0\_(t.f0\_),\ f1\_(t.f1\_),\ f2\_(t.f2\_),}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ f3\_(t.f3\_),\ f4\_(t.f4\_),\ f5\_(t.f5\_),\ f6\_(t.f6\_),\ f7\_(t.f7\_),\ f8\_(t.f8\_),}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ f9\_(t.f9\_)\ \{\}}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ t)\ \{\ \textcolor{keywordflow}{return}\ CopyFrom(t);\ \}}
+\DoxyCodeLine{00626\ }
+\DoxyCodeLine{00627\ \ \ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00628\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ operator=(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00629\ \ \ \ \ \textcolor{keywordflow}{return}\ CopyFrom(t);}
+\DoxyCodeLine{00630\ \ \ \}}
+\DoxyCodeLine{00631\ }
+\DoxyCodeLine{00632\ \ \ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}
+\DoxyCodeLine{00633\ }
+\DoxyCodeLine{00634\ \ \ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00635\ \ \ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple}{tuple}}\&\ CopyFrom(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(U)\&\ t)\ \{}
+\DoxyCodeLine{00636\ \ \ \ \ f0\_\ =\ t.f0\_;}
+\DoxyCodeLine{00637\ \ \ \ \ f1\_\ =\ t.f1\_;}
+\DoxyCodeLine{00638\ \ \ \ \ f2\_\ =\ t.f2\_;}
+\DoxyCodeLine{00639\ \ \ \ \ f3\_\ =\ t.f3\_;}
+\DoxyCodeLine{00640\ \ \ \ \ f4\_\ =\ t.f4\_;}
+\DoxyCodeLine{00641\ \ \ \ \ f5\_\ =\ t.f5\_;}
+\DoxyCodeLine{00642\ \ \ \ \ f6\_\ =\ t.f6\_;}
+\DoxyCodeLine{00643\ \ \ \ \ f7\_\ =\ t.f7\_;}
+\DoxyCodeLine{00644\ \ \ \ \ f8\_\ =\ t.f8\_;}
+\DoxyCodeLine{00645\ \ \ \ \ f9\_\ =\ t.f9\_;}
+\DoxyCodeLine{00646\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00647\ \ \ \}}
+\DoxyCodeLine{00648\ }
+\DoxyCodeLine{00649\ \ \ T0\ f0\_;}
+\DoxyCodeLine{00650\ \ \ T1\ f1\_;}
+\DoxyCodeLine{00651\ \ \ T2\ f2\_;}
+\DoxyCodeLine{00652\ \ \ T3\ f3\_;}
+\DoxyCodeLine{00653\ \ \ T4\ f4\_;}
+\DoxyCodeLine{00654\ \ \ T5\ f5\_;}
+\DoxyCodeLine{00655\ \ \ T6\ f6\_;}
+\DoxyCodeLine{00656\ \ \ T7\ f7\_;}
+\DoxyCodeLine{00657\ \ \ T8\ f8\_;}
+\DoxyCodeLine{00658\ \ \ T9\ f9\_;}
+\DoxyCodeLine{00659\ \};}
+\DoxyCodeLine{00660\ }
+\DoxyCodeLine{00661\ \textcolor{comment}{//\ 6.1.3.2\ Tuple\ creation\ functions.}}
+\DoxyCodeLine{00662\ }
+\DoxyCodeLine{00663\ \textcolor{comment}{//\ Known\ limitations:\ we\ don't\ support\ passing\ an}}
+\DoxyCodeLine{00664\ \textcolor{comment}{//\ std::tr1::reference\_wrapper<T>\ to\ make\_tuple().\ \ And\ we\ don't}}
+\DoxyCodeLine{00665\ \textcolor{comment}{//\ implement\ tie().}}
+\DoxyCodeLine{00666\ }
+\DoxyCodeLine{00667\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple_3_4}{tuple<>}}\ make\_tuple()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classstd_1_1tr1_1_1tuple_3_4}{tuple<>}}();\ \}}
+\DoxyCodeLine{00668\ }
+\DoxyCodeLine{00669\ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00670\ \textcolor{keyword}{inline}\ GTEST\_1\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0)\ \{}
+\DoxyCodeLine{00671\ \ \ \textcolor{keywordflow}{return}\ GTEST\_1\_TUPLE\_(T)(f0);}
+\DoxyCodeLine{00672\ \}}
+\DoxyCodeLine{00673\ }
+\DoxyCodeLine{00674\ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00675\ \textcolor{keyword}{inline}\ GTEST\_2\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1)\ \{}
+\DoxyCodeLine{00676\ \ \ \textcolor{keywordflow}{return}\ GTEST\_2\_TUPLE\_(T)(f0,\ f1);}
+\DoxyCodeLine{00677\ \}}
+\DoxyCodeLine{00678\ }
+\DoxyCodeLine{00679\ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00680\ \textcolor{keyword}{inline}\ GTEST\_3\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2)\ \{}
+\DoxyCodeLine{00681\ \ \ \textcolor{keywordflow}{return}\ GTEST\_3\_TUPLE\_(T)(f0,\ f1,\ f2);}
+\DoxyCodeLine{00682\ \}}
+\DoxyCodeLine{00683\ }
+\DoxyCodeLine{00684\ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00685\ \textcolor{keyword}{inline}\ GTEST\_4\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00686\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3)\ \{}
+\DoxyCodeLine{00687\ \ \ \textcolor{keywordflow}{return}\ GTEST\_4\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3);}
+\DoxyCodeLine{00688\ \}}
+\DoxyCodeLine{00689\ }
+\DoxyCodeLine{00690\ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00691\ \textcolor{keyword}{inline}\ GTEST\_5\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00692\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4)\ \{}
+\DoxyCodeLine{00693\ \ \ \textcolor{keywordflow}{return}\ GTEST\_5\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4);}
+\DoxyCodeLine{00694\ \}}
+\DoxyCodeLine{00695\ }
+\DoxyCodeLine{00696\ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00697\ \textcolor{keyword}{inline}\ GTEST\_6\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00698\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4,\ \textcolor{keyword}{const}\ T5\&\ f5)\ \{}
+\DoxyCodeLine{00699\ \ \ \textcolor{keywordflow}{return}\ GTEST\_6\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4,\ f5);}
+\DoxyCodeLine{00700\ \}}
+\DoxyCodeLine{00701\ }
+\DoxyCodeLine{00702\ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00703\ \textcolor{keyword}{inline}\ GTEST\_7\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00704\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4,\ \textcolor{keyword}{const}\ T5\&\ f5,\ \textcolor{keyword}{const}\ T6\&\ f6)\ \{}
+\DoxyCodeLine{00705\ \ \ \textcolor{keywordflow}{return}\ GTEST\_7\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4,\ f5,\ f6);}
+\DoxyCodeLine{00706\ \}}
+\DoxyCodeLine{00707\ }
+\DoxyCodeLine{00708\ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00709\ \textcolor{keyword}{inline}\ GTEST\_8\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00710\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4,\ \textcolor{keyword}{const}\ T5\&\ f5,\ \textcolor{keyword}{const}\ T6\&\ f6,\ \textcolor{keyword}{const}\ T7\&\ f7)\ \{}
+\DoxyCodeLine{00711\ \ \ \textcolor{keywordflow}{return}\ GTEST\_8\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4,\ f5,\ f6,\ f7);}
+\DoxyCodeLine{00712\ \}}
+\DoxyCodeLine{00713\ }
+\DoxyCodeLine{00714\ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00715\ \textcolor{keyword}{inline}\ GTEST\_9\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00716\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4,\ \textcolor{keyword}{const}\ T5\&\ f5,\ \textcolor{keyword}{const}\ T6\&\ f6,\ \textcolor{keyword}{const}\ T7\&\ f7,}
+\DoxyCodeLine{00717\ \ \ \ \ \textcolor{keyword}{const}\ T8\&\ f8)\ \{}
+\DoxyCodeLine{00718\ \ \ \textcolor{keywordflow}{return}\ GTEST\_9\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4,\ f5,\ f6,\ f7,\ f8);}
+\DoxyCodeLine{00719\ \}}
+\DoxyCodeLine{00720\ }
+\DoxyCodeLine{00721\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00722\ \textcolor{keyword}{inline}\ GTEST\_10\_TUPLE\_(T)\ make\_tuple(\textcolor{keyword}{const}\ T0\&\ f0,\ \textcolor{keyword}{const}\ T1\&\ f1,\ \textcolor{keyword}{const}\ T2\&\ f2,}
+\DoxyCodeLine{00723\ \ \ \ \ \textcolor{keyword}{const}\ T3\&\ f3,\ \textcolor{keyword}{const}\ T4\&\ f4,\ \textcolor{keyword}{const}\ T5\&\ f5,\ \textcolor{keyword}{const}\ T6\&\ f6,\ \textcolor{keyword}{const}\ T7\&\ f7,}
+\DoxyCodeLine{00724\ \ \ \ \ \textcolor{keyword}{const}\ T8\&\ f8,\ \textcolor{keyword}{const}\ T9\&\ f9)\ \{}
+\DoxyCodeLine{00725\ \ \ \textcolor{keywordflow}{return}\ GTEST\_10\_TUPLE\_(T)(f0,\ f1,\ f2,\ f3,\ f4,\ f5,\ f6,\ f7,\ f8,\ f9);}
+\DoxyCodeLine{00726\ \}}
+\DoxyCodeLine{00727\ }
+\DoxyCodeLine{00728\ \textcolor{comment}{//\ 6.1.3.3\ Tuple\ helper\ classes.}}
+\DoxyCodeLine{00729\ }
+\DoxyCodeLine{00730\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Tuple>\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}};}
+\DoxyCodeLine{00731\ }
+\DoxyCodeLine{00732\ \textcolor{keyword}{template}\ <GTEST\_0\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00733\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_0\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00734\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 0;}
+\DoxyCodeLine{00735\ \};}
+\DoxyCodeLine{00736\ }
+\DoxyCodeLine{00737\ \textcolor{keyword}{template}\ <GTEST\_1\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00738\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_1\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00739\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 1;}
+\DoxyCodeLine{00740\ \};}
+\DoxyCodeLine{00741\ }
+\DoxyCodeLine{00742\ \textcolor{keyword}{template}\ <GTEST\_2\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00743\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_2\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00744\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 2;}
+\DoxyCodeLine{00745\ \};}
+\DoxyCodeLine{00746\ }
+\DoxyCodeLine{00747\ \textcolor{keyword}{template}\ <GTEST\_3\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00748\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_3\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00749\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 3;}
+\DoxyCodeLine{00750\ \};}
+\DoxyCodeLine{00751\ }
+\DoxyCodeLine{00752\ \textcolor{keyword}{template}\ <GTEST\_4\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00753\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_4\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00754\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 4;}
+\DoxyCodeLine{00755\ \};}
+\DoxyCodeLine{00756\ }
+\DoxyCodeLine{00757\ \textcolor{keyword}{template}\ <GTEST\_5\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00758\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_5\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00759\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 5;}
+\DoxyCodeLine{00760\ \};}
+\DoxyCodeLine{00761\ }
+\DoxyCodeLine{00762\ \textcolor{keyword}{template}\ <GTEST\_6\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00763\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_6\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00764\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 6;}
+\DoxyCodeLine{00765\ \};}
+\DoxyCodeLine{00766\ }
+\DoxyCodeLine{00767\ \textcolor{keyword}{template}\ <GTEST\_7\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00768\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_7\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00769\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 7;}
+\DoxyCodeLine{00770\ \};}
+\DoxyCodeLine{00771\ }
+\DoxyCodeLine{00772\ \textcolor{keyword}{template}\ <GTEST\_8\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00773\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_8\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00774\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 8;}
+\DoxyCodeLine{00775\ \};}
+\DoxyCodeLine{00776\ }
+\DoxyCodeLine{00777\ \textcolor{keyword}{template}\ <GTEST\_9\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00778\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_9\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00779\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 9;}
+\DoxyCodeLine{00780\ \};}
+\DoxyCodeLine{00781\ }
+\DoxyCodeLine{00782\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00783\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_10\_TUPLE\_(T)\ >\ \{}
+\DoxyCodeLine{00784\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ value\ =\ 10;}
+\DoxyCodeLine{00785\ \};}
+\DoxyCodeLine{00786\ }
+\DoxyCodeLine{00787\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k,\ \textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00788\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__element}{tuple\_element}}\ \{}
+\DoxyCodeLine{00789\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_tuple_element}{gtest\_internal::TupleElement}}<}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ k\ <\ (\mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size<Tuple>::value}}),\ k,\ Tuple>::type\ type;}
+\DoxyCodeLine{00791\ \};}
+\DoxyCodeLine{00792\ }
+\DoxyCodeLine{00793\ \textcolor{preprocessor}{\#define\ GTEST\_TUPLE\_ELEMENT\_(k,\ Tuple)\ typename\ tuple\_element<k,\ Tuple\ >::type}}
+\DoxyCodeLine{00794\ }
+\DoxyCodeLine{00795\ \textcolor{comment}{//\ 6.1.3.4\ Element\ access.}}
+\DoxyCodeLine{00796\ }
+\DoxyCodeLine{00797\ \textcolor{keyword}{namespace\ }gtest\_internal\ \{}
+\DoxyCodeLine{00798\ }
+\DoxyCodeLine{00799\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00800\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<0>\ \{}
+\DoxyCodeLine{00801\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00802\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00803\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(0,\ Tuple))}
+\DoxyCodeLine{00804\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f0\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00805\ }
+\DoxyCodeLine{00806\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00807\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(0,\ Tuple))}
+\DoxyCodeLine{00808\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f0\_;\ \}}
+\DoxyCodeLine{00809\ \};}
+\DoxyCodeLine{00810\ }
+\DoxyCodeLine{00811\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00812\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<1>\ \{}
+\DoxyCodeLine{00813\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00814\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00815\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(1,\ Tuple))}
+\DoxyCodeLine{00816\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f1\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00817\ }
+\DoxyCodeLine{00818\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00819\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(1,\ Tuple))}
+\DoxyCodeLine{00820\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f1\_;\ \}}
+\DoxyCodeLine{00821\ \};}
+\DoxyCodeLine{00822\ }
+\DoxyCodeLine{00823\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00824\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<2>\ \{}
+\DoxyCodeLine{00825\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00826\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00827\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(2,\ Tuple))}
+\DoxyCodeLine{00828\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f2\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00829\ }
+\DoxyCodeLine{00830\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00831\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(2,\ Tuple))}
+\DoxyCodeLine{00832\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f2\_;\ \}}
+\DoxyCodeLine{00833\ \};}
+\DoxyCodeLine{00834\ }
+\DoxyCodeLine{00835\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00836\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<3>\ \{}
+\DoxyCodeLine{00837\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00838\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00839\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(3,\ Tuple))}
+\DoxyCodeLine{00840\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f3\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00841\ }
+\DoxyCodeLine{00842\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00843\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(3,\ Tuple))}
+\DoxyCodeLine{00844\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f3\_;\ \}}
+\DoxyCodeLine{00845\ \};}
+\DoxyCodeLine{00846\ }
+\DoxyCodeLine{00847\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00848\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<4>\ \{}
+\DoxyCodeLine{00849\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00850\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00851\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(4,\ Tuple))}
+\DoxyCodeLine{00852\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f4\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00853\ }
+\DoxyCodeLine{00854\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00855\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(4,\ Tuple))}
+\DoxyCodeLine{00856\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f4\_;\ \}}
+\DoxyCodeLine{00857\ \};}
+\DoxyCodeLine{00858\ }
+\DoxyCodeLine{00859\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00860\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<5>\ \{}
+\DoxyCodeLine{00861\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00862\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00863\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(5,\ Tuple))}
+\DoxyCodeLine{00864\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f5\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00865\ }
+\DoxyCodeLine{00866\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00867\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(5,\ Tuple))}
+\DoxyCodeLine{00868\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f5\_;\ \}}
+\DoxyCodeLine{00869\ \};}
+\DoxyCodeLine{00870\ }
+\DoxyCodeLine{00871\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00872\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<6>\ \{}
+\DoxyCodeLine{00873\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00874\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00875\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(6,\ Tuple))}
+\DoxyCodeLine{00876\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f6\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00877\ }
+\DoxyCodeLine{00878\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00879\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(6,\ Tuple))}
+\DoxyCodeLine{00880\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f6\_;\ \}}
+\DoxyCodeLine{00881\ \};}
+\DoxyCodeLine{00882\ }
+\DoxyCodeLine{00883\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00884\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<7>\ \{}
+\DoxyCodeLine{00885\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00886\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00887\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(7,\ Tuple))}
+\DoxyCodeLine{00888\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f7\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00889\ }
+\DoxyCodeLine{00890\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00891\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(7,\ Tuple))}
+\DoxyCodeLine{00892\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f7\_;\ \}}
+\DoxyCodeLine{00893\ \};}
+\DoxyCodeLine{00894\ }
+\DoxyCodeLine{00895\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00896\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<8>\ \{}
+\DoxyCodeLine{00897\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00898\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00899\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(8,\ Tuple))}
+\DoxyCodeLine{00900\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f8\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00901\ }
+\DoxyCodeLine{00902\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00903\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(8,\ Tuple))}
+\DoxyCodeLine{00904\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f8\_;\ \}}
+\DoxyCodeLine{00905\ \};}
+\DoxyCodeLine{00906\ }
+\DoxyCodeLine{00907\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00908\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{Get}}<9>\ \{}
+\DoxyCodeLine{00909\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00910\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00911\ \ \ \textcolor{keyword}{static}\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(9,\ Tuple))}
+\DoxyCodeLine{00912\ \ \ Field(Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f9\_;\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00913\ }
+\DoxyCodeLine{00914\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple>}
+\DoxyCodeLine{00915\ \ \ \textcolor{keyword}{static}\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(9,\ Tuple))}
+\DoxyCodeLine{00916\ \ \ ConstField(\textcolor{keyword}{const}\ Tuple\&\ t)\ \{\ \textcolor{keywordflow}{return}\ t.f9\_;\ \}}
+\DoxyCodeLine{00917\ \};}
+\DoxyCodeLine{00918\ }
+\DoxyCodeLine{00919\ \}\ \ \textcolor{comment}{//\ namespace\ gtest\_internal}}
+\DoxyCodeLine{00920\ }
+\DoxyCodeLine{00921\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k,\ GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00922\ GTEST\_ADD\_REF\_(GTEST\_TUPLE\_ELEMENT\_(k,\ GTEST\_10\_TUPLE\_(T)))}
+\DoxyCodeLine{00923\ get(GTEST\_10\_TUPLE\_(T)\&\ t)\ \{}
+\DoxyCodeLine{00924\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classstd_1_1tr1_1_1gtest__internal_1_1_get}{gtest\_internal::Get<k>::Field}}(t);}
+\DoxyCodeLine{00925\ \}}
+\DoxyCodeLine{00926\ }
+\DoxyCodeLine{00927\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k,\ GTEST\_10\_TYPENAMES\_(T)>}
+\DoxyCodeLine{00928\ GTEST\_BY\_REF\_(GTEST\_TUPLE\_ELEMENT\_(k,\ \ GTEST\_10\_TUPLE\_(T)))}
+\DoxyCodeLine{00929\ get(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(T)\&\ t)\ \{}
+\DoxyCodeLine{00930\ \ \ \textcolor{keywordflow}{return}\ gtest\_internal::Get<k>::ConstField(t);}
+\DoxyCodeLine{00931\ \}}
+\DoxyCodeLine{00932\ }
+\DoxyCodeLine{00933\ \textcolor{comment}{//\ 6.1.3.5\ Relational\ operators}}
+\DoxyCodeLine{00934\ }
+\DoxyCodeLine{00935\ \textcolor{comment}{//\ We\ only\ implement\ ==\ and\ !=,\ as\ we\ don't\ have\ a\ need\ for\ the\ rest\ yet.}}
+\DoxyCodeLine{00936\ }
+\DoxyCodeLine{00937\ \textcolor{keyword}{namespace\ }gtest\_internal\ \{}
+\DoxyCodeLine{00938\ }
+\DoxyCodeLine{00939\ \textcolor{comment}{//\ SameSizeTuplePrefixComparator<k,\ k>::Eq(t1,\ t2)\ returns\ true\ if\ the}}
+\DoxyCodeLine{00940\ \textcolor{comment}{//\ first\ k\ fields\ of\ t1\ equals\ the\ first\ k\ fields\ of\ t2.}}
+\DoxyCodeLine{00941\ \textcolor{comment}{//\ SameSizeTuplePrefixComparator(k1,\ k2)\ would\ be\ a\ compiler\ error\ if}}
+\DoxyCodeLine{00942\ \textcolor{comment}{//\ k1\ !=\ k2.}}
+\DoxyCodeLine{00943\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ kSize1,\ \textcolor{keywordtype}{int}\ kSize2>}
+\DoxyCodeLine{00944\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_same_size_tuple_prefix_comparator}{SameSizeTuplePrefixComparator}};}
+\DoxyCodeLine{00945\ }
+\DoxyCodeLine{00946\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00947\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_same_size_tuple_prefix_comparator}{SameSizeTuplePrefixComparator}}<0,\ 0>\ \{}
+\DoxyCodeLine{00948\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple1,\ \textcolor{keyword}{class}\ Tuple2>}
+\DoxyCodeLine{00949\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ Eq(\textcolor{keyword}{const}\ Tuple1\&\ \textcolor{comment}{/*\ t1\ */},\ \textcolor{keyword}{const}\ Tuple2\&\ \textcolor{comment}{/*\ t2\ */})\ \{}
+\DoxyCodeLine{00950\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00951\ \ \ \}}
+\DoxyCodeLine{00952\ \};}
+\DoxyCodeLine{00953\ }
+\DoxyCodeLine{00954\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{int}\ k>}
+\DoxyCodeLine{00955\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_same_size_tuple_prefix_comparator}{SameSizeTuplePrefixComparator}}<k,\ k>\ \{}
+\DoxyCodeLine{00956\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Tuple1,\ \textcolor{keyword}{class}\ Tuple2>}
+\DoxyCodeLine{00957\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ Eq(\textcolor{keyword}{const}\ Tuple1\&\ t1,\ \textcolor{keyword}{const}\ Tuple2\&\ t2)\ \{}
+\DoxyCodeLine{00958\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_same_size_tuple_prefix_comparator}{SameSizeTuplePrefixComparator<k\ -\/\ 1,\ k\ -\/\ 1>::Eq}}(t1,\ t2)\ \&\&}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ ::std::tr1::get<k\ -\/\ 1>(t1)\ ==\ ::std::tr1::get<k\ -\/\ 1>(t2);}
+\DoxyCodeLine{00960\ \ \ \}}
+\DoxyCodeLine{00961\ \};}
+\DoxyCodeLine{00962\ }
+\DoxyCodeLine{00963\ \}\ \ \textcolor{comment}{//\ namespace\ gtest\_internal}}
+\DoxyCodeLine{00964\ }
+\DoxyCodeLine{00965\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T),\ GTEST\_10\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00966\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(T)\&\ t,}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(U)\&\ u)\ \{}
+\DoxyCodeLine{00968\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structstd_1_1tr1_1_1gtest__internal_1_1_same_size_tuple_prefix_comparator}{gtest\_internal::SameSizeTuplePrefixComparator}}<}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_10\_TUPLE\_(T)\ >::value,}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \mbox{\hyperlink{structstd_1_1tr1_1_1tuple__size}{tuple\_size}}<GTEST\_10\_TUPLE\_(U)\ >::value>::Eq(t,\ u);}
+\DoxyCodeLine{00971\ \}}
+\DoxyCodeLine{00972\ }
+\DoxyCodeLine{00973\ \textcolor{keyword}{template}\ <GTEST\_10\_TYPENAMES\_(T),\ GTEST\_10\_TYPENAMES\_(U)>}
+\DoxyCodeLine{00974\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(T)\&\ t,}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ GTEST\_10\_TUPLE\_(U)\&\ u)\ \{\ \textcolor{keywordflow}{return}\ !(t\ ==\ u);\ \}}
+\DoxyCodeLine{00976\ }
+\DoxyCodeLine{00977\ \textcolor{comment}{//\ 6.1.4\ Pairs.}}
+\DoxyCodeLine{00978\ \textcolor{comment}{//\ Unimplemented.}}
+\DoxyCodeLine{00979\ }
+\DoxyCodeLine{00980\ \}\ \ \textcolor{comment}{//\ namespace\ tr1}}
+\DoxyCodeLine{00981\ \}\ \ \textcolor{comment}{//\ namespace\ std}}
+\DoxyCodeLine{00982\ }
+\DoxyCodeLine{00983\ \textcolor{preprocessor}{\#undef\ GTEST\_0\_TUPLE\_}}
+\DoxyCodeLine{00984\ \textcolor{preprocessor}{\#undef\ GTEST\_1\_TUPLE\_}}
+\DoxyCodeLine{00985\ \textcolor{preprocessor}{\#undef\ GTEST\_2\_TUPLE\_}}
+\DoxyCodeLine{00986\ \textcolor{preprocessor}{\#undef\ GTEST\_3\_TUPLE\_}}
+\DoxyCodeLine{00987\ \textcolor{preprocessor}{\#undef\ GTEST\_4\_TUPLE\_}}
+\DoxyCodeLine{00988\ \textcolor{preprocessor}{\#undef\ GTEST\_5\_TUPLE\_}}
+\DoxyCodeLine{00989\ \textcolor{preprocessor}{\#undef\ GTEST\_6\_TUPLE\_}}
+\DoxyCodeLine{00990\ \textcolor{preprocessor}{\#undef\ GTEST\_7\_TUPLE\_}}
+\DoxyCodeLine{00991\ \textcolor{preprocessor}{\#undef\ GTEST\_8\_TUPLE\_}}
+\DoxyCodeLine{00992\ \textcolor{preprocessor}{\#undef\ GTEST\_9\_TUPLE\_}}
+\DoxyCodeLine{00993\ \textcolor{preprocessor}{\#undef\ GTEST\_10\_TUPLE\_}}
+\DoxyCodeLine{00994\ }
+\DoxyCodeLine{00995\ \textcolor{preprocessor}{\#undef\ GTEST\_0\_TYPENAMES\_}}
+\DoxyCodeLine{00996\ \textcolor{preprocessor}{\#undef\ GTEST\_1\_TYPENAMES\_}}
+\DoxyCodeLine{00997\ \textcolor{preprocessor}{\#undef\ GTEST\_2\_TYPENAMES\_}}
+\DoxyCodeLine{00998\ \textcolor{preprocessor}{\#undef\ GTEST\_3\_TYPENAMES\_}}
+\DoxyCodeLine{00999\ \textcolor{preprocessor}{\#undef\ GTEST\_4\_TYPENAMES\_}}
+\DoxyCodeLine{01000\ \textcolor{preprocessor}{\#undef\ GTEST\_5\_TYPENAMES\_}}
+\DoxyCodeLine{01001\ \textcolor{preprocessor}{\#undef\ GTEST\_6\_TYPENAMES\_}}
+\DoxyCodeLine{01002\ \textcolor{preprocessor}{\#undef\ GTEST\_7\_TYPENAMES\_}}
+\DoxyCodeLine{01003\ \textcolor{preprocessor}{\#undef\ GTEST\_8\_TYPENAMES\_}}
+\DoxyCodeLine{01004\ \textcolor{preprocessor}{\#undef\ GTEST\_9\_TYPENAMES\_}}
+\DoxyCodeLine{01005\ \textcolor{preprocessor}{\#undef\ GTEST\_10\_TYPENAMES\_}}
+\DoxyCodeLine{01006\ }
+\DoxyCodeLine{01007\ \textcolor{preprocessor}{\#undef\ GTEST\_DECLARE\_TUPLE\_AS\_FRIEND\_}}
+\DoxyCodeLine{01008\ \textcolor{preprocessor}{\#undef\ GTEST\_BY\_REF\_}}
+\DoxyCodeLine{01009\ \textcolor{preprocessor}{\#undef\ GTEST\_ADD\_REF\_}}
+\DoxyCodeLine{01010\ \textcolor{preprocessor}{\#undef\ GTEST\_TUPLE\_ELEMENT\_}}
+\DoxyCodeLine{01011\ }
+\DoxyCodeLine{01012\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_TUPLE\_H\_}}
+
+\end{DoxyCode}

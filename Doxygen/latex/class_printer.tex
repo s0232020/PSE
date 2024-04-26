@@ -1,0 +1,87 @@
+\doxysection{Printer Class Reference}
+\hypertarget{class_printer}{}\label{class_printer}\index{Printer@{Printer}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_printer_a22e0c1df69484941083e5b37c890e2f4}{Printer}} (const std\+::string \&name, int emissions, int speed, float cost, const std\+::string \&type)
+\item 
+\Hypertarget{class_printer_ae1f74c26acfaa247a94105b5bdb22258}\label{class_printer_ae1f74c26acfaa247a94105b5bdb22258} 
+std\+::string {\bfseries get\+Name} () const
+\item 
+\Hypertarget{class_printer_ab0bd6756ade558f69664b32856b7c4ca}\label{class_printer_ab0bd6756ade558f69664b32856b7c4ca} 
+int {\bfseries get\+Emissions} () const
+\item 
+\Hypertarget{class_printer_a7aea6ee1414c1db040649bdedc3c38ed}\label{class_printer_a7aea6ee1414c1db040649bdedc3c38ed} 
+int {\bfseries get\+Speed} () const
+\item 
+\Hypertarget{class_printer_a5c312a97a5f3de2f1dd27d8b46ff4d8c}\label{class_printer_a5c312a97a5f3de2f1dd27d8b46ff4d8c} 
+int {\bfseries get\+Cost\+Per\+Page} () const
+\item 
+\Hypertarget{class_printer_a031b797893a2b6333afda69aeb25e89f}\label{class_printer_a031b797893a2b6333afda69aeb25e89f} 
+void {\bfseries set\+Cost\+Per\+Page} (int cost)
+\item 
+\Hypertarget{class_printer_a6c2efef94143fbe14f987cc8e9a105c3}\label{class_printer_a6c2efef94143fbe14f987cc8e9a105c3} 
+void {\bfseries set\+Emissions} (int emissions)
+\item 
+\Hypertarget{class_printer_a0fc8cca3a1013df54373ac09010021d2}\label{class_printer_a0fc8cca3a1013df54373ac09010021d2} 
+void {\bfseries set\+Speed} (int speed)
+\item 
+\Hypertarget{class_printer_a6638c84d3de8118b0e6a2a3c3569bab9}\label{class_printer_a6638c84d3de8118b0e6a2a3c3569bab9} 
+void {\bfseries set\+Name} (std\+::string name)
+\item 
+\Hypertarget{class_printer_a92cf8ae9e9d673a372104ee194c24f19}\label{class_printer_a92cf8ae9e9d673a372104ee194c24f19} 
+void {\bfseries add\+Job\+To\+Printer} (const \mbox{\hyperlink{class_job}{Job}} \&job)
+\item 
+\Hypertarget{class_printer_a9d12bb8f264024970bdd20a8ab6ff21a}\label{class_printer_a9d12bb8f264024970bdd20a8ab6ff21a} 
+void {\bfseries set\+Types} (const std\+::string \&type)
+\item 
+\Hypertarget{class_printer_a24b32d7c6ad45f37f20895f97b9c3bed}\label{class_printer_a24b32d7c6ad45f37f20895f97b9c3bed} 
+std\+::string {\bfseries get\+Type} () const
+\item 
+\Hypertarget{class_printer_a0b99bdcdbfec5e0257acc25398f769e3}\label{class_printer_a0b99bdcdbfec5e0257acc25398f769e3} 
+const \mbox{\hyperlink{class_job}{Job}} \& {\bfseries get\+Current\+Job} () const
+\item 
+\Hypertarget{class_printer_a6f86a802705b3f42cca962e711f5fc3b}\label{class_printer_a6f86a802705b3f42cca962e711f5fc3b} 
+std\+::vector$<$ \mbox{\hyperlink{class_job}{Job}} $>$ {\bfseries get\+Job\+Queue} () const
+\item 
+\Hypertarget{class_printer_a87c19036dc7cd99d7e95cb796f62dbd3}\label{class_printer_a87c19036dc7cd99d7e95cb796f62dbd3} 
+std\+::vector$<$ \mbox{\hyperlink{class_job}{Job}} $>$ {\bfseries get\+Printer\+Jobs} () const
+\item 
+\Hypertarget{class_printer_ac7ccd0de8d498d5342e252109fbd816d}\label{class_printer_ac7ccd0de8d498d5342e252109fbd816d} 
+void {\bfseries add\+Completed\+Job} (\mbox{\hyperlink{class_job}{Job}} \&job)
+\item 
+\Hypertarget{class_printer_a8c19b9c949f8f437d339504ea3cab5c6}\label{class_printer_a8c19b9c949f8f437d339504ea3cab5c6} 
+std\+::string {\bfseries get\+Status} (const \mbox{\hyperlink{class_job}{Job}} \&job) const
+\item 
+\Hypertarget{class_printer_ade5ea8f3430a03f9aee412bc84bc7f31}\label{class_printer_ade5ea8f3430a03f9aee412bc84bc7f31} 
+int {\bfseries get\+Queue\+Number} (const \mbox{\hyperlink{class_job}{Job}} \&jobR) const
+\item 
+\Hypertarget{class_printer_af182127684da7573e30e3b6a3eceb33c}\label{class_printer_af182127684da7573e30e3b6a3eceb33c} 
+int {\bfseries calculate\+CO2} (\mbox{\hyperlink{class_job}{Job}} job)
+\item 
+\Hypertarget{class_printer_a044e700bec71ba9f0e715a4f8b0b006c}\label{class_printer_a044e700bec71ba9f0e715a4f8b0b006c} 
+std\+::string {\bfseries calculate\+Cost} (\mbox{\hyperlink{class_job}{Job}} job)
+\item 
+\Hypertarget{class_printer_a26cfc21dbabf593548aa97d8cf62e2bc}\label{class_printer_a26cfc21dbabf593548aa97d8cf62e2bc} 
+void {\bfseries increment\+CO2\+Emissions} ()
+\item 
+\Hypertarget{class_printer_a4af48293eeafc36970d987f47317cd17}\label{class_printer_a4af48293eeafc36970d987f47317cd17} 
+int {\bfseries get\+CO2\+Emissions} ()
+\item 
+\Hypertarget{class_printer_a621673f52c6f624874d5b08b91da3ffd}\label{class_printer_a621673f52c6f624874d5b08b91da3ffd} 
+int {\bfseries get\+Queue\+Pages} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_printer_a22e0c1df69484941083e5b37c890e2f4}\label{class_printer_a22e0c1df69484941083e5b37c890e2f4} 
+\index{Printer@{Printer}!Printer@{Printer}}
+\index{Printer@{Printer}!Printer@{Printer}}
+\doxysubsubsection{\texorpdfstring{Printer()}{Printer()}}
+{\footnotesize\ttfamily Printer\+::\+Printer (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{int}]{emissions,  }\item[{int}]{speed,  }\item[{float}]{cost,  }\item[{const std\+::string \&}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+This is a class with getter functions like get\+Name, get\+Emissions and get\+Speed which will be usefull for testing the validity and consistency of our printer and xml parser. The emissions are specified in the following unit\+: gram CO2 per page The speeds are specified in the following unit\+: pages per minute 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/Printer.\+h\end{DoxyCompactItemize}

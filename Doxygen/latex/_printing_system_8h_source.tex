@@ -1,0 +1,146 @@
+\doxysection{Printing\+System.\+h}
+\hypertarget{_printing_system_8h_source}{}\label{_printing_system_8h_source}\index{src/PrintingSystem.h@{src/PrintingSystem.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ PROJECTTITLE\_PRINTINGSYSTEM\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ PROJECTTITLE\_PRINTINGSYSTEM\_H}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Printer.h"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}ClimateCompensationInitiative.h"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ getLoadErrorMessage(LoadError\ error);}
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_printer}{Printer}};}
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_printing_system}{PrintingSystem}}\{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ LoadError\ \mbox{\hyperlink{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}{loadFromFile}}(\textcolor{keyword}{const}\ std::string\&\ filename);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_printing_system_ade75d7f752e6de7d135c384fe91ab336}{generateStatusReport}}(\textcolor{keyword}{const}\ std::string\ \&filename);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba}{processJob}}(\textcolor{keyword}{const}\ std::string\ \&printerName);}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_printing_system_a03019cfbb871ebef1bd1fe1670261abb}{addJobsToPrinters}}(\mbox{\hyperlink{class_printing_system}{PrintingSystem}}\ \&system);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ processAutomatically(\mbox{\hyperlink{class_printing_system}{PrintingSystem}}\&\ system);}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ getPrinterCount()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00020\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ REQUIRE\ (printers\_.size()\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ printer\ count"{}});}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ printers\_.size();}
+\DoxyCodeLine{00023\ \ \ \ \ \}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ getJobCount()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00026\ \textcolor{keyword}{\ \ \ \ }\{\ \textcolor{comment}{//\ Keep\ count\ of\ how\ many\ jobs\ there\ are}}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ REQUIRE\ (jobs\_.size()\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ job\ count"{}});}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ jobs\_.size();}
+\DoxyCodeLine{00029\ \ \ \ \ \}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ addPrinter(\mbox{\hyperlink{class_printer}{Printer}}\ \&printer)}
+\DoxyCodeLine{00032\ \ \ \ \ \{}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifndef\ TESTING}}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ REQUIRE\ (printer.getName()\ !=\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}Invalid\ printer\ name"{}});}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ printers\_.emplace\_back(printer);}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifndef\ TESTING}}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ ENSURE\ (printers\_.back().getName()\ ==\ printer.getName(),\ \textcolor{stringliteral}{"{}Printer\ name\ not\ added\ correctly"{}});}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00040\ \ \ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ addJob(\mbox{\hyperlink{class_job}{Job}}\ \&job)}
+\DoxyCodeLine{00043\ \ \ \ \ \{}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifndef\ TESTING}}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ REQUIRE\ (job.getUserName()\ !=\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}Invalid\ user\ name"{}});}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ jobs\_.emplace\_back(job);}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifndef\ TESTING}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ ENSURE\ (jobs\_.back().getUserName()\ ==\ job.getUserName(),\ \textcolor{stringliteral}{"{}User\ name\ not\ added\ correctly"{}});}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ std::vector<Printer>\&\ getPrinters()}
+\DoxyCodeLine{00056\ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ REQUIRE\ (printers\_.size()\ >\ 0,\ \textcolor{stringliteral}{"{}Invalid\ printer\ count"{}});}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ printers\_;}
+\DoxyCodeLine{00059\ \ \ \ \ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ std::vector<Job>\&\ getJobs()}
+\DoxyCodeLine{00062\ \ \ \ \ \{}
+\DoxyCodeLine{00063\ \textcolor{preprocessor}{\#ifndef\ TESTING}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ REQUIRE\ (jobs\_.size()\ >\ 0,\ \textcolor{stringliteral}{"{}Invalid\ job\ count"{}});}
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ jobs\_;}
+\DoxyCodeLine{00067\ \ \ \ \ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ std::vector<ClimateCompensationInitiative>\ getClimateCompensationInitiatives()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ REQUIRE\ (climateCompensationInitiatives\_.size()\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ climate\ compensation\ initiative\ count"{}});}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ climateCompensationInitiatives\_;}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ std::vector<ClimateCompensationInitiative>setClimateCompensationInitiatives()}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ REQUIRE\ (climateCompensationInitiatives\_.size()\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ climate\ compensation\ initiative\ count"{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ climateCompensationInitiatives\_;}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ addClimateCompensationInitiative(\mbox{\hyperlink{class_climate_compensation_initiative}{ClimateCompensationInitiative}}\ \&initiative)}
+\DoxyCodeLine{00082\ \ \ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ climateCompensationInitiatives\_.emplace\_back(initiative);}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ deleteJob(\textcolor{keywordtype}{int}\ jobNumber)}
+\DoxyCodeLine{00087\ \ \ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ REQUIRE\ (jobNumber\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ job\ number"{}});}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Find\ the\ job\ with\ the\ specified\ job\ number}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::find\_if(jobs\_.begin(),\ jobs\_.end(),\ [jobNumber](\textcolor{keyword}{const}\ \mbox{\hyperlink{class_job}{Job}}\&\ job)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ return\ job.getJobNumber()\ ==\ jobNumber;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ job\ was\ found,\ delete\ it}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ jobs\_.end())\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ jobs\_.erase(it);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{void}\ deletePrinter(\textcolor{keyword}{const}\ std::string\ \&printerName)}
+\DoxyCodeLine{00101\ \ \ \ \ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ REQUIRE\ (printerName\ !=\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}Invalid\ printer\ name"{}});}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Find\ the\ printer\ with\ the\ specified\ name}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::find\_if(printers\_.begin(),\ printers\_.end(),\ [printerName](\textcolor{keyword}{const}\ \mbox{\hyperlink{class_printer}{Printer}}\&\ printer)\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ return\ printer.getName()\ ==\ printerName;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ printer\ was\ found,\ delete\ it}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ printers\_.end())\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ printers\_.erase(it);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{int}\ calculateTotalCO2Emissions()}
+\DoxyCodeLine{00115\ \ \ \ \ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ REQUIRE\ (printers\_.size()\ >\ 0,\ \textcolor{stringliteral}{"{}Invalid\ printer\ count"{}});}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{class_printer}{Printer}}\&\ printer\ :\ printers\_)}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ CO2\_emissions\ +=\ printer.getCO2Emissions();}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CO2\_emissions;}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{void}\ addUncompletedJob(\mbox{\hyperlink{class_job}{Job}}\&\ job)}
+\DoxyCodeLine{00125\ \ \ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ REQUIRE\ (job.getJobNumber()\ >=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ job\ number"{}});}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ uncompletedJobs\_.emplace\_back(job);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ ENSURE\ (uncompletedJobs\_.back().getJobNumber()\ ==\ job.getJobNumber(),\ \textcolor{stringliteral}{"{}Job\ number\ not\ added\ correctly"{}});}
+\DoxyCodeLine{00129\ \ \ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00132\ \ \ \ \ std::vector<Printer>\ printers\_;}
+\DoxyCodeLine{00133\ \ \ \ \ std::vector<Job>\ jobs\_;}
+\DoxyCodeLine{00134\ \ \ \ \ std::vector<Job>\ uncompletedJobs\_;}
+\DoxyCodeLine{00135\ \ \ \ \ std::vector<ClimateCompensationInitiative>\ climateCompensationInitiatives\_;}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordtype}{int}\ CO2\_emissions\ =\ 0;}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//PROJECTTITLE\_PRINTINGSYSTEM\_H}}
+
+\end{DoxyCode}

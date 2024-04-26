@@ -1,0 +1,1953 @@
+\doxysection{gtest-\/port.h}
+\hypertarget{gtest-port_8h_source}{}\label{gtest-port_8h_source}\index{gtest/include/gtest/internal/gtest-\/port.h@{gtest/include/gtest/internal/gtest-\/port.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ Copyright\ 2005,\ Google\ Inc.}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ All\ rights\ reserved.}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Redistribution\ and\ use\ in\ source\ and\ binary\ forms,\ with\ or\ without}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ modification,\ are\ permitted\ provided\ that\ the\ following\ conditions\ are}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ met:}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ of\ source\ code\ must\ retain\ the\ above\ copyright}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer.}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ \ \ \ \ *\ Redistributions\ in\ binary\ form\ must\ reproduce\ the\ above}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ copyright\ notice,\ this\ list\ of\ conditions\ and\ the\ following\ disclaimer}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ in\ the\ documentation\ and/or\ other\ materials\ provided\ with\ the}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ distribution.}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ \ \ \ \ *\ Neither\ the\ name\ of\ Google\ Inc.\ nor\ the\ names\ of\ its}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//\ contributors\ may\ be\ used\ to\ endorse\ or\ promote\ products\ derived\ from}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//\ this\ software\ without\ specific\ prior\ written\ permission.}}
+\DoxyCodeLine{00017\ \textcolor{comment}{//}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//\ THIS\ SOFTWARE\ IS\ PROVIDED\ BY\ THE\ COPYRIGHT\ HOLDERS\ AND\ CONTRIBUTORS}}
+\DoxyCodeLine{00019\ \textcolor{comment}{//\ "{}AS\ IS"{}\ AND\ ANY\ EXPRESS\ OR\ IMPLIED\ WARRANTIES,\ INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00020\ \textcolor{comment}{//\ LIMITED\ TO,\ THE\ IMPLIED\ WARRANTIES\ OF\ MERCHANTABILITY\ AND\ FITNESS\ FOR}}
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ A\ PARTICULAR\ PURPOSE\ ARE\ DISCLAIMED.\ IN\ NO\ EVENT\ SHALL\ THE\ COPYRIGHT}}
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ OWNER\ OR\ CONTRIBUTORS\ BE\ LIABLE\ FOR\ ANY\ DIRECT,\ INDIRECT,\ INCIDENTAL,}}
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ SPECIAL,\ EXEMPLARY,\ OR\ CONSEQUENTIAL\ DAMAGES\ (INCLUDING,\ BUT\ NOT}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ LIMITED\ TO,\ PROCUREMENT\ OF\ SUBSTITUTE\ GOODS\ OR\ SERVICES;\ LOSS\ OF\ USE,}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ DATA,\ OR\ PROFITS;\ OR\ BUSINESS\ INTERRUPTION)\ HOWEVER\ CAUSED\ AND\ ON\ ANY}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ THEORY\ OF\ LIABILITY,\ WHETHER\ IN\ CONTRACT,\ STRICT\ LIABILITY,\ OR\ TORT}}
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ (INCLUDING\ NEGLIGENCE\ OR\ OTHERWISE)\ ARISING\ IN\ ANY\ WAY\ OUT\ OF\ THE\ USE}}
+\DoxyCodeLine{00028\ \textcolor{comment}{//\ OF\ THIS\ SOFTWARE,\ EVEN\ IF\ ADVISED\ OF\ THE\ POSSIBILITY\ OF\ SUCH\ DAMAGE.}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ Authors:\ wan@google.com\ (Zhanyong\ Wan)}}
+\DoxyCodeLine{00031\ \textcolor{comment}{//}}
+\DoxyCodeLine{00032\ \textcolor{comment}{//\ Low-\/level\ types\ and\ utilities\ for\ porting\ Google\ Test\ to\ various}}
+\DoxyCodeLine{00033\ \textcolor{comment}{//\ platforms.\ \ They\ are\ subject\ to\ change\ without\ notice.\ \ DO\ NOT\ USE}}
+\DoxyCodeLine{00034\ \textcolor{comment}{//\ THEM\ IN\ USER\ CODE.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{//}}
+\DoxyCodeLine{00036\ \textcolor{comment}{//\ This\ file\ is\ fundamental\ to\ Google\ Test.\ \ All\ other\ Google\ Test\ source}}
+\DoxyCodeLine{00037\ \textcolor{comment}{//\ files\ are\ expected\ to\ \#include\ this.\ \ Therefore,\ it\ cannot\ \#include}}
+\DoxyCodeLine{00038\ \textcolor{comment}{//\ any\ other\ Google\ Test\ header.}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#ifndef\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PORT\_H\_}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#define\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PORT\_H\_}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ The\ user\ can\ define\ the\ following\ macros\ in\ the\ build\ script\ to}}
+\DoxyCodeLine{00044\ \textcolor{comment}{//\ control\ Google\ Test's\ behavior.\ \ If\ the\ user\ doesn't\ define\ a\ macro}}
+\DoxyCodeLine{00045\ \textcolor{comment}{//\ in\ this\ list,\ Google\ Test\ will\ define\ it.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{//}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_CLONE\ \ \ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ clone(2)}}
+\DoxyCodeLine{00048\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is/isn't\ available.}}
+\DoxyCodeLine{00049\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_EXCEPTIONS\ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ exceptions}}
+\DoxyCodeLine{00050\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ are\ enabled.}}
+\DoxyCodeLine{00051\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_GLOBAL\_STRING\ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ ::string}}
+\DoxyCodeLine{00052\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is/isn't\ available\ (some\ systems\ define}}
+\DoxyCodeLine{00053\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ::string,\ which\ is\ different\ to\ std::string).}}
+\DoxyCodeLine{00054\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_GLOBAL\_WSTRING\ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ ::string}}
+\DoxyCodeLine{00055\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is/isn't\ available\ (some\ systems\ define}}
+\DoxyCodeLine{00056\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ::wstring,\ which\ is\ different\ to\ std::wstring).}}
+\DoxyCodeLine{00057\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_POSIX\_RE\ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ POSIX\ regular}}
+\DoxyCodeLine{00058\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expressions\ are/aren't\ available.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_PTHREAD\ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ <pthread.h>}}
+\DoxyCodeLine{00060\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is/isn't\ available.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_RTTI\ \ \ \ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ RTTI\ is/isn't}}
+\DoxyCodeLine{00062\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ enabled.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_STD\_WSTRING\ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that}}
+\DoxyCodeLine{00064\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::wstring\ does/doesn't\ work\ (Google\ Test\ can}}
+\DoxyCodeLine{00065\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ be\ used\ where\ std::wstring\ is\ unavailable).}}
+\DoxyCodeLine{00066\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_TR1\_TUPLE\ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ tr1::tuple}}
+\DoxyCodeLine{00067\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is/isn't\ available.}}
+\DoxyCodeLine{00068\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_SEH\ \ \ \ \ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ whether\ the}}
+\DoxyCodeLine{00069\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ compiler\ supports\ Microsoft's\ "{}Structured}}
+\DoxyCodeLine{00070\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Exception\ Handling"{}.}}
+\DoxyCodeLine{00071\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_STREAM\_REDIRECTION}}
+\DoxyCodeLine{00072\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ whether\ the}}
+\DoxyCodeLine{00073\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ platform\ supports\ I/O\ stream\ redirection\ using}}
+\DoxyCodeLine{00074\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dup()\ and\ dup2().}}
+\DoxyCodeLine{00075\ \textcolor{comment}{//\ \ \ GTEST\_USE\_OWN\_TR1\_TUPLE\ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ whether\ Google}}
+\DoxyCodeLine{00076\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Test's\ own\ tr1\ tuple\ implementation\ should\ be}}
+\DoxyCodeLine{00077\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ used.\ \ Unused\ when\ the\ user\ sets}}
+\DoxyCodeLine{00078\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GTEST\_HAS\_TR1\_TUPLE\ to\ 0.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{//\ \ \ GTEST\_LANG\_CXX11\ \ \ \ \ \ \ \ \ -\/\ Define\ it\ to\ 1/0\ to\ indicate\ that\ Google\ Test}}
+\DoxyCodeLine{00080\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\ building\ in\ C++11/C++98\ mode.}}
+\DoxyCodeLine{00081\ \textcolor{comment}{//\ \ \ GTEST\_LINKED\_AS\_SHARED\_LIBRARY}}
+\DoxyCodeLine{00082\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ Define\ to\ 1\ when\ compiling\ tests\ that\ use}}
+\DoxyCodeLine{00083\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Google\ Test\ as\ a\ shared\ library\ (known\ as}}
+\DoxyCodeLine{00084\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DLL\ on\ Windows).}}
+\DoxyCodeLine{00085\ \textcolor{comment}{//\ \ \ GTEST\_CREATE\_SHARED\_LIBRARY}}
+\DoxyCodeLine{00086\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ Define\ to\ 1\ when\ compiling\ Google\ Test\ itself}}
+\DoxyCodeLine{00087\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ as\ a\ shared\ library.}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{comment}{//\ This\ header\ defines\ the\ following\ utilities:}}
+\DoxyCodeLine{00090\ \textcolor{comment}{//}}
+\DoxyCodeLine{00091\ \textcolor{comment}{//\ Macros\ indicating\ the\ current\ platform\ (defined\ to\ 1\ if\ compiled\ on}}
+\DoxyCodeLine{00092\ \textcolor{comment}{//\ the\ given\ platform;\ otherwise\ undefined):}}
+\DoxyCodeLine{00093\ \textcolor{comment}{//\ \ \ GTEST\_OS\_AIX\ \ \ \ \ \ -\/\ IBM\ AIX}}
+\DoxyCodeLine{00094\ \textcolor{comment}{//\ \ \ GTEST\_OS\_CYGWIN\ \ \ -\/\ Cygwin}}
+\DoxyCodeLine{00095\ \textcolor{comment}{//\ \ \ GTEST\_OS\_HPUX\ \ \ \ \ -\/\ HP-\/UX}}
+\DoxyCodeLine{00096\ \textcolor{comment}{//\ \ \ GTEST\_OS\_LINUX\ \ \ \ -\/\ Linux}}
+\DoxyCodeLine{00097\ \textcolor{comment}{//\ \ \ \ \ GTEST\_OS\_LINUX\_ANDROID\ -\/\ Google\ Android}}
+\DoxyCodeLine{00098\ \textcolor{comment}{//\ \ \ GTEST\_OS\_MAC\ \ \ \ \ \ -\/\ Mac\ OS\ X}}
+\DoxyCodeLine{00099\ \textcolor{comment}{//\ \ \ \ \ GTEST\_OS\_IOS\ \ \ \ -\/\ iOS}}
+\DoxyCodeLine{00100\ \textcolor{comment}{//\ \ \ \ \ \ \ GTEST\_OS\_IOS\_SIMULATOR\ -\/\ iOS\ simulator}}
+\DoxyCodeLine{00101\ \textcolor{comment}{//\ \ \ GTEST\_OS\_NACL\ \ \ \ \ -\/\ Google\ Native\ Client\ (NaCl)}}
+\DoxyCodeLine{00102\ \textcolor{comment}{//\ \ \ GTEST\_OS\_OPENBSD\ \ -\/\ OpenBSD}}
+\DoxyCodeLine{00103\ \textcolor{comment}{//\ \ \ GTEST\_OS\_QNX\ \ \ \ \ \ -\/\ QNX}}
+\DoxyCodeLine{00104\ \textcolor{comment}{//\ \ \ GTEST\_OS\_SOLARIS\ \ -\/\ Sun\ Solaris}}
+\DoxyCodeLine{00105\ \textcolor{comment}{//\ \ \ GTEST\_OS\_SYMBIAN\ \ -\/\ Symbian}}
+\DoxyCodeLine{00106\ \textcolor{comment}{//\ \ \ GTEST\_OS\_WINDOWS\ \ -\/\ Windows\ (Desktop,\ MinGW,\ or\ Mobile)}}
+\DoxyCodeLine{00107\ \textcolor{comment}{//\ \ \ \ \ GTEST\_OS\_WINDOWS\_DESKTOP\ \ -\/\ Windows\ Desktop}}
+\DoxyCodeLine{00108\ \textcolor{comment}{//\ \ \ \ \ GTEST\_OS\_WINDOWS\_MINGW\ \ \ \ -\/\ MinGW}}
+\DoxyCodeLine{00109\ \textcolor{comment}{//\ \ \ \ \ GTEST\_OS\_WINDOWS\_MOBILE\ \ \ -\/\ Windows\ Mobile}}
+\DoxyCodeLine{00110\ \textcolor{comment}{//\ \ \ GTEST\_OS\_ZOS\ \ \ \ \ \ -\/\ z/OS}}
+\DoxyCodeLine{00111\ \textcolor{comment}{//}}
+\DoxyCodeLine{00112\ \textcolor{comment}{//\ Among\ the\ platforms,\ Cygwin,\ Linux,\ Max\ OS\ X,\ and\ Windows\ have\ the}}
+\DoxyCodeLine{00113\ \textcolor{comment}{//\ most\ stable\ support.\ \ Since\ core\ members\ of\ the\ Google\ Test\ project}}
+\DoxyCodeLine{00114\ \textcolor{comment}{//\ don't\ have\ access\ to\ other\ platforms,\ support\ for\ them\ may\ be\ less}}
+\DoxyCodeLine{00115\ \textcolor{comment}{//\ stable.\ \ If\ you\ notice\ any\ problems\ on\ your\ platform,\ please\ notify}}
+\DoxyCodeLine{00116\ \textcolor{comment}{//\ googletestframework@googlegroups.com\ (patches\ for\ fixing\ them\ are}}
+\DoxyCodeLine{00117\ \textcolor{comment}{//\ even\ more\ welcome!).}}
+\DoxyCodeLine{00118\ \textcolor{comment}{//}}
+\DoxyCodeLine{00119\ \textcolor{comment}{//\ Note\ that\ it\ is\ possible\ that\ none\ of\ the\ GTEST\_OS\_*\ macros\ are\ defined.}}
+\DoxyCodeLine{00120\ \textcolor{comment}{//}}
+\DoxyCodeLine{00121\ \textcolor{comment}{//\ Macros\ indicating\ available\ Google\ Test\ features\ (defined\ to\ 1\ if}}
+\DoxyCodeLine{00122\ \textcolor{comment}{//\ the\ corresponding\ feature\ is\ supported;\ otherwise\ undefined):}}
+\DoxyCodeLine{00123\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_COMBINE\ \ \ \ \ \ -\/\ the\ Combine()\ function\ (for\ value-\/parameterized}}
+\DoxyCodeLine{00124\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tests)}}
+\DoxyCodeLine{00125\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_DEATH\_TEST\ \ \ -\/\ death\ tests}}
+\DoxyCodeLine{00126\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_PARAM\_TEST\ \ \ -\/\ value-\/parameterized\ tests}}
+\DoxyCodeLine{00127\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_TYPED\_TEST\ \ \ -\/\ typed\ tests}}
+\DoxyCodeLine{00128\ \textcolor{comment}{//\ \ \ GTEST\_HAS\_TYPED\_TEST\_P\ -\/\ type-\/parameterized\ tests}}
+\DoxyCodeLine{00129\ \textcolor{comment}{//\ \ \ GTEST\_USES\_POSIX\_RE\ \ \ \ -\/\ enhanced\ POSIX\ regex\ is\ used.\ Do\ not\ confuse\ with}}
+\DoxyCodeLine{00130\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ GTEST\_HAS\_POSIX\_RE\ (see\ above)\ which\ users\ can}}
+\DoxyCodeLine{00131\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ define\ themselves.}}
+\DoxyCodeLine{00132\ \textcolor{comment}{//\ \ \ GTEST\_USES\_SIMPLE\_RE\ \ \ -\/\ our\ own\ simple\ regex\ is\ used;}}
+\DoxyCodeLine{00133\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ the\ above\ two\ are\ mutually\ exclusive.}}
+\DoxyCodeLine{00134\ \textcolor{comment}{//\ \ \ GTEST\_CAN\_COMPARE\_NULL\ -\/\ accepts\ untyped\ NULL\ in\ EXPECT\_EQ().}}
+\DoxyCodeLine{00135\ \textcolor{comment}{//}}
+\DoxyCodeLine{00136\ \textcolor{comment}{//\ Macros\ for\ basic\ C++\ coding:}}
+\DoxyCodeLine{00137\ \textcolor{comment}{//\ \ \ GTEST\_AMBIGUOUS\_ELSE\_BLOCKER\_\ -\/\ for\ disabling\ a\ gcc\ warning.}}
+\DoxyCodeLine{00138\ \textcolor{comment}{//\ \ \ GTEST\_ATTRIBUTE\_UNUSED\_\ \ -\/\ declares\ that\ a\ class'\ instances\ or\ a}}
+\DoxyCodeLine{00139\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ variable\ don't\ have\ to\ be\ used.}}
+\DoxyCodeLine{00140\ \textcolor{comment}{//\ \ \ GTEST\_DISALLOW\_ASSIGN\_\ \ \ -\/\ disables\ operator=.}}
+\DoxyCodeLine{00141\ \textcolor{comment}{//\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_\ -\/\ disables\ copy\ ctor\ and\ operator=.}}
+\DoxyCodeLine{00142\ \textcolor{comment}{//\ \ \ GTEST\_MUST\_USE\_RESULT\_\ \ \ -\/\ declares\ that\ a\ function's\ result\ must\ be\ used.}}
+\DoxyCodeLine{00143\ \textcolor{comment}{//}}
+\DoxyCodeLine{00144\ \textcolor{comment}{//\ Synchronization:}}
+\DoxyCodeLine{00145\ \textcolor{comment}{//\ \ \ Mutex,\ MutexLock,\ ThreadLocal,\ GetThreadCount()}}
+\DoxyCodeLine{00146\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ synchronization\ primitives.}}
+\DoxyCodeLine{00147\ \textcolor{comment}{//\ \ \ GTEST\_IS\_THREADSAFE\ -\/\ defined\ to\ 1\ to\ indicate\ that\ the\ above}}
+\DoxyCodeLine{00148\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ synchronization\ primitives\ have\ real\ implementations}}
+\DoxyCodeLine{00149\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ and\ Google\ Test\ is\ thread-\/safe;\ or\ 0\ otherwise.}}
+\DoxyCodeLine{00150\ \textcolor{comment}{//}}
+\DoxyCodeLine{00151\ \textcolor{comment}{//\ Template\ meta\ programming:}}
+\DoxyCodeLine{00152\ \textcolor{comment}{//\ \ \ is\_pointer\ \ \ \ \ -\/\ as\ in\ TR1;\ needed\ on\ Symbian\ and\ IBM\ XL\ C/C++\ only.}}
+\DoxyCodeLine{00153\ \textcolor{comment}{//\ \ \ IteratorTraits\ -\/\ partial\ implementation\ of\ std::iterator\_traits,\ which}}
+\DoxyCodeLine{00154\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\ not\ available\ in\ libCstd\ when\ compiled\ with\ Sun\ C++.}}
+\DoxyCodeLine{00155\ \textcolor{comment}{//}}
+\DoxyCodeLine{00156\ \textcolor{comment}{//\ Smart\ pointers:}}
+\DoxyCodeLine{00157\ \textcolor{comment}{//\ \ \ scoped\_ptr\ \ \ \ \ -\/\ as\ in\ TR2.}}
+\DoxyCodeLine{00158\ \textcolor{comment}{//}}
+\DoxyCodeLine{00159\ \textcolor{comment}{//\ Regular\ expressions:}}
+\DoxyCodeLine{00160\ \textcolor{comment}{//\ \ \ RE\ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ a\ simple\ regular\ expression\ class\ using\ the\ POSIX}}
+\DoxyCodeLine{00161\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Extended\ Regular\ Expression\ syntax\ on\ UNIX-\/like}}
+\DoxyCodeLine{00162\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ platforms,\ or\ a\ reduced\ regular\ exception\ syntax\ on}}
+\DoxyCodeLine{00163\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ other\ platforms,\ including\ Windows.}}
+\DoxyCodeLine{00164\ \textcolor{comment}{//}}
+\DoxyCodeLine{00165\ \textcolor{comment}{//\ Logging:}}
+\DoxyCodeLine{00166\ \textcolor{comment}{//\ \ \ GTEST\_LOG\_()\ \ \ -\/\ logs\ messages\ at\ the\ specified\ severity\ level.}}
+\DoxyCodeLine{00167\ \textcolor{comment}{//\ \ \ LogToStderr()\ \ -\/\ directs\ all\ log\ messages\ to\ stderr.}}
+\DoxyCodeLine{00168\ \textcolor{comment}{//\ \ \ FlushInfoLog()\ -\/\ flushes\ informational\ log\ messages.}}
+\DoxyCodeLine{00169\ \textcolor{comment}{//}}
+\DoxyCodeLine{00170\ \textcolor{comment}{//\ Stdout\ and\ stderr\ capturing:}}
+\DoxyCodeLine{00171\ \textcolor{comment}{//\ \ \ CaptureStdout()\ \ \ \ \ -\/\ starts\ capturing\ stdout.}}
+\DoxyCodeLine{00172\ \textcolor{comment}{//\ \ \ GetCapturedStdout()\ -\/\ stops\ capturing\ stdout\ and\ returns\ the\ captured}}
+\DoxyCodeLine{00173\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ string.}}
+\DoxyCodeLine{00174\ \textcolor{comment}{//\ \ \ CaptureStderr()\ \ \ \ \ -\/\ starts\ capturing\ stderr.}}
+\DoxyCodeLine{00175\ \textcolor{comment}{//\ \ \ GetCapturedStderr()\ -\/\ stops\ capturing\ stderr\ and\ returns\ the\ captured}}
+\DoxyCodeLine{00176\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ string.}}
+\DoxyCodeLine{00177\ \textcolor{comment}{//}}
+\DoxyCodeLine{00178\ \textcolor{comment}{//\ Integer\ types:}}
+\DoxyCodeLine{00179\ \textcolor{comment}{//\ \ \ TypeWithSize\ \ \ -\/\ maps\ an\ integer\ to\ a\ int\ type.}}
+\DoxyCodeLine{00180\ \textcolor{comment}{//\ \ \ Int32,\ UInt32,\ Int64,\ UInt64,\ TimeInMillis}}
+\DoxyCodeLine{00181\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ integers\ of\ known\ sizes.}}
+\DoxyCodeLine{00182\ \textcolor{comment}{//\ \ \ BiggestInt\ \ \ \ \ -\/\ the\ biggest\ signed\ integer\ type.}}
+\DoxyCodeLine{00183\ \textcolor{comment}{//}}
+\DoxyCodeLine{00184\ \textcolor{comment}{//\ Command-\/line\ utilities:}}
+\DoxyCodeLine{00185\ \textcolor{comment}{//\ \ \ GTEST\_FLAG()\ \ \ \ \ \ \ -\/\ references\ a\ flag.}}
+\DoxyCodeLine{00186\ \textcolor{comment}{//\ \ \ GTEST\_DECLARE\_*()\ \ -\/\ declares\ a\ flag.}}
+\DoxyCodeLine{00187\ \textcolor{comment}{//\ \ \ GTEST\_DEFINE\_*()\ \ \ -\/\ defines\ a\ flag.}}
+\DoxyCodeLine{00188\ \textcolor{comment}{//\ \ \ GetInjectableArgvs()\ -\/\ returns\ the\ command\ line\ as\ a\ vector\ of\ strings.}}
+\DoxyCodeLine{00189\ \textcolor{comment}{//}}
+\DoxyCodeLine{00190\ \textcolor{comment}{//\ Environment\ variable\ utilities:}}
+\DoxyCodeLine{00191\ \textcolor{comment}{//\ \ \ GetEnv()\ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ gets\ the\ value\ of\ an\ environment\ variable.}}
+\DoxyCodeLine{00192\ \textcolor{comment}{//\ \ \ BoolFromGTestEnv()\ \ \ -\/\ parses\ a\ bool\ environment\ variable.}}
+\DoxyCodeLine{00193\ \textcolor{comment}{//\ \ \ Int32FromGTestEnv()\ \ -\/\ parses\ an\ Int32\ environment\ variable.}}
+\DoxyCodeLine{00194\ \textcolor{comment}{//\ \ \ StringFromGTestEnv()\ -\/\ parses\ a\ string\ environment\ variable.}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \textcolor{preprocessor}{\#include\ <ctype.h>}\ \ \ \textcolor{comment}{//\ for\ isspace,\ etc}}
+\DoxyCodeLine{00197\ \textcolor{preprocessor}{\#include\ <stddef.h>}\ \ \textcolor{comment}{//\ for\ ptrdiff\_t}}
+\DoxyCodeLine{00198\ \textcolor{preprocessor}{\#include\ <stdlib.h>}}
+\DoxyCodeLine{00199\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{00200\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{00201\ \textcolor{preprocessor}{\#ifndef\ \_WIN32\_WCE}}
+\DoxyCodeLine{00202\ \textcolor{preprocessor}{\#\ include\ <sys/types.h>}}
+\DoxyCodeLine{00203\ \textcolor{preprocessor}{\#\ include\ <sys/stat.h>}}
+\DoxyCodeLine{00204\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ !\_WIN32\_WCE}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \textcolor{preprocessor}{\#if\ defined\ \_\_APPLE\_\_}}
+\DoxyCodeLine{00207\ \textcolor{preprocessor}{\#\ include\ <AvailabilityMacros.h>}}
+\DoxyCodeLine{00208\ \textcolor{preprocessor}{\#\ include\ <TargetConditionals.h>}}
+\DoxyCodeLine{00209\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \textcolor{preprocessor}{\#include\ <iostream>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00212\ \textcolor{preprocessor}{\#include\ <sstream>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00213\ \textcolor{preprocessor}{\#include\ <string>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \textcolor{preprocessor}{\#define\ GTEST\_DEV\_EMAIL\_\ "{}googletestframework@@googlegroups.com"{}}}
+\DoxyCodeLine{00216\ \textcolor{preprocessor}{\#define\ GTEST\_FLAG\_PREFIX\_\ "{}gtest\_"{}}}
+\DoxyCodeLine{00217\ \textcolor{preprocessor}{\#define\ GTEST\_FLAG\_PREFIX\_DASH\_\ "{}gtest-\/"{}}}
+\DoxyCodeLine{00218\ \textcolor{preprocessor}{\#define\ GTEST\_FLAG\_PREFIX\_UPPER\_\ "{}GTEST\_"{}}}
+\DoxyCodeLine{00219\ \textcolor{preprocessor}{\#define\ GTEST\_NAME\_\ "{}Google\ Test"{}}}
+\DoxyCodeLine{00220\ \textcolor{preprocessor}{\#define\ GTEST\_PROJECT\_URL\_\ "{}http://code.google.com/p/googletest/"{}}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \textcolor{comment}{//\ Determines\ the\ version\ of\ gcc\ that\ is\ used\ to\ compile\ this.}}
+\DoxyCodeLine{00223\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00224\ \textcolor{comment}{//\ 40302\ means\ version\ 4.3.2.}}
+\DoxyCodeLine{00225\ \textcolor{preprocessor}{\#\ define\ GTEST\_GCC\_VER\_\ \(\backslash\)}}
+\DoxyCodeLine{00226\ \textcolor{preprocessor}{\ \ \ \ (\_\_GNUC\_\_*10000\ +\ \_\_GNUC\_MINOR\_\_*100\ +\ \_\_GNUC\_PATCHLEVEL\_\_)}}
+\DoxyCodeLine{00227\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \textcolor{comment}{//\ Determines\ the\ platform\ on\ which\ Google\ Test\ is\ compiled.}}
+\DoxyCodeLine{00230\ \textcolor{preprocessor}{\#ifdef\ \_\_CYGWIN\_\_}}
+\DoxyCodeLine{00231\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_CYGWIN\ 1}}
+\DoxyCodeLine{00232\ \textcolor{preprocessor}{\#elif\ defined\ \_\_SYMBIAN32\_\_}}
+\DoxyCodeLine{00233\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_SYMBIAN\ 1}}
+\DoxyCodeLine{00234\ \textcolor{preprocessor}{\#elif\ defined\ \_WIN32}}
+\DoxyCodeLine{00235\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_WINDOWS\ 1}}
+\DoxyCodeLine{00236\ \textcolor{preprocessor}{\#\ ifdef\ \_WIN32\_WCE}}
+\DoxyCodeLine{00237\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_OS\_WINDOWS\_MOBILE\ 1}}
+\DoxyCodeLine{00238\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_MINGW\_\_)\ ||\ defined(\_\_MINGW32\_\_)}}
+\DoxyCodeLine{00239\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_OS\_WINDOWS\_MINGW\ 1}}
+\DoxyCodeLine{00240\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00241\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_OS\_WINDOWS\_DESKTOP\ 1}}
+\DoxyCodeLine{00242\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ \_WIN32\_WCE}}
+\DoxyCodeLine{00243\ \textcolor{preprocessor}{\#elif\ defined\ \_\_APPLE\_\_}}
+\DoxyCodeLine{00244\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_MAC\ 1}}
+\DoxyCodeLine{00245\ \textcolor{preprocessor}{\#\ if\ TARGET\_OS\_IPHONE}}
+\DoxyCodeLine{00246\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_OS\_IOS\ 1}}
+\DoxyCodeLine{00247\ \textcolor{preprocessor}{\#\ \ if\ TARGET\_IPHONE\_SIMULATOR}}
+\DoxyCodeLine{00248\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_OS\_IOS\_SIMULATOR\ 1}}
+\DoxyCodeLine{00249\ \textcolor{preprocessor}{\#\ \ endif}}
+\DoxyCodeLine{00250\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00251\ \textcolor{preprocessor}{\#elif\ defined\ \_\_linux\_\_}}
+\DoxyCodeLine{00252\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_LINUX\ 1}}
+\DoxyCodeLine{00253\ \textcolor{preprocessor}{\#\ if\ defined\ \_\_ANDROID\_\_}}
+\DoxyCodeLine{00254\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_OS\_LINUX\_ANDROID\ 1}}
+\DoxyCodeLine{00255\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00256\ \textcolor{preprocessor}{\#elif\ defined\ \_\_MVS\_\_}}
+\DoxyCodeLine{00257\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_ZOS\ 1}}
+\DoxyCodeLine{00258\ \textcolor{preprocessor}{\#elif\ defined(\_\_sun)\ \&\&\ defined(\_\_SVR4)}}
+\DoxyCodeLine{00259\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_SOLARIS\ 1}}
+\DoxyCodeLine{00260\ \textcolor{preprocessor}{\#elif\ defined(\_AIX)}}
+\DoxyCodeLine{00261\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_AIX\ 1}}
+\DoxyCodeLine{00262\ \textcolor{preprocessor}{\#elif\ defined(\_\_hpux)}}
+\DoxyCodeLine{00263\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_HPUX\ 1}}
+\DoxyCodeLine{00264\ \textcolor{preprocessor}{\#elif\ defined\ \_\_native\_client\_\_}}
+\DoxyCodeLine{00265\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_NACL\ 1}}
+\DoxyCodeLine{00266\ \textcolor{preprocessor}{\#elif\ defined\ \_\_OpenBSD\_\_}}
+\DoxyCodeLine{00267\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_OPENBSD\ 1}}
+\DoxyCodeLine{00268\ \textcolor{preprocessor}{\#elif\ defined\ \_\_QNX\_\_}}
+\DoxyCodeLine{00269\ \textcolor{preprocessor}{\#\ define\ GTEST\_OS\_QNX\ 1}}
+\DoxyCodeLine{00270\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ \_\_CYGWIN\_\_}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \textcolor{preprocessor}{\#ifndef\ GTEST\_LANG\_CXX11}}
+\DoxyCodeLine{00273\ \textcolor{comment}{//\ gcc\ and\ clang\ define\ \_\_GXX\_EXPERIMENTAL\_CXX0X\_\_\ when}}
+\DoxyCodeLine{00274\ \textcolor{comment}{//\ -\/std=\{c,gnu\}++\{0x,11\}\ is\ passed.\ \ The\ C++11\ standard\ specifies\ a}}
+\DoxyCodeLine{00275\ \textcolor{comment}{//\ value\ for\ \_\_cplusplus,\ and\ recent\ versions\ of\ clang,\ gcc,\ and}}
+\DoxyCodeLine{00276\ \textcolor{comment}{//\ probably\ other\ compilers\ set\ that\ too\ in\ C++11\ mode.}}
+\DoxyCodeLine{00277\ \textcolor{preprocessor}{\#\ if\ \_\_GXX\_EXPERIMENTAL\_CXX0X\_\_\ ||\ \_\_cplusplus\ >=\ 201103L}}
+\DoxyCodeLine{00278\ \textcolor{comment}{//\ Compiling\ in\ at\ least\ C++11\ mode.}}
+\DoxyCodeLine{00279\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_LANG\_CXX11\ 1}}
+\DoxyCodeLine{00280\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00281\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_LANG\_CXX11\ 0}}
+\DoxyCodeLine{00282\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00283\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \textcolor{comment}{//\ Brings\ in\ definitions\ for\ functions\ used\ in\ the\ testing::internal::posix}}
+\DoxyCodeLine{00286\ \textcolor{comment}{//\ namespace\ (read,\ write,\ close,\ chdir,\ isatty,\ stat).\ We\ do\ not\ currently}}
+\DoxyCodeLine{00287\ \textcolor{comment}{//\ use\ them\ on\ Windows\ Mobile.}}
+\DoxyCodeLine{00288\ \textcolor{preprocessor}{\#if\ !GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{00289\ \textcolor{comment}{//\ This\ assumes\ that\ non-\/Windows\ OSes\ provide\ unistd.h.\ For\ OSes\ where\ this}}
+\DoxyCodeLine{00290\ \textcolor{comment}{//\ is\ not\ the\ case,\ we\ need\ to\ include\ headers\ that\ provide\ the\ functions}}
+\DoxyCodeLine{00291\ \textcolor{comment}{//\ mentioned\ above.}}
+\DoxyCodeLine{00292\ \textcolor{preprocessor}{\#\ include\ <unistd.h>}}
+\DoxyCodeLine{00293\ \textcolor{preprocessor}{\#\ include\ <strings.h>}}
+\DoxyCodeLine{00294\ \textcolor{preprocessor}{\#elif\ !GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{00295\ \textcolor{preprocessor}{\#\ include\ <direct.h>}}
+\DoxyCodeLine{00296\ \textcolor{preprocessor}{\#\ include\ <io.h>}}
+\DoxyCodeLine{00297\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_LINUX\_ANDROID}}
+\DoxyCodeLine{00300\ \textcolor{comment}{//\ Used\ to\ define\ \_\_ANDROID\_API\_\_\ matching\ the\ target\ NDK\ API\ level.}}
+\DoxyCodeLine{00301\ \textcolor{preprocessor}{\#\ \ include\ <android/api-\/level.h>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00302\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \textcolor{comment}{//\ Defines\ this\ to\ true\ iff\ Google\ Test\ can\ use\ POSIX\ regular\ expressions.}}
+\DoxyCodeLine{00305\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_POSIX\_RE}}
+\DoxyCodeLine{00306\ \textcolor{preprocessor}{\#\ if\ GTEST\_OS\_LINUX\_ANDROID}}
+\DoxyCodeLine{00307\ \textcolor{comment}{//\ On\ Android,\ <regex.h>\ is\ only\ available\ starting\ with\ Gingerbread.}}
+\DoxyCodeLine{00308\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_POSIX\_RE\ (\_\_ANDROID\_API\_\_\ >=\ 9)}}
+\DoxyCodeLine{00309\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00310\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_POSIX\_RE\ (!GTEST\_OS\_WINDOWS)}}
+\DoxyCodeLine{00311\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00312\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_POSIX\_RE}}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \textcolor{comment}{//\ On\ some\ platforms,\ <regex.h>\ needs\ someone\ to\ define\ size\_t,\ and}}
+\DoxyCodeLine{00317\ \textcolor{comment}{//\ won't\ compile\ otherwise.\ \ We\ can\ \#include\ it\ here\ as\ we\ already}}
+\DoxyCodeLine{00318\ \textcolor{comment}{//\ included\ <stdlib.h>,\ which\ is\ guaranteed\ to\ define\ size\_t\ through}}
+\DoxyCodeLine{00319\ \textcolor{comment}{//\ <stddef.h>.}}
+\DoxyCodeLine{00320\ \textcolor{preprocessor}{\#\ include\ <regex.h>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00321\ }
+\DoxyCodeLine{00322\ \textcolor{preprocessor}{\#\ define\ GTEST\_USES\_POSIX\_RE\ 1}}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \textcolor{preprocessor}{\#elif\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \textcolor{comment}{//\ <regex.h>\ is\ not\ available\ on\ Windows.\ \ Use\ our\ own\ simple\ regex}}
+\DoxyCodeLine{00327\ \textcolor{comment}{//\ implementation\ instead.}}
+\DoxyCodeLine{00328\ \textcolor{preprocessor}{\#\ define\ GTEST\_USES\_SIMPLE\_RE\ 1}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \textcolor{comment}{//\ <regex.h>\ may\ not\ be\ available\ on\ this\ platform.\ \ Use\ our\ own}}
+\DoxyCodeLine{00333\ \textcolor{comment}{//\ simple\ regex\ implementation\ instead.}}
+\DoxyCodeLine{00334\ \textcolor{preprocessor}{\#\ define\ GTEST\_USES\_SIMPLE\_RE\ 1}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_POSIX\_RE}}
+\DoxyCodeLine{00337\ }
+\DoxyCodeLine{00338\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00339\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ whether\ exceptions\ are\ enabled,\ so\ we\ need}}
+\DoxyCodeLine{00340\ \textcolor{comment}{//\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00341\ \textcolor{preprocessor}{\#\ if\ defined(\_MSC\_VER)\ ||\ defined(\_\_BORLANDC\_\_)}}
+\DoxyCodeLine{00342\ \textcolor{comment}{//\ MSVC's\ and\ C++Builder's\ implementations\ of\ the\ STL\ use\ the\ \_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00343\ \textcolor{comment}{//\ macro\ to\ enable\ exceptions,\ so\ we'll\ do\ the\ same.}}
+\DoxyCodeLine{00344\ \textcolor{comment}{//\ Assumes\ that\ exceptions\ are\ enabled\ by\ default.}}
+\DoxyCodeLine{00345\ \textcolor{preprocessor}{\#\ \ ifndef\ \_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00346\ \textcolor{preprocessor}{\#\ \ \ define\ \_HAS\_EXCEPTIONS\ 1}}
+\DoxyCodeLine{00347\ \textcolor{preprocessor}{\#\ \ endif\ \ }\textcolor{comment}{//\ \_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00348\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ \_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00349\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_GNUC\_\_)\ \&\&\ \_\_EXCEPTIONS}}
+\DoxyCodeLine{00350\ \textcolor{comment}{//\ gcc\ defines\ \_\_EXCEPTIONS\ to\ 1\ iff\ exceptions\ are\ enabled.}}
+\DoxyCodeLine{00351\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ 1}}
+\DoxyCodeLine{00352\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_SUNPRO\_CC)}}
+\DoxyCodeLine{00353\ \textcolor{comment}{//\ Sun\ Pro\ CC\ supports\ exceptions.\ \ However,\ there\ is\ no\ compile-\/time\ way\ of}}
+\DoxyCodeLine{00354\ \textcolor{comment}{//\ detecting\ whether\ they\ are\ enabled\ or\ not.\ \ Therefore,\ we\ assume\ that}}
+\DoxyCodeLine{00355\ \textcolor{comment}{//\ they\ are\ enabled\ unless\ the\ user\ tells\ us\ otherwise.}}
+\DoxyCodeLine{00356\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ 1}}
+\DoxyCodeLine{00357\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_IBMCPP\_\_)\ \&\&\ \_\_EXCEPTIONS}}
+\DoxyCodeLine{00358\ \textcolor{comment}{//\ xlC\ defines\ \_\_EXCEPTIONS\ to\ 1\ iff\ exceptions\ are\ enabled.}}
+\DoxyCodeLine{00359\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ 1}}
+\DoxyCodeLine{00360\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_HP\_aCC)}}
+\DoxyCodeLine{00361\ \textcolor{comment}{//\ Exception\ handling\ is\ in\ effect\ by\ default\ in\ HP\ aCC\ compiler.\ It\ has\ to}}
+\DoxyCodeLine{00362\ \textcolor{comment}{//\ be\ turned\ of\ by\ +noeh\ compiler\ option\ if\ desired.}}
+\DoxyCodeLine{00363\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ 1}}
+\DoxyCodeLine{00364\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00365\ \textcolor{comment}{//\ For\ other\ compilers,\ we\ assume\ exceptions\ are\ disabled\ to\ be}}
+\DoxyCodeLine{00366\ \textcolor{comment}{//\ conservative.}}
+\DoxyCodeLine{00367\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_EXCEPTIONS\ 0}}
+\DoxyCodeLine{00368\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ defined(\_MSC\_VER)\ ||\ defined(\_\_BORLANDC\_\_)}}
+\DoxyCodeLine{00369\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_EXCEPTIONS}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \textcolor{preprocessor}{\#if\ !defined(GTEST\_HAS\_STD\_STRING)}}
+\DoxyCodeLine{00372\ \textcolor{comment}{//\ Even\ though\ we\ don't\ use\ this\ macro\ any\ longer,\ we\ keep\ it\ in\ case}}
+\DoxyCodeLine{00373\ \textcolor{comment}{//\ some\ clients\ still\ depend\ on\ it.}}
+\DoxyCodeLine{00374\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_STD\_STRING\ 1}}
+\DoxyCodeLine{00375\ \textcolor{preprocessor}{\#elif\ !GTEST\_HAS\_STD\_STRING}}
+\DoxyCodeLine{00376\ \textcolor{comment}{//\ The\ user\ told\ us\ that\ ::std::string\ isn't\ available.}}
+\DoxyCodeLine{00377\ \textcolor{preprocessor}{\#\ error\ "{}Google\ Test\ cannot\ be\ used\ where\ ::std::string\ isn't\ available."{}}}
+\DoxyCodeLine{00378\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ !defined(GTEST\_HAS\_STD\_STRING)}}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00381\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ whether\ ::string\ is\ available,\ so\ we\ need}}
+\DoxyCodeLine{00382\ \textcolor{comment}{//\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_GLOBAL\_STRING\ 0}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00387\ }
+\DoxyCodeLine{00388\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_STD\_WSTRING}}
+\DoxyCodeLine{00389\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ whether\ ::std::wstring\ is\ available,\ so\ we\ need}}
+\DoxyCodeLine{00390\ \textcolor{comment}{//\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00391\ \textcolor{comment}{//\ TODO(wan@google.com):\ uses\ autoconf\ to\ detect\ whether\ ::std::wstring}}
+\DoxyCodeLine{00392\ \textcolor{comment}{//\ \ \ is\ available.}}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \textcolor{comment}{//\ Cygwin\ 1.7\ and\ below\ doesn't\ support\ ::std::wstring.}}
+\DoxyCodeLine{00395\ \textcolor{comment}{//\ Solaris'\ libc++\ doesn't\ support\ it\ either.\ \ Android\ has}}
+\DoxyCodeLine{00396\ \textcolor{comment}{//\ no\ support\ for\ it\ at\ least\ as\ recent\ as\ Froyo\ (2.2).}}
+\DoxyCodeLine{00397\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_STD\_WSTRING\ \(\backslash\)}}
+\DoxyCodeLine{00398\ \textcolor{preprocessor}{\ \ \ \ (!(GTEST\_OS\_LINUX\_ANDROID\ ||\ GTEST\_OS\_CYGWIN\ ||\ GTEST\_OS\_SOLARIS))}}
+\DoxyCodeLine{00399\ }
+\DoxyCodeLine{00400\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_STD\_WSTRING}}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_GLOBAL\_WSTRING}}
+\DoxyCodeLine{00403\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ whether\ ::wstring\ is\ available,\ so\ we\ need}}
+\DoxyCodeLine{00404\ \textcolor{comment}{//\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00405\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_GLOBAL\_WSTRING\ \(\backslash\)}}
+\DoxyCodeLine{00406\ \textcolor{preprocessor}{\ \ \ \ (GTEST\_HAS\_STD\_WSTRING\ \&\&\ GTEST\_HAS\_GLOBAL\_STRING)}}
+\DoxyCodeLine{00407\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_WSTRING}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \textcolor{comment}{//\ Determines\ whether\ RTTI\ is\ available.}}
+\DoxyCodeLine{00410\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_RTTI}}
+\DoxyCodeLine{00411\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ whether\ RTTI\ is\ enabled,\ so\ we\ need\ to}}
+\DoxyCodeLine{00412\ \textcolor{comment}{//\ figure\ it\ out.}}
+\DoxyCodeLine{00413\ }
+\DoxyCodeLine{00414\ \textcolor{preprocessor}{\#\ ifdef\ \_MSC\_VER}}
+\DoxyCodeLine{00415\ }
+\DoxyCodeLine{00416\ \textcolor{preprocessor}{\#\ \ ifdef\ \_CPPRTTI\ \ }\textcolor{comment}{//\ MSVC\ defines\ this\ macro\ iff\ RTTI\ is\ enabled.}}
+\DoxyCodeLine{00417\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_RTTI\ 1}}
+\DoxyCodeLine{00418\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{00419\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_RTTI\ 0}}
+\DoxyCodeLine{00420\ \textcolor{preprocessor}{\#\ \ endif}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \textcolor{comment}{//\ Starting\ with\ version\ 4.3.2,\ gcc\ defines\ \_\_GXX\_RTTI\ iff\ RTTI\ is\ enabled.}}
+\DoxyCodeLine{00423\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_GNUC\_\_)\ \&\&\ (GTEST\_GCC\_VER\_\ >=\ 40302)}}
+\DoxyCodeLine{00424\ }
+\DoxyCodeLine{00425\ \textcolor{preprocessor}{\#\ \ ifdef\ \_\_GXX\_RTTI}}
+\DoxyCodeLine{00426\ \textcolor{comment}{//\ When\ building\ against\ STLport\ with\ the\ Android\ NDK\ and\ with}}
+\DoxyCodeLine{00427\ \textcolor{comment}{//\ -\/frtti\ -\/fno-\/exceptions,\ the\ build\ fails\ at\ link\ time\ with\ undefined}}
+\DoxyCodeLine{00428\ \textcolor{comment}{//\ references\ to\ \_\_cxa\_bad\_typeid.\ Note\ sure\ if\ STL\ or\ toolchain\ bug,}}
+\DoxyCodeLine{00429\ \textcolor{comment}{//\ so\ disable\ RTTI\ when\ detected.}}
+\DoxyCodeLine{00430\ \textcolor{preprocessor}{\#\ \ \ if\ GTEST\_OS\_LINUX\_ANDROID\ \&\&\ defined(\_STLPORT\_MAJOR)\ \&\&\ \(\backslash\)}}
+\DoxyCodeLine{00431\ \textcolor{preprocessor}{\ \ \ \ \ \ \ !defined(\_\_EXCEPTIONS)}}
+\DoxyCodeLine{00432\ \textcolor{preprocessor}{\#\ \ \ \ define\ GTEST\_HAS\_RTTI\ 0}}
+\DoxyCodeLine{00433\ \textcolor{preprocessor}{\#\ \ \ else}}
+\DoxyCodeLine{00434\ \textcolor{preprocessor}{\#\ \ \ \ define\ GTEST\_HAS\_RTTI\ 1}}
+\DoxyCodeLine{00435\ \textcolor{preprocessor}{\#\ \ \ endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_LINUX\_ANDROID\ \&\&\ \_\_STLPORT\_MAJOR\ \&\&\ !\_\_EXCEPTIONS}}
+\DoxyCodeLine{00436\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{00437\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_RTTI\ 0}}
+\DoxyCodeLine{00438\ \textcolor{preprocessor}{\#\ \ endif\ \ }\textcolor{comment}{//\ \_\_GXX\_RTTI}}
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \textcolor{comment}{//\ Clang\ defines\ \_\_GXX\_RTTI\ starting\ with\ version\ 3.0,\ but\ its\ manual\ recommends}}
+\DoxyCodeLine{00441\ \textcolor{comment}{//\ using\ has\_feature\ instead.\ has\_feature(cxx\_rtti)\ is\ supported\ since\ 2.7,\ the}}
+\DoxyCodeLine{00442\ \textcolor{comment}{//\ first\ version\ with\ C++\ support.}}
+\DoxyCodeLine{00443\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_clang\_\_)}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_RTTI\ \_\_has\_feature(cxx\_rtti)}}
+\DoxyCodeLine{00446\ }
+\DoxyCodeLine{00447\ \textcolor{comment}{//\ Starting\ with\ version\ 9.0\ IBM\ Visual\ Age\ defines\ \_\_RTTI\_ALL\_\_\ to\ 1\ if}}
+\DoxyCodeLine{00448\ \textcolor{comment}{//\ both\ the\ typeid\ and\ dynamic\_cast\ features\ are\ present.}}
+\DoxyCodeLine{00449\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_IBMCPP\_\_)\ \&\&\ (\_\_IBMCPP\_\_\ >=\ 900)}}
+\DoxyCodeLine{00450\ }
+\DoxyCodeLine{00451\ \textcolor{preprocessor}{\#\ \ ifdef\ \_\_RTTI\_ALL\_\_}}
+\DoxyCodeLine{00452\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_RTTI\ 1}}
+\DoxyCodeLine{00453\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{00454\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_RTTI\ 0}}
+\DoxyCodeLine{00455\ \textcolor{preprocessor}{\#\ \ endif}}
+\DoxyCodeLine{00456\ }
+\DoxyCodeLine{00457\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00458\ }
+\DoxyCodeLine{00459\ \textcolor{comment}{//\ For\ all\ other\ compilers,\ we\ assume\ RTTI\ is\ enabled.}}
+\DoxyCodeLine{00460\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_RTTI\ 1}}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ \_MSC\_VER}}
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_RTTI}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \textcolor{comment}{//\ It's\ this\ header's\ responsibility\ to\ \#include\ <typeinfo>\ when\ RTTI}}
+\DoxyCodeLine{00467\ \textcolor{comment}{//\ is\ enabled.}}
+\DoxyCodeLine{00468\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_RTTI}}
+\DoxyCodeLine{00469\ \textcolor{preprocessor}{\#\ include\ <typeinfo>}}
+\DoxyCodeLine{00470\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00471\ }
+\DoxyCodeLine{00472\ \textcolor{comment}{//\ Determines\ whether\ Google\ Test\ can\ use\ the\ pthreads\ library.}}
+\DoxyCodeLine{00473\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{00474\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ explicitly,\ so\ we\ assume\ pthreads\ support\ is}}
+\DoxyCodeLine{00475\ \textcolor{comment}{//\ available\ on\ Linux\ and\ Mac.}}
+\DoxyCodeLine{00476\ \textcolor{comment}{//}}
+\DoxyCodeLine{00477\ \textcolor{comment}{//\ To\ disable\ threading\ support\ in\ Google\ Test,\ add\ -\/DGTEST\_HAS\_PTHREAD=0}}
+\DoxyCodeLine{00478\ \textcolor{comment}{//\ to\ your\ compiler\ flags.}}
+\DoxyCodeLine{00479\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_PTHREAD\ (GTEST\_OS\_LINUX\ ||\ GTEST\_OS\_MAC\ ||\ GTEST\_OS\_HPUX\ \(\backslash\)}}
+\DoxyCodeLine{00480\ \textcolor{preprocessor}{\ \ \ \ ||\ GTEST\_OS\_QNX)}}
+\DoxyCodeLine{00481\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00483\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{00484\ \textcolor{comment}{//\ gtest-\/port.h\ guarantees\ to\ \#include\ <pthread.h>\ when\ GTEST\_HAS\_PTHREAD\ is}}
+\DoxyCodeLine{00485\ \textcolor{comment}{//\ true.}}
+\DoxyCodeLine{00486\ \textcolor{preprocessor}{\#\ include\ <pthread.h>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00488\ \textcolor{comment}{//\ For\ timespec\ and\ nanosleep,\ used\ below.}}
+\DoxyCodeLine{00489\ \textcolor{preprocessor}{\#\ include\ <time.h>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00490\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00491\ }
+\DoxyCodeLine{00492\ \textcolor{comment}{//\ Determines\ whether\ Google\ Test\ can\ use\ tr1/tuple.\ \ You\ can\ define}}
+\DoxyCodeLine{00493\ \textcolor{comment}{//\ this\ macro\ to\ 0\ to\ prevent\ Google\ Test\ from\ using\ tuple\ (any}}
+\DoxyCodeLine{00494\ \textcolor{comment}{//\ feature\ depending\ on\ tuple\ with\ be\ disabled\ in\ this\ mode).}}
+\DoxyCodeLine{00495\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00496\ \textcolor{preprocessor}{\#\ if\ GTEST\_OS\_LINUX\_ANDROID\ \&\&\ defined(\_STLPORT\_MAJOR)}}
+\DoxyCodeLine{00497\ \textcolor{comment}{//\ STLport,\ provided\ with\ the\ Android\ NDK,\ has\ neither\ <tr1/tuple>\ or\ <tuple>.}}
+\DoxyCodeLine{00498\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_TR1\_TUPLE\ 0}}
+\DoxyCodeLine{00499\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00500\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us\ not\ to\ do\ it,\ so\ we\ assume\ it's\ OK.}}
+\DoxyCodeLine{00501\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_TR1\_TUPLE\ 1}}
+\DoxyCodeLine{00502\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00503\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \textcolor{comment}{//\ Determines\ whether\ Google\ Test's\ own\ tr1\ tuple\ implementation}}
+\DoxyCodeLine{00506\ \textcolor{comment}{//\ should\ be\ used.}}
+\DoxyCodeLine{00507\ \textcolor{preprocessor}{\#ifndef\ GTEST\_USE\_OWN\_TR1\_TUPLE}}
+\DoxyCodeLine{00508\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us,\ so\ we\ need\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00509\ }
+\DoxyCodeLine{00510\ \textcolor{comment}{//\ We\ use\ our\ own\ TR1\ tuple\ if\ we\ aren't\ sure\ the\ user\ has\ an}}
+\DoxyCodeLine{00511\ \textcolor{comment}{//\ implementation\ of\ it\ already.\ \ At\ this\ time,\ libstdc++\ 4.0.0+\ and}}
+\DoxyCodeLine{00512\ \textcolor{comment}{//\ MSVC\ 2010\ are\ the\ only\ mainstream\ standard\ libraries\ that\ come}}
+\DoxyCodeLine{00513\ \textcolor{comment}{//\ with\ a\ TR1\ tuple\ implementation.\ \ NVIDIA's\ CUDA\ NVCC\ compiler}}
+\DoxyCodeLine{00514\ \textcolor{comment}{//\ pretends\ to\ be\ GCC\ by\ defining\ \_\_GNUC\_\_\ and\ friends,\ but\ cannot}}
+\DoxyCodeLine{00515\ \textcolor{comment}{//\ compile\ GCC's\ tuple\ implementation.\ \ MSVC\ 2008\ (9.0)\ provides\ TR1}}
+\DoxyCodeLine{00516\ \textcolor{comment}{//\ tuple\ in\ a\ 323\ MB\ Feature\ Pack\ download,\ which\ we\ cannot\ assume\ the}}
+\DoxyCodeLine{00517\ \textcolor{comment}{//\ user\ has.\ \ QNX's\ QCC\ compiler\ is\ a\ modified\ GCC\ but\ it\ doesn't}}
+\DoxyCodeLine{00518\ \textcolor{comment}{//\ support\ TR1\ tuple.\ \ libc++\ only\ provides\ std::tuple,\ in\ C++11\ mode,}}
+\DoxyCodeLine{00519\ \textcolor{comment}{//\ and\ it\ can\ be\ used\ with\ some\ compilers\ that\ define\ \_\_GNUC\_\_.}}
+\DoxyCodeLine{00520\ \textcolor{preprocessor}{\#\ if\ (defined(\_\_GNUC\_\_)\ \&\&\ !defined(\_\_CUDACC\_\_)\ \&\&\ (GTEST\_GCC\_VER\_\ >=\ 40000)\ \(\backslash\)}}
+\DoxyCodeLine{00521\ \textcolor{preprocessor}{\ \ \ \ \ \ \&\&\ !GTEST\_OS\_QNX\ \&\&\ !defined(\_LIBCPP\_VERSION))\ ||\ \_MSC\_VER\ >=\ 1600}}
+\DoxyCodeLine{00522\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_ENV\_HAS\_TR1\_TUPLE\_\ 1}}
+\DoxyCodeLine{00523\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00524\ }
+\DoxyCodeLine{00525\ \textcolor{comment}{//\ C++11\ specifies\ that\ <tuple>\ provides\ std::tuple.\ Use\ that\ if\ gtest\ is\ used}}
+\DoxyCodeLine{00526\ \textcolor{comment}{//\ in\ C++11\ mode\ and\ libstdc++\ isn't\ very\ old\ (binaries\ targeting\ OS\ X\ 10.6}}
+\DoxyCodeLine{00527\ \textcolor{comment}{//\ can\ build\ with\ clang\ but\ need\ to\ use\ gcc4.2's\ libstdc++).}}
+\DoxyCodeLine{00528\ \textcolor{preprocessor}{\#\ if\ GTEST\_LANG\_CXX11\ \&\&\ (!defined(\_\_GLIBCXX\_\_)\ ||\ \_\_GLIBCXX\_\_\ >\ 20110325)}}
+\DoxyCodeLine{00529\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_ENV\_HAS\_STD\_TUPLE\_\ 1}}
+\DoxyCodeLine{00530\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00531\ }
+\DoxyCodeLine{00532\ \textcolor{preprocessor}{\#\ if\ GTEST\_ENV\_HAS\_TR1\_TUPLE\_\ ||\ GTEST\_ENV\_HAS\_STD\_TUPLE\_}}
+\DoxyCodeLine{00533\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_USE\_OWN\_TR1\_TUPLE\ 0}}
+\DoxyCodeLine{00534\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00535\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_USE\_OWN\_TR1\_TUPLE\ 1}}
+\DoxyCodeLine{00536\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00537\ }
+\DoxyCodeLine{00538\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_USE\_OWN\_TR1\_TUPLE}}
+\DoxyCodeLine{00539\ }
+\DoxyCodeLine{00540\ \textcolor{comment}{//\ To\ avoid\ conditional\ compilation\ everywhere,\ we\ make\ it}}
+\DoxyCodeLine{00541\ \textcolor{comment}{//\ gtest-\/port.h's\ responsibility\ to\ \#include\ the\ header\ implementing}}
+\DoxyCodeLine{00542\ \textcolor{comment}{//\ tr1/tuple.}}
+\DoxyCodeLine{00543\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00544\ }
+\DoxyCodeLine{00545\ \textcolor{preprocessor}{\#\ if\ GTEST\_USE\_OWN\_TR1\_TUPLE}}
+\DoxyCodeLine{00546\ \textcolor{preprocessor}{\#\ \ include\ "{}gtest/internal/gtest-\/tuple.h"{}}}
+\DoxyCodeLine{00547\ \textcolor{preprocessor}{\#\ elif\ GTEST\_ENV\_HAS\_STD\_TUPLE\_}}
+\DoxyCodeLine{00548\ \textcolor{preprocessor}{\#\ \ include\ <tuple>}}
+\DoxyCodeLine{00549\ \textcolor{comment}{//\ C++11\ puts\ its\ tuple\ into\ the\ ::std\ namespace\ rather\ than}}
+\DoxyCodeLine{00550\ \textcolor{comment}{//\ ::std::tr1.\ \ gtest\ expects\ tuple\ to\ live\ in\ ::std::tr1,\ so\ put\ it\ there.}}
+\DoxyCodeLine{00551\ \textcolor{comment}{//\ This\ causes\ undefined\ behavior,\ but\ supported\ compilers\ react\ in}}
+\DoxyCodeLine{00552\ \textcolor{comment}{//\ the\ way\ we\ intend.}}
+\DoxyCodeLine{00553\ \textcolor{keyword}{namespace\ }std\ \{}
+\DoxyCodeLine{00554\ \textcolor{keyword}{namespace\ }tr1\ \{}
+\DoxyCodeLine{00555\ using\ ::std::get;}
+\DoxyCodeLine{00556\ using\ ::std::make\_tuple;}
+\DoxyCodeLine{00557\ using\ ::std::tuple;}
+\DoxyCodeLine{00558\ using\ ::std::tuple\_element;}
+\DoxyCodeLine{00559\ using\ ::std::tuple\_size;}
+\DoxyCodeLine{00560\ \}}
+\DoxyCodeLine{00561\ \}}
+\DoxyCodeLine{00562\ }
+\DoxyCodeLine{00563\ \textcolor{preprocessor}{\#\ elif\ GTEST\_OS\_SYMBIAN}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \textcolor{comment}{//\ On\ Symbian,\ BOOST\_HAS\_TR1\_TUPLE\ causes\ Boost's\ TR1\ tuple\ library\ to}}
+\DoxyCodeLine{00566\ \textcolor{comment}{//\ use\ STLport's\ tuple\ implementation,\ which\ unfortunately\ doesn't}}
+\DoxyCodeLine{00567\ \textcolor{comment}{//\ work\ as\ the\ copy\ of\ STLport\ distributed\ with\ Symbian\ is\ incomplete.}}
+\DoxyCodeLine{00568\ \textcolor{comment}{//\ By\ making\ sure\ BOOST\_HAS\_TR1\_TUPLE\ is\ undefined,\ we\ force\ Boost\ to}}
+\DoxyCodeLine{00569\ \textcolor{comment}{//\ use\ its\ own\ tuple\ implementation.}}
+\DoxyCodeLine{00570\ \textcolor{preprocessor}{\#\ \ ifdef\ BOOST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00571\ \textcolor{preprocessor}{\#\ \ \ undef\ BOOST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00572\ \textcolor{preprocessor}{\#\ \ endif\ \ }\textcolor{comment}{//\ BOOST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00573\ }
+\DoxyCodeLine{00574\ \textcolor{comment}{//\ This\ prevents\ <boost/tr1/detail/config.hpp>,\ which\ defines}}
+\DoxyCodeLine{00575\ \textcolor{comment}{//\ BOOST\_HAS\_TR1\_TUPLE,\ from\ being\ \#included\ by\ Boost's\ <tuple>.}}
+\DoxyCodeLine{00576\ \textcolor{preprocessor}{\#\ \ define\ BOOST\_TR1\_DETAIL\_CONFIG\_HPP\_INCLUDED}}
+\DoxyCodeLine{00577\ \textcolor{preprocessor}{\#\ \ include\ <tuple>}}
+\DoxyCodeLine{00578\ }
+\DoxyCodeLine{00579\ \textcolor{preprocessor}{\#\ elif\ defined(\_\_GNUC\_\_)\ \&\&\ (GTEST\_GCC\_VER\_\ >=\ 40000)}}
+\DoxyCodeLine{00580\ \textcolor{comment}{//\ GCC\ 4.0+\ implements\ tr1/tuple\ in\ the\ <tr1/tuple>\ header.\ \ This\ does}}
+\DoxyCodeLine{00581\ \textcolor{comment}{//\ not\ conform\ to\ the\ TR1\ spec,\ which\ requires\ the\ header\ to\ be\ <tuple>.}}
+\DoxyCodeLine{00582\ }
+\DoxyCodeLine{00583\ \textcolor{preprocessor}{\#\ \ if\ !GTEST\_HAS\_RTTI\ \&\&\ GTEST\_GCC\_VER\_\ <\ 40302}}
+\DoxyCodeLine{00584\ \textcolor{comment}{//\ Until\ version\ 4.3.2,\ gcc\ has\ a\ bug\ that\ causes\ <tr1/functional>,}}
+\DoxyCodeLine{00585\ \textcolor{comment}{//\ which\ is\ \#included\ by\ <tr1/tuple>,\ to\ not\ compile\ when\ RTTI\ is}}
+\DoxyCodeLine{00586\ \textcolor{comment}{//\ disabled.\ \ \_TR1\_FUNCTIONAL\ is\ the\ header\ guard\ for}}
+\DoxyCodeLine{00587\ \textcolor{comment}{//\ <tr1/functional>.\ \ Hence\ the\ following\ \#define\ is\ a\ hack\ to\ prevent}}
+\DoxyCodeLine{00588\ \textcolor{comment}{//\ <tr1/functional>\ from\ being\ included.}}
+\DoxyCodeLine{00589\ \textcolor{preprocessor}{\#\ \ \ define\ \_TR1\_FUNCTIONAL\ 1}}
+\DoxyCodeLine{00590\ \textcolor{preprocessor}{\#\ \ \ include\ <tr1/tuple>}}
+\DoxyCodeLine{00591\ \textcolor{preprocessor}{\#\ \ \ undef\ \_TR1\_FUNCTIONAL\ \ }\textcolor{comment}{//\ Allows\ the\ user\ to\ \#include}}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ <tr1/functional>\ if\ he\ chooses\ to.}}
+\DoxyCodeLine{00593\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{00594\ \textcolor{preprocessor}{\#\ \ \ include\ <tr1/tuple>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00595\ \textcolor{preprocessor}{\#\ \ endif\ \ }\textcolor{comment}{//\ !GTEST\_HAS\_RTTI\ \&\&\ GTEST\_GCC\_VER\_\ <\ 40302}}
+\DoxyCodeLine{00596\ }
+\DoxyCodeLine{00597\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00598\ \textcolor{comment}{//\ If\ the\ compiler\ is\ not\ GCC\ 4.0+,\ we\ assume\ the\ user\ is\ using\ a}}
+\DoxyCodeLine{00599\ \textcolor{comment}{//\ spec-\/conforming\ TR1\ implementation.}}
+\DoxyCodeLine{00600\ \textcolor{preprocessor}{\#\ \ include\ <tuple>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00601\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ GTEST\_USE\_OWN\_TR1\_TUPLE}}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_TR1\_TUPLE}}
+\DoxyCodeLine{00604\ }
+\DoxyCodeLine{00605\ \textcolor{comment}{//\ Determines\ whether\ clone(2)\ is\ supported.}}
+\DoxyCodeLine{00606\ \textcolor{comment}{//\ Usually\ it\ will\ only\ be\ available\ on\ Linux,\ excluding}}
+\DoxyCodeLine{00607\ \textcolor{comment}{//\ Linux\ on\ the\ Itanium\ architecture.}}
+\DoxyCodeLine{00608\ \textcolor{comment}{//\ Also\ see\ http://linux.die.net/man/2/clone.}}
+\DoxyCodeLine{00609\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_CLONE}}
+\DoxyCodeLine{00610\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us,\ so\ we\ need\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00611\ }
+\DoxyCodeLine{00612\ \textcolor{preprocessor}{\#\ if\ GTEST\_OS\_LINUX\ \&\&\ !defined(\_\_ia64\_\_)}}
+\DoxyCodeLine{00613\ \textcolor{preprocessor}{\#\ \ if\ GTEST\_OS\_LINUX\_ANDROID}}
+\DoxyCodeLine{00614\ \textcolor{comment}{//\ On\ Android,\ clone()\ is\ only\ available\ on\ ARM\ starting\ with\ Gingerbread.}}
+\DoxyCodeLine{00615\ \textcolor{preprocessor}{\#\ \ \ \ if\ defined(\_\_arm\_\_)\ \&\&\ \_\_ANDROID\_API\_\_\ >=\ 9}}
+\DoxyCodeLine{00616\ \textcolor{preprocessor}{\#\ \ \ \ \ define\ GTEST\_HAS\_CLONE\ 1}}
+\DoxyCodeLine{00617\ \textcolor{preprocessor}{\#\ \ \ \ else}}
+\DoxyCodeLine{00618\ \textcolor{preprocessor}{\#\ \ \ \ \ define\ GTEST\_HAS\_CLONE\ 0}}
+\DoxyCodeLine{00619\ \textcolor{preprocessor}{\#\ \ \ \ endif}}
+\DoxyCodeLine{00620\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{00621\ \textcolor{preprocessor}{\#\ \ \ define\ GTEST\_HAS\_CLONE\ 1}}
+\DoxyCodeLine{00622\ \textcolor{preprocessor}{\#\ \ endif}}
+\DoxyCodeLine{00623\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00624\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_CLONE\ 0}}
+\DoxyCodeLine{00625\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_LINUX\ \&\&\ !defined(\_\_ia64\_\_)}}
+\DoxyCodeLine{00626\ }
+\DoxyCodeLine{00627\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_CLONE}}
+\DoxyCodeLine{00628\ }
+\DoxyCodeLine{00629\ \textcolor{comment}{//\ Determines\ whether\ to\ support\ stream\ redirection.\ This\ is\ used\ to\ test}}
+\DoxyCodeLine{00630\ \textcolor{comment}{//\ output\ correctness\ and\ to\ implement\ death\ tests.}}
+\DoxyCodeLine{00631\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_STREAM\_REDIRECTION}}
+\DoxyCodeLine{00632\ \textcolor{comment}{//\ By\ default,\ we\ assume\ that\ stream\ redirection\ is\ supported\ on\ all}}
+\DoxyCodeLine{00633\ \textcolor{comment}{//\ platforms\ except\ known\ mobile\ ones.}}
+\DoxyCodeLine{00634\ \textcolor{preprocessor}{\#\ if\ GTEST\_OS\_WINDOWS\_MOBILE\ ||\ GTEST\_OS\_SYMBIAN}}
+\DoxyCodeLine{00635\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_STREAM\_REDIRECTION\ 0}}
+\DoxyCodeLine{00636\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00637\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_STREAM\_REDIRECTION\ 1}}
+\DoxyCodeLine{00638\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ !GTEST\_OS\_WINDOWS\_MOBILE\ \&\&\ !GTEST\_OS\_SYMBIAN}}
+\DoxyCodeLine{00639\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_STREAM\_REDIRECTION}}
+\DoxyCodeLine{00640\ }
+\DoxyCodeLine{00641\ \textcolor{comment}{//\ Determines\ whether\ to\ support\ death\ tests.}}
+\DoxyCodeLine{00642\ \textcolor{comment}{//\ Google\ Test\ does\ not\ support\ death\ tests\ for\ VC\ 7.1\ and\ earlier\ as}}
+\DoxyCodeLine{00643\ \textcolor{comment}{//\ abort()\ in\ a\ VC\ 7.1\ application\ compiled\ as\ GUI\ in\ debug\ config}}
+\DoxyCodeLine{00644\ \textcolor{comment}{//\ pops\ up\ a\ dialog\ window\ that\ cannot\ be\ suppressed\ programmatically.}}
+\DoxyCodeLine{00645\ \textcolor{preprocessor}{\#if\ (GTEST\_OS\_LINUX\ ||\ GTEST\_OS\_CYGWIN\ ||\ GTEST\_OS\_SOLARIS\ ||\ \(\backslash\)}}
+\DoxyCodeLine{00646\ \textcolor{preprocessor}{\ \ \ \ \ (GTEST\_OS\_MAC\ \&\&\ !GTEST\_OS\_IOS)\ ||\ GTEST\_OS\_IOS\_SIMULATOR\ ||\ \(\backslash\)}}
+\DoxyCodeLine{00647\ \textcolor{preprocessor}{\ \ \ \ \ (GTEST\_OS\_WINDOWS\_DESKTOP\ \&\&\ \_MSC\_VER\ >=\ 1400)\ ||\ \(\backslash\)}}
+\DoxyCodeLine{00648\ \textcolor{preprocessor}{\ \ \ \ \ GTEST\_OS\_WINDOWS\_MINGW\ ||\ GTEST\_OS\_AIX\ ||\ GTEST\_OS\_HPUX\ ||\ \(\backslash\)}}
+\DoxyCodeLine{00649\ \textcolor{preprocessor}{\ \ \ \ \ GTEST\_OS\_OPENBSD\ ||\ GTEST\_OS\_QNX)}}
+\DoxyCodeLine{00650\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_DEATH\_TEST\ 1}}
+\DoxyCodeLine{00651\ \textcolor{preprocessor}{\#\ include\ <vector>}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00652\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00653\ }
+\DoxyCodeLine{00654\ \textcolor{comment}{//\ We\ don't\ support\ MSVC\ 7.1\ with\ exceptions\ disabled\ now.\ \ Therefore}}
+\DoxyCodeLine{00655\ \textcolor{comment}{//\ all\ the\ compilers\ we\ care\ about\ are\ adequate\ for\ supporting}}
+\DoxyCodeLine{00656\ \textcolor{comment}{//\ value-\/parameterized\ tests.}}
+\DoxyCodeLine{00657\ \textcolor{preprocessor}{\#define\ GTEST\_HAS\_PARAM\_TEST\ 1}}
+\DoxyCodeLine{00658\ }
+\DoxyCodeLine{00659\ \textcolor{comment}{//\ Determines\ whether\ to\ support\ type-\/driven\ tests.}}
+\DoxyCodeLine{00660\ }
+\DoxyCodeLine{00661\ \textcolor{comment}{//\ Typed\ tests\ need\ <typeinfo>\ and\ variadic\ macros,\ which\ GCC,\ VC++\ 8.0,}}
+\DoxyCodeLine{00662\ \textcolor{comment}{//\ Sun\ Pro\ CC,\ IBM\ Visual\ Age,\ and\ HP\ aCC\ support.}}
+\DoxyCodeLine{00663\ \textcolor{preprocessor}{\#if\ defined(\_\_GNUC\_\_)\ ||\ (\_MSC\_VER\ >=\ 1400)\ ||\ defined(\_\_SUNPRO\_CC)\ ||\ \(\backslash\)}}
+\DoxyCodeLine{00664\ \textcolor{preprocessor}{\ \ \ \ defined(\_\_IBMCPP\_\_)\ ||\ defined(\_\_HP\_aCC)}}
+\DoxyCodeLine{00665\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_TYPED\_TEST\ 1}}
+\DoxyCodeLine{00666\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_TYPED\_TEST\_P\ 1}}
+\DoxyCodeLine{00667\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00668\ }
+\DoxyCodeLine{00669\ \textcolor{comment}{//\ Determines\ whether\ to\ support\ Combine().\ This\ only\ makes\ sense\ when}}
+\DoxyCodeLine{00670\ \textcolor{comment}{//\ value-\/parameterized\ tests\ are\ enabled.\ \ The\ implementation\ doesn't}}
+\DoxyCodeLine{00671\ \textcolor{comment}{//\ work\ on\ Sun\ Studio\ since\ it\ doesn't\ understand\ templated\ conversion}}
+\DoxyCodeLine{00672\ \textcolor{comment}{//\ operators.}}
+\DoxyCodeLine{00673\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_PARAM\_TEST\ \&\&\ GTEST\_HAS\_TR1\_TUPLE\ \&\&\ !defined(\_\_SUNPRO\_CC)}}
+\DoxyCodeLine{00674\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_COMBINE\ 1}}
+\DoxyCodeLine{00675\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00676\ }
+\DoxyCodeLine{00677\ \textcolor{comment}{//\ Determines\ whether\ the\ system\ compiler\ uses\ UTF-\/16\ for\ encoding\ wide\ strings.}}
+\DoxyCodeLine{00678\ \textcolor{preprocessor}{\#define\ GTEST\_WIDE\_STRING\_USES\_UTF16\_\ \(\backslash\)}}
+\DoxyCodeLine{00679\ \textcolor{preprocessor}{\ \ \ \ (GTEST\_OS\_WINDOWS\ ||\ GTEST\_OS\_CYGWIN\ ||\ GTEST\_OS\_SYMBIAN\ ||\ GTEST\_OS\_AIX)}}
+\DoxyCodeLine{00680\ }
+\DoxyCodeLine{00681\ \textcolor{comment}{//\ Determines\ whether\ test\ results\ can\ be\ streamed\ to\ a\ socket.}}
+\DoxyCodeLine{00682\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_LINUX}}
+\DoxyCodeLine{00683\ \textcolor{preprocessor}{\#\ define\ GTEST\_CAN\_STREAM\_RESULTS\_\ 1}}
+\DoxyCodeLine{00684\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00685\ }
+\DoxyCodeLine{00686\ \textcolor{comment}{//\ Defines\ some\ utility\ macros.}}
+\DoxyCodeLine{00687\ }
+\DoxyCodeLine{00688\ \textcolor{comment}{//\ The\ GNU\ compiler\ emits\ a\ warning\ if\ nested\ "{}if"{}\ statements\ are\ followed\ by}}
+\DoxyCodeLine{00689\ \textcolor{comment}{//\ an\ "{}else"{}\ statement\ and\ braces\ are\ not\ used\ to\ explicitly\ disambiguate\ the}}
+\DoxyCodeLine{00690\ \textcolor{comment}{//\ "{}else"{}\ binding.\ \ This\ leads\ to\ problems\ with\ code\ like:}}
+\DoxyCodeLine{00691\ \textcolor{comment}{//}}
+\DoxyCodeLine{00692\ \textcolor{comment}{//\ \ \ if\ (gate)}}
+\DoxyCodeLine{00693\ \textcolor{comment}{//\ \ \ \ \ ASSERT\_*(condition)\ <<\ "{}Some\ message"{};}}
+\DoxyCodeLine{00694\ \textcolor{comment}{//}}
+\DoxyCodeLine{00695\ \textcolor{comment}{//\ The\ "{}switch\ (0)\ case\ 0:"{}\ idiom\ is\ used\ to\ suppress\ this.}}
+\DoxyCodeLine{00696\ \textcolor{preprocessor}{\#ifdef\ \_\_INTEL\_COMPILER}}
+\DoxyCodeLine{00697\ \textcolor{preprocessor}{\#\ define\ GTEST\_AMBIGUOUS\_ELSE\_BLOCKER\_}}
+\DoxyCodeLine{00698\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00699\ \textcolor{preprocessor}{\#\ define\ GTEST\_AMBIGUOUS\_ELSE\_BLOCKER\_\ switch\ (0)\ case\ 0:\ default:\ \ }\textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00700\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00701\ }
+\DoxyCodeLine{00702\ \textcolor{comment}{//\ Use\ this\ annotation\ at\ the\ end\ of\ a\ struct/class\ definition\ to}}
+\DoxyCodeLine{00703\ \textcolor{comment}{//\ prevent\ the\ compiler\ from\ optimizing\ away\ instances\ that\ are\ never}}
+\DoxyCodeLine{00704\ \textcolor{comment}{//\ used.\ \ This\ is\ useful\ when\ all\ interesting\ logic\ happens\ inside\ the}}
+\DoxyCodeLine{00705\ \textcolor{comment}{//\ c'tor\ and\ /\ or\ d'tor.\ \ Example:}}
+\DoxyCodeLine{00706\ \textcolor{comment}{//}}
+\DoxyCodeLine{00707\ \textcolor{comment}{//\ \ \ struct\ Foo\ \{}}
+\DoxyCodeLine{00708\ \textcolor{comment}{//\ \ \ \ \ Foo()\ \{\ ...\ \}}}
+\DoxyCodeLine{00709\ \textcolor{comment}{//\ \ \ \}\ GTEST\_ATTRIBUTE\_UNUSED\_;}}
+\DoxyCodeLine{00710\ \textcolor{comment}{//}}
+\DoxyCodeLine{00711\ \textcolor{comment}{//\ Also\ use\ it\ after\ a\ variable\ or\ parameter\ declaration\ to\ tell\ the}}
+\DoxyCodeLine{00712\ \textcolor{comment}{//\ compiler\ the\ variable/parameter\ does\ not\ have\ to\ be\ used.}}
+\DoxyCodeLine{00713\ \textcolor{preprocessor}{\#if\ defined(\_\_GNUC\_\_)\ \&\&\ !defined(COMPILER\_ICC)}}
+\DoxyCodeLine{00714\ \textcolor{preprocessor}{\#\ define\ GTEST\_ATTRIBUTE\_UNUSED\_\ \_\_attribute\_\_\ ((unused))}}
+\DoxyCodeLine{00715\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00716\ \textcolor{preprocessor}{\#\ define\ GTEST\_ATTRIBUTE\_UNUSED\_}}
+\DoxyCodeLine{00717\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00718\ }
+\DoxyCodeLine{00719\ \textcolor{comment}{//\ A\ macro\ to\ disallow\ operator=}}
+\DoxyCodeLine{00720\ \textcolor{comment}{//\ This\ should\ be\ used\ in\ the\ private:\ declarations\ for\ a\ class.}}
+\DoxyCodeLine{00721\ \textcolor{preprocessor}{\#define\ GTEST\_DISALLOW\_ASSIGN\_(type)\(\backslash\)}}
+\DoxyCodeLine{00722\ \textcolor{preprocessor}{\ \ void\ operator=(type\ const\ \&)}}
+\DoxyCodeLine{00723\ }
+\DoxyCodeLine{00724\ \textcolor{comment}{//\ A\ macro\ to\ disallow\ copy\ constructor\ and\ operator=}}
+\DoxyCodeLine{00725\ \textcolor{comment}{//\ This\ should\ be\ used\ in\ the\ private:\ declarations\ for\ a\ class.}}
+\DoxyCodeLine{00726\ \textcolor{preprocessor}{\#define\ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(type)\(\backslash\)}}
+\DoxyCodeLine{00727\ \textcolor{preprocessor}{\ \ type(type\ const\ \&);\(\backslash\)}}
+\DoxyCodeLine{00728\ \textcolor{preprocessor}{\ \ GTEST\_DISALLOW\_ASSIGN\_(type)}}
+\DoxyCodeLine{00729\ }
+\DoxyCodeLine{00730\ \textcolor{comment}{//\ Tell\ the\ compiler\ to\ warn\ about\ unused\ return\ values\ for\ functions\ declared}}
+\DoxyCodeLine{00731\ \textcolor{comment}{//\ with\ this\ macro.\ \ The\ macro\ should\ be\ used\ on\ function\ declarations}}
+\DoxyCodeLine{00732\ \textcolor{comment}{//\ following\ the\ argument\ list:}}
+\DoxyCodeLine{00733\ \textcolor{comment}{//}}
+\DoxyCodeLine{00734\ \textcolor{comment}{//\ \ \ Sprocket*\ AllocateSprocket()\ GTEST\_MUST\_USE\_RESULT\_;}}
+\DoxyCodeLine{00735\ \textcolor{preprocessor}{\#if\ defined(\_\_GNUC\_\_)\ \&\&\ (GTEST\_GCC\_VER\_\ >=\ 30400)\ \&\&\ !defined(COMPILER\_ICC)}}
+\DoxyCodeLine{00736\ \textcolor{preprocessor}{\#\ define\ GTEST\_MUST\_USE\_RESULT\_\ \_\_attribute\_\_\ ((warn\_unused\_result))}}
+\DoxyCodeLine{00737\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00738\ \textcolor{preprocessor}{\#\ define\ GTEST\_MUST\_USE\_RESULT\_}}
+\DoxyCodeLine{00739\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ \_\_GNUC\_\_\ \&\&\ (GTEST\_GCC\_VER\_\ >=\ 30400)\ \&\&\ !COMPILER\_ICC}}
+\DoxyCodeLine{00740\ }
+\DoxyCodeLine{00741\ \textcolor{comment}{//\ Determine\ whether\ the\ compiler\ supports\ Microsoft's\ Structured\ Exception}}
+\DoxyCodeLine{00742\ \textcolor{comment}{//\ Handling.\ \ This\ is\ supported\ by\ several\ Windows\ compilers\ but\ generally}}
+\DoxyCodeLine{00743\ \textcolor{comment}{//\ does\ not\ exist\ on\ any\ other\ system.}}
+\DoxyCodeLine{00744\ \textcolor{preprocessor}{\#ifndef\ GTEST\_HAS\_SEH}}
+\DoxyCodeLine{00745\ \textcolor{comment}{//\ The\ user\ didn't\ tell\ us,\ so\ we\ need\ to\ figure\ it\ out.}}
+\DoxyCodeLine{00746\ }
+\DoxyCodeLine{00747\ \textcolor{preprocessor}{\#\ if\ defined(\_MSC\_VER)\ ||\ defined(\_\_BORLANDC\_\_)}}
+\DoxyCodeLine{00748\ \textcolor{comment}{//\ These\ two\ compilers\ are\ known\ to\ support\ SEH.}}
+\DoxyCodeLine{00749\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_SEH\ 1}}
+\DoxyCodeLine{00750\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{00751\ \textcolor{comment}{//\ Assume\ no\ SEH.}}
+\DoxyCodeLine{00752\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_HAS\_SEH\ 0}}
+\DoxyCodeLine{00753\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00754\ }
+\DoxyCodeLine{00755\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_SEH}}
+\DoxyCodeLine{00756\ }
+\DoxyCodeLine{00757\ \textcolor{preprocessor}{\#ifdef\ \_MSC\_VER}}
+\DoxyCodeLine{00758\ }
+\DoxyCodeLine{00759\ \textcolor{preprocessor}{\#\ if\ GTEST\_LINKED\_AS\_SHARED\_LIBRARY}}
+\DoxyCodeLine{00760\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_API\_\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00761\ \textcolor{preprocessor}{\#\ elif\ GTEST\_CREATE\_SHARED\_LIBRARY}}
+\DoxyCodeLine{00762\ \textcolor{preprocessor}{\#\ \ define\ GTEST\_API\_\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00763\ \textcolor{preprocessor}{\#\ endif}}
+\DoxyCodeLine{00764\ }
+\DoxyCodeLine{00765\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ \_MSC\_VER}}
+\DoxyCodeLine{00766\ }
+\DoxyCodeLine{00767\ \textcolor{preprocessor}{\#ifndef\ GTEST\_API\_}}
+\DoxyCodeLine{00768\ \textcolor{preprocessor}{\#\ define\ GTEST\_API\_}}
+\DoxyCodeLine{00769\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00770\ }
+\DoxyCodeLine{00771\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00772\ \textcolor{comment}{//\ Ask\ the\ compiler\ to\ never\ inline\ a\ given\ function.}}
+\DoxyCodeLine{00773\ \textcolor{preprocessor}{\#\ define\ GTEST\_NO\_INLINE\_\ \_\_attribute\_\_((noinline))}}
+\DoxyCodeLine{00774\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00775\ \textcolor{preprocessor}{\#\ define\ GTEST\_NO\_INLINE\_}}
+\DoxyCodeLine{00776\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00777\ }
+\DoxyCodeLine{00778\ \textcolor{comment}{//\ \_LIBCPP\_VERSION\ is\ defined\ by\ the\ libc++\ library\ from\ the\ LLVM\ project.}}
+\DoxyCodeLine{00779\ \textcolor{preprocessor}{\#if\ defined(\_\_GLIBCXX\_\_)\ ||\ defined(\_LIBCPP\_VERSION)}}
+\DoxyCodeLine{00780\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_CXXABI\_H\_\ 1}}
+\DoxyCodeLine{00781\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00782\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_CXXABI\_H\_\ 0}}
+\DoxyCodeLine{00783\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00784\ }
+\DoxyCodeLine{00785\ \textcolor{keyword}{namespace\ }testing\ \{}
+\DoxyCodeLine{00786\ }
+\DoxyCodeLine{00787\ \textcolor{keyword}{class\ }Message;}
+\DoxyCodeLine{00788\ }
+\DoxyCodeLine{00789\ \textcolor{keyword}{namespace\ }internal\ \{}
+\DoxyCodeLine{00790\ }
+\DoxyCodeLine{00791\ \textcolor{comment}{//\ A\ secret\ type\ that\ Google\ Test\ users\ don't\ know\ about.\ \ It\ has\ no}}
+\DoxyCodeLine{00792\ \textcolor{comment}{//\ definition\ on\ purpose.\ \ Therefore\ it's\ impossible\ to\ create\ a}}
+\DoxyCodeLine{00793\ \textcolor{comment}{//\ Secret\ object,\ which\ is\ what\ we\ want.}}
+\DoxyCodeLine{00794\ \textcolor{keyword}{class\ }Secret;}
+\DoxyCodeLine{00795\ }
+\DoxyCodeLine{00796\ \textcolor{comment}{//\ The\ GTEST\_COMPILE\_ASSERT\_\ macro\ can\ be\ used\ to\ verify\ that\ a\ compile\ time}}
+\DoxyCodeLine{00797\ \textcolor{comment}{//\ expression\ is\ true.\ For\ example,\ you\ could\ use\ it\ to\ verify\ the}}
+\DoxyCodeLine{00798\ \textcolor{comment}{//\ size\ of\ a\ static\ array:}}
+\DoxyCodeLine{00799\ \textcolor{comment}{//}}
+\DoxyCodeLine{00800\ \textcolor{comment}{//\ \ \ GTEST\_COMPILE\_ASSERT\_(ARRAYSIZE(content\_type\_names)\ ==\ CONTENT\_NUM\_TYPES,}}
+\DoxyCodeLine{00801\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ content\_type\_names\_incorrect\_size);}}
+\DoxyCodeLine{00802\ \textcolor{comment}{//}}
+\DoxyCodeLine{00803\ \textcolor{comment}{//\ or\ to\ make\ sure\ a\ struct\ is\ smaller\ than\ a\ certain\ size:}}
+\DoxyCodeLine{00804\ \textcolor{comment}{//}}
+\DoxyCodeLine{00805\ \textcolor{comment}{//\ \ \ GTEST\_COMPILE\_ASSERT\_(sizeof(foo)\ <\ 128,\ foo\_too\_large);}}
+\DoxyCodeLine{00806\ \textcolor{comment}{//}}
+\DoxyCodeLine{00807\ \textcolor{comment}{//\ The\ second\ argument\ to\ the\ macro\ is\ the\ name\ of\ the\ variable.\ If}}
+\DoxyCodeLine{00808\ \textcolor{comment}{//\ the\ expression\ is\ false,\ most\ compilers\ will\ issue\ a\ warning/error}}
+\DoxyCodeLine{00809\ \textcolor{comment}{//\ containing\ the\ name\ of\ the\ variable.}}
+\DoxyCodeLine{00810\ }
+\DoxyCodeLine{00811\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{bool}>}
+\DoxyCodeLine{00812\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_compile_assert}{CompileAssert}}\ \{}
+\DoxyCodeLine{00813\ \};}
+\DoxyCodeLine{00814\ }
+\DoxyCodeLine{00815\ \textcolor{preprocessor}{\#define\ GTEST\_COMPILE\_ASSERT\_(expr,\ msg)\ \(\backslash\)}}
+\DoxyCodeLine{00816\ \textcolor{preprocessor}{\ \ typedef\ ::testing::internal::CompileAssert<(static\_cast<bool>(expr))>\ \(\backslash\)}}
+\DoxyCodeLine{00817\ \textcolor{preprocessor}{\ \ \ \ \ \ msg[static\_cast<bool>(expr)\ ?\ 1\ :\ -\/1]\ GTEST\_ATTRIBUTE\_UNUSED\_}}
+\DoxyCodeLine{00818\ }
+\DoxyCodeLine{00819\ \textcolor{comment}{//\ Implementation\ details\ of\ GTEST\_COMPILE\_ASSERT\_:}}
+\DoxyCodeLine{00820\ \textcolor{comment}{//}}
+\DoxyCodeLine{00821\ \textcolor{comment}{//\ -\/\ GTEST\_COMPILE\_ASSERT\_\ works\ by\ defining\ an\ array\ type\ that\ has\ -\/1}}
+\DoxyCodeLine{00822\ \textcolor{comment}{//\ \ \ elements\ (and\ thus\ is\ invalid)\ when\ the\ expression\ is\ false.}}
+\DoxyCodeLine{00823\ \textcolor{comment}{//}}
+\DoxyCodeLine{00824\ \textcolor{comment}{//\ -\/\ The\ simpler\ definition}}
+\DoxyCodeLine{00825\ \textcolor{comment}{//}}
+\DoxyCodeLine{00826\ \textcolor{comment}{//\ \ \ \ \#define\ GTEST\_COMPILE\_ASSERT\_(expr,\ msg)\ typedef\ char\ msg[(expr)\ ?\ 1\ :\ -\/1]}}
+\DoxyCodeLine{00827\ \textcolor{comment}{//}}
+\DoxyCodeLine{00828\ \textcolor{comment}{//\ \ \ does\ not\ work,\ as\ gcc\ supports\ variable-\/length\ arrays\ whose\ sizes}}
+\DoxyCodeLine{00829\ \textcolor{comment}{//\ \ \ are\ determined\ at\ run-\/time\ (this\ is\ gcc's\ extension\ and\ not\ part}}
+\DoxyCodeLine{00830\ \textcolor{comment}{//\ \ \ of\ the\ C++\ standard).\ \ As\ a\ result,\ gcc\ fails\ to\ reject\ the}}
+\DoxyCodeLine{00831\ \textcolor{comment}{//\ \ \ following\ code\ with\ the\ simple\ definition:}}
+\DoxyCodeLine{00832\ \textcolor{comment}{//}}
+\DoxyCodeLine{00833\ \textcolor{comment}{//\ \ \ \ \ int\ foo;}}
+\DoxyCodeLine{00834\ \textcolor{comment}{//\ \ \ \ \ GTEST\_COMPILE\_ASSERT\_(foo,\ msg);\ //\ not\ supposed\ to\ compile\ as\ foo\ is}}
+\DoxyCodeLine{00835\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ not\ a\ compile-\/time\ constant.}}
+\DoxyCodeLine{00836\ \textcolor{comment}{//}}
+\DoxyCodeLine{00837\ \textcolor{comment}{//\ -\/\ By\ using\ the\ type\ CompileAssert<(bool(expr))>,\ we\ ensures\ that}}
+\DoxyCodeLine{00838\ \textcolor{comment}{//\ \ \ expr\ is\ a\ compile-\/time\ constant.\ \ (Template\ arguments\ must\ be}}
+\DoxyCodeLine{00839\ \textcolor{comment}{//\ \ \ determined\ at\ compile-\/time.)}}
+\DoxyCodeLine{00840\ \textcolor{comment}{//}}
+\DoxyCodeLine{00841\ \textcolor{comment}{//\ -\/\ The\ outter\ parentheses\ in\ CompileAssert<(bool(expr))>\ are\ necessary}}
+\DoxyCodeLine{00842\ \textcolor{comment}{//\ \ \ to\ work\ around\ a\ bug\ in\ gcc\ 3.4.4\ and\ 4.0.1.\ \ If\ we\ had\ written}}
+\DoxyCodeLine{00843\ \textcolor{comment}{//}}
+\DoxyCodeLine{00844\ \textcolor{comment}{//\ \ \ \ \ CompileAssert<bool(expr)>}}
+\DoxyCodeLine{00845\ \textcolor{comment}{//}}
+\DoxyCodeLine{00846\ \textcolor{comment}{//\ \ \ instead,\ these\ compilers\ will\ refuse\ to\ compile}}
+\DoxyCodeLine{00847\ \textcolor{comment}{//}}
+\DoxyCodeLine{00848\ \textcolor{comment}{//\ \ \ \ \ GTEST\_COMPILE\_ASSERT\_(5\ >\ 0,\ some\_message);}}
+\DoxyCodeLine{00849\ \textcolor{comment}{//}}
+\DoxyCodeLine{00850\ \textcolor{comment}{//\ \ \ (They\ seem\ to\ think\ the\ "{}>"{}\ in\ "{}5\ >\ 0"{}\ marks\ the\ end\ of\ the}}
+\DoxyCodeLine{00851\ \textcolor{comment}{//\ \ \ template\ argument\ list.)}}
+\DoxyCodeLine{00852\ \textcolor{comment}{//}}
+\DoxyCodeLine{00853\ \textcolor{comment}{//\ -\/\ The\ array\ size\ is\ (bool(expr)\ ?\ 1\ :\ -\/1),\ instead\ of\ simply}}
+\DoxyCodeLine{00854\ \textcolor{comment}{//}}
+\DoxyCodeLine{00855\ \textcolor{comment}{//\ \ \ \ \ ((expr)\ ?\ 1\ :\ -\/1).}}
+\DoxyCodeLine{00856\ \textcolor{comment}{//}}
+\DoxyCodeLine{00857\ \textcolor{comment}{//\ \ \ This\ is\ to\ avoid\ running\ into\ a\ bug\ in\ MS\ VC\ 7.1,\ which}}
+\DoxyCodeLine{00858\ \textcolor{comment}{//\ \ \ causes\ ((0.0)\ ?\ 1\ :\ -\/1)\ to\ incorrectly\ evaluate\ to\ 1.}}
+\DoxyCodeLine{00859\ }
+\DoxyCodeLine{00860\ \textcolor{comment}{//\ StaticAssertTypeEqHelper\ is\ used\ by\ StaticAssertTypeEq\ defined\ in\ gtest.h.}}
+\DoxyCodeLine{00861\ \textcolor{comment}{//}}
+\DoxyCodeLine{00862\ \textcolor{comment}{//\ This\ template\ is\ declared,\ but\ intentionally\ undefined.}}
+\DoxyCodeLine{00863\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T1,\ \textcolor{keyword}{typename}\ T2>}
+\DoxyCodeLine{00864\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_static_assert_type_eq_helper}{StaticAssertTypeEqHelper}};}
+\DoxyCodeLine{00865\ }
+\DoxyCodeLine{00866\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00867\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_static_assert_type_eq_helper}{StaticAssertTypeEqHelper}}<\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}},\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}>\ \{\};}
+\DoxyCodeLine{00868\ }
+\DoxyCodeLine{00869\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00870\ \textcolor{keyword}{typedef}\ ::string\ string;}
+\DoxyCodeLine{00871\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00872\ \textcolor{keyword}{typedef}\ ::std::string\ string;}
+\DoxyCodeLine{00873\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00874\ }
+\DoxyCodeLine{00875\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_GLOBAL\_WSTRING}}
+\DoxyCodeLine{00876\ \textcolor{keyword}{typedef}\ ::wstring\ wstring;}
+\DoxyCodeLine{00877\ \textcolor{preprocessor}{\#elif\ GTEST\_HAS\_STD\_WSTRING}}
+\DoxyCodeLine{00878\ \textcolor{keyword}{typedef}\ ::std::wstring\ wstring;}
+\DoxyCodeLine{00879\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_WSTRING}}
+\DoxyCodeLine{00880\ }
+\DoxyCodeLine{00881\ \textcolor{comment}{//\ A\ helper\ for\ suppressing\ warnings\ on\ constant\ condition.\ \ It\ just}}
+\DoxyCodeLine{00882\ \textcolor{comment}{//\ returns\ 'condition'.}}
+\DoxyCodeLine{00883\ GTEST\_API\_\ \textcolor{keywordtype}{bool}\ IsTrue(\textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{condition}});}
+\DoxyCodeLine{00884\ }
+\DoxyCodeLine{00885\ \textcolor{comment}{//\ Defines\ scoped\_ptr.}}
+\DoxyCodeLine{00886\ }
+\DoxyCodeLine{00887\ \textcolor{comment}{//\ This\ implementation\ of\ scoped\_ptr\ is\ PARTIAL\ -\/\ it\ only\ contains}}
+\DoxyCodeLine{00888\ \textcolor{comment}{//\ enough\ stuff\ to\ satisfy\ Google\ Test's\ need.}}
+\DoxyCodeLine{00889\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00890\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1scoped__ptr}{scoped\_ptr}}\ \{}
+\DoxyCodeLine{00891\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00892\ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{element\_type}};}
+\DoxyCodeLine{00893\ }
+\DoxyCodeLine{00894\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classtesting_1_1internal_1_1scoped__ptr}{scoped\_ptr}}(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{p}}\ =\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{NULL}})\ :\ ptr\_(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{p}})\ \{\}}
+\DoxyCodeLine{00895\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1scoped__ptr}{\string~scoped\_ptr}}()\ \{\ reset();\ \}}
+\DoxyCodeLine{00896\ }
+\DoxyCodeLine{00897\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\&\ operator*()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *ptr\_;\ \}}
+\DoxyCodeLine{00898\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ operator-\/>()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ptr\_;\ \}}
+\DoxyCodeLine{00899\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ get()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ptr\_;\ \}}
+\DoxyCodeLine{00900\ }
+\DoxyCodeLine{00901\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ release()\ \{}
+\DoxyCodeLine{00902\ \ \ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{ptr}}\ =\ ptr\_;}
+\DoxyCodeLine{00903\ \ \ \ \ ptr\_\ =\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{NULL}};}
+\DoxyCodeLine{00904\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{ptr}};}
+\DoxyCodeLine{00905\ \ \ \}}
+\DoxyCodeLine{00906\ }
+\DoxyCodeLine{00907\ \ \ \textcolor{keywordtype}{void}\ reset(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{p}}\ =\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{NULL}})\ \{}
+\DoxyCodeLine{00908\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{p}}\ !=\ ptr\_)\ \{}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (IsTrue(\textcolor{keyword}{sizeof}(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}})\ >\ 0))\ \{\ \ \textcolor{comment}{//\ Makes\ sure\ T\ is\ a\ complete\ type.}}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ ptr\_;}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ ptr\_\ =\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{p}};}
+\DoxyCodeLine{00913\ \ \ \ \ \}}
+\DoxyCodeLine{00914\ \ \ \}}
+\DoxyCodeLine{00915\ }
+\DoxyCodeLine{00916\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00917\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ ptr\_;}
+\DoxyCodeLine{00918\ }
+\DoxyCodeLine{00919\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(\mbox{\hyperlink{classtesting_1_1internal_1_1scoped__ptr}{scoped\_ptr}});}
+\DoxyCodeLine{00920\ \};}
+\DoxyCodeLine{00921\ }
+\DoxyCodeLine{00922\ \textcolor{comment}{//\ Defines\ RE.}}
+\DoxyCodeLine{00923\ }
+\DoxyCodeLine{00924\ \textcolor{comment}{//\ A\ simple\ C++\ wrapper\ for\ <regex.h>.\ \ It\ uses\ the\ POSIX\ Extended}}
+\DoxyCodeLine{00925\ \textcolor{comment}{//\ Regular\ Expression\ syntax.}}
+\DoxyCodeLine{00926\ \textcolor{keyword}{class\ }GTEST\_API\_\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\ \{}
+\DoxyCodeLine{00927\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00928\ \ \ \textcolor{comment}{//\ A\ copy\ constructor\ is\ required\ by\ the\ Standard\ to\ initialize\ object}}
+\DoxyCodeLine{00929\ \ \ \textcolor{comment}{//\ references\ from\ r-\/values.}}
+\DoxyCodeLine{00930\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{other}})\ \{\ Init(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{other}}.pattern());\ \}}
+\DoxyCodeLine{00931\ }
+\DoxyCodeLine{00932\ \ \ \textcolor{comment}{//\ Constructs\ an\ RE\ from\ a\ string.}}
+\DoxyCodeLine{00933\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}(const\ ::std::string\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}})\ \{\ Init(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}}.c\_str());\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00934\ }
+\DoxyCodeLine{00935\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00936\ }
+\DoxyCodeLine{00937\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}(const\ ::string\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}})\ \{\ Init(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}}.c\_str());\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00938\ }
+\DoxyCodeLine{00939\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00940\ }
+\DoxyCodeLine{00941\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}})\ \{\ Init(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}});\ \}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{00942\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{\string~RE}}();}
+\DoxyCodeLine{00943\ }
+\DoxyCodeLine{00944\ \ \ \textcolor{comment}{//\ Returns\ the\ string\ representation\ of\ the\ regex.}}
+\DoxyCodeLine{00945\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ pattern()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ pattern\_;\ \}}
+\DoxyCodeLine{00946\ }
+\DoxyCodeLine{00947\ \ \ \textcolor{comment}{//\ FullMatch(str,\ re)\ returns\ true\ iff\ regular\ expression\ re\ matches}}
+\DoxyCodeLine{00948\ \ \ \textcolor{comment}{//\ the\ entire\ str.}}
+\DoxyCodeLine{00949\ \ \ \textcolor{comment}{//\ PartialMatch(str,\ re)\ returns\ true\ iff\ regular\ expression\ re}}
+\DoxyCodeLine{00950\ \ \ \textcolor{comment}{//\ matches\ a\ substring\ of\ str\ (including\ str\ itself).}}
+\DoxyCodeLine{00951\ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00952\ \ \ \textcolor{comment}{//\ TODO(wan@google.com):\ make\ FullMatch()\ and\ PartialMatch()\ work}}
+\DoxyCodeLine{00953\ \ \ \textcolor{comment}{//\ when\ str\ contains\ NUL\ characters.}}
+\DoxyCodeLine{00954\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ FullMatch(const\ ::std::string\&\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}})\ \{}
+\DoxyCodeLine{00955\ \ \ \ \ \textcolor{keywordflow}{return}\ FullMatch(str.c\_str(),\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00956\ \ \ \}}
+\DoxyCodeLine{00957\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ PartialMatch(const\ ::std::string\&\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}})\ \{}
+\DoxyCodeLine{00958\ \ \ \ \ \textcolor{keywordflow}{return}\ PartialMatch(str.c\_str(),\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00959\ \ \ \}}
+\DoxyCodeLine{00960\ }
+\DoxyCodeLine{00961\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00962\ }
+\DoxyCodeLine{00963\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ FullMatch(const\ ::string\&\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}})\ \{}
+\DoxyCodeLine{00964\ \ \ \ \ \textcolor{keywordflow}{return}\ FullMatch(str.c\_str(),\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00965\ \ \ \}}
+\DoxyCodeLine{00966\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ PartialMatch(const\ ::string\&\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}})\ \{}
+\DoxyCodeLine{00967\ \ \ \ \ \textcolor{keywordflow}{return}\ PartialMatch(str.c\_str(),\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00968\ \ \ \}}
+\DoxyCodeLine{00969\ }
+\DoxyCodeLine{00970\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_GLOBAL\_STRING}}
+\DoxyCodeLine{00971\ }
+\DoxyCodeLine{00972\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ FullMatch(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00973\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ PartialMatch(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ str,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{re}});}
+\DoxyCodeLine{00974\ }
+\DoxyCodeLine{00975\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00976\ \ \ \textcolor{keywordtype}{void}\ Init(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex}});}
+\DoxyCodeLine{00977\ }
+\DoxyCodeLine{00978\ \ \ \textcolor{comment}{//\ We\ use\ a\ const\ char*\ instead\ of\ an\ std::string,\ as\ Google\ Test\ used\ to\ be}}
+\DoxyCodeLine{00979\ \ \ \textcolor{comment}{//\ used\ where\ std::string\ is\ not\ available.\ \ TODO(wan@google.com):\ change\ to}}
+\DoxyCodeLine{00980\ \ \ \textcolor{comment}{//\ std::string.}}
+\DoxyCodeLine{00981\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ pattern\_;}
+\DoxyCodeLine{00982\ \ \ \textcolor{keywordtype}{bool}\ is\_valid\_;}
+\DoxyCodeLine{00983\ }
+\DoxyCodeLine{00984\ \textcolor{preprocessor}{\#if\ GTEST\_USES\_POSIX\_RE}}
+\DoxyCodeLine{00985\ }
+\DoxyCodeLine{00986\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex\_t}}\ full\_regex\_;\ \ \ \ \ \textcolor{comment}{//\ For\ FullMatch().}}
+\DoxyCodeLine{00987\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{regex\_t}}\ partial\_regex\_;\ \ \textcolor{comment}{//\ For\ PartialMatch().}}
+\DoxyCodeLine{00988\ }
+\DoxyCodeLine{00989\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{//\ GTEST\_USES\_SIMPLE\_RE}}
+\DoxyCodeLine{00990\ }
+\DoxyCodeLine{00991\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{full\_pattern\_}};\ \ \textcolor{comment}{//\ For\ FullMatch();}}
+\DoxyCodeLine{00992\ }
+\DoxyCodeLine{00993\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00994\ }
+\DoxyCodeLine{00995\ \ \ GTEST\_DISALLOW\_ASSIGN\_(\mbox{\hyperlink{classtesting_1_1internal_1_1_r_e}{RE}});}
+\DoxyCodeLine{00996\ \};}
+\DoxyCodeLine{00997\ }
+\DoxyCodeLine{00998\ \textcolor{comment}{//\ Formats\ a\ source\ file\ path\ and\ a\ line\ number\ as\ they\ would\ appear}}
+\DoxyCodeLine{00999\ \textcolor{comment}{//\ in\ an\ error\ message\ from\ the\ compiler\ used\ to\ compile\ this\ code.}}
+\DoxyCodeLine{01000\ GTEST\_API\_\ ::std::string\ FormatFileLocation(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file,\ \textcolor{keywordtype}{int}\ line);}
+\DoxyCodeLine{01001\ }
+\DoxyCodeLine{01002\ \textcolor{comment}{//\ Formats\ a\ file\ location\ for\ compiler-\/independent\ XML\ output.}}
+\DoxyCodeLine{01003\ \textcolor{comment}{//\ Although\ this\ function\ is\ not\ platform\ dependent,\ we\ put\ it\ next\ to}}
+\DoxyCodeLine{01004\ \textcolor{comment}{//\ FormatFileLocation\ in\ order\ to\ contrast\ the\ two\ functions.}}
+\DoxyCodeLine{01005\ GTEST\_API\_\ ::std::string\ FormatCompilerIndependentFileLocation(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file,}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ line);}
+\DoxyCodeLine{01007\ }
+\DoxyCodeLine{01008\ \textcolor{comment}{//\ Defines\ logging\ utilities:}}
+\DoxyCodeLine{01009\ \textcolor{comment}{//\ \ \ GTEST\_LOG\_(severity)\ -\/\ logs\ messages\ at\ the\ specified\ severity\ level.\ The}}
+\DoxyCodeLine{01010\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ message\ itself\ is\ streamed\ into\ the\ macro.}}
+\DoxyCodeLine{01011\ \textcolor{comment}{//\ \ \ LogToStderr()\ \ -\/\ directs\ all\ log\ messages\ to\ stderr.}}
+\DoxyCodeLine{01012\ \textcolor{comment}{//\ \ \ FlushInfoLog()\ -\/\ flushes\ informational\ log\ messages.}}
+\DoxyCodeLine{01013\ }
+\DoxyCodeLine{01014\ \textcolor{keyword}{enum}\ GTestLogSeverity\ \{}
+\DoxyCodeLine{01015\ \ \ GTEST\_INFO,}
+\DoxyCodeLine{01016\ \ \ GTEST\_WARNING,}
+\DoxyCodeLine{01017\ \ \ GTEST\_ERROR,}
+\DoxyCodeLine{01018\ \ \ GTEST\_FATAL}
+\DoxyCodeLine{01019\ \};}
+\DoxyCodeLine{01020\ }
+\DoxyCodeLine{01021\ \textcolor{comment}{//\ Formats\ log\ entry\ severity,\ provides\ a\ stream\ object\ for\ streaming\ the}}
+\DoxyCodeLine{01022\ \textcolor{comment}{//\ log\ message,\ and\ terminates\ the\ message\ with\ a\ newline\ when\ going\ out\ of}}
+\DoxyCodeLine{01023\ \textcolor{comment}{//\ scope.}}
+\DoxyCodeLine{01024\ \textcolor{keyword}{class\ }GTEST\_API\_\ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_log}{GTestLog}}\ \{}
+\DoxyCodeLine{01025\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01026\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_log}{GTestLog}}(GTestLogSeverity\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{severity}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file,\ \textcolor{keywordtype}{int}\ line);}
+\DoxyCodeLine{01027\ }
+\DoxyCodeLine{01028\ \ \ \textcolor{comment}{//\ Flushes\ the\ buffers\ and,\ if\ severity\ is\ GTEST\_FATAL,\ aborts\ the\ program.}}
+\DoxyCodeLine{01029\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_log}{\string~GTestLog}}();}
+\DoxyCodeLine{01030\ }
+\DoxyCodeLine{01031\ \ \ ::std::ostream\&\ GetStream()\ \{\ return\ ::std::cerr;\ \}}
+\DoxyCodeLine{01032\ }
+\DoxyCodeLine{01033\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01034\ \ \ \textcolor{keyword}{const}\ GTestLogSeverity\ severity\_;}
+\DoxyCodeLine{01035\ }
+\DoxyCodeLine{01036\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(\mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_log}{GTestLog}});}
+\DoxyCodeLine{01037\ \};}
+\DoxyCodeLine{01038\ }
+\DoxyCodeLine{01039\ \textcolor{preprocessor}{\#define\ GTEST\_LOG\_(severity)\ \(\backslash\)}}
+\DoxyCodeLine{01040\ \textcolor{preprocessor}{\ \ \ \ ::testing::internal::GTestLog(::testing::internal::GTEST\_\#\#severity,\ \(\backslash\)}}
+\DoxyCodeLine{01041\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_\_FILE\_\_,\ \_\_LINE\_\_).GetStream()}}
+\DoxyCodeLine{01042\ }
+\DoxyCodeLine{01043\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ LogToStderr()\ \{\}}
+\DoxyCodeLine{01044\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ FlushInfoLog()\ \{\ fflush(NULL);\ \}}
+\DoxyCodeLine{01045\ }
+\DoxyCodeLine{01046\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE.}}
+\DoxyCodeLine{01047\ \textcolor{comment}{//}}
+\DoxyCodeLine{01048\ \textcolor{comment}{//\ GTEST\_CHECK\_\ is\ an\ all-\/mode\ assert.\ It\ aborts\ the\ program\ if\ the\ condition}}
+\DoxyCodeLine{01049\ \textcolor{comment}{//\ is\ not\ satisfied.}}
+\DoxyCodeLine{01050\ \textcolor{comment}{//\ \ Synopsys:}}
+\DoxyCodeLine{01051\ \textcolor{comment}{//\ \ \ \ GTEST\_CHECK\_(boolean\_condition);}}
+\DoxyCodeLine{01052\ \textcolor{comment}{//\ \ \ \ \ or}}
+\DoxyCodeLine{01053\ \textcolor{comment}{//\ \ \ \ GTEST\_CHECK\_(boolean\_condition)\ <<\ "{}Additional\ message"{};}}
+\DoxyCodeLine{01054\ \textcolor{comment}{//}}
+\DoxyCodeLine{01055\ \textcolor{comment}{//\ \ \ \ This\ checks\ the\ condition\ and\ if\ the\ condition\ is\ not\ satisfied}}
+\DoxyCodeLine{01056\ \textcolor{comment}{//\ \ \ \ it\ prints\ message\ about\ the\ condition\ violation,\ including\ the}}
+\DoxyCodeLine{01057\ \textcolor{comment}{//\ \ \ \ condition\ itself,\ plus\ additional\ message\ streamed\ into\ it,\ if\ any,}}
+\DoxyCodeLine{01058\ \textcolor{comment}{//\ \ \ \ and\ then\ it\ aborts\ the\ program.\ It\ aborts\ the\ program\ irrespective\ of}}
+\DoxyCodeLine{01059\ \textcolor{comment}{//\ \ \ \ whether\ it\ is\ built\ in\ the\ debug\ mode\ or\ not.}}
+\DoxyCodeLine{01060\ \textcolor{preprocessor}{\#define\ GTEST\_CHECK\_(condition)\ \(\backslash\)}}
+\DoxyCodeLine{01061\ \textcolor{preprocessor}{\ \ \ \ GTEST\_AMBIGUOUS\_ELSE\_BLOCKER\_\ \(\backslash\)}}
+\DoxyCodeLine{01062\ \textcolor{preprocessor}{\ \ \ \ if\ (::testing::internal::IsTrue(condition))\ \(\backslash\)}}
+\DoxyCodeLine{01063\ \textcolor{preprocessor}{\ \ \ \ \ \ ;\ \(\backslash\)}}
+\DoxyCodeLine{01064\ \textcolor{preprocessor}{\ \ \ \ else\ \(\backslash\)}}
+\DoxyCodeLine{01065\ \textcolor{preprocessor}{\ \ \ \ \ \ GTEST\_LOG\_(FATAL)\ <<\ "{}Condition\ "{}\ \#condition\ "{}\ failed.\ "{}}}
+\DoxyCodeLine{01066\ }
+\DoxyCodeLine{01067\ \textcolor{comment}{//\ An\ all-\/mode\ assert\ to\ verify\ that\ the\ given\ POSIX-\/style\ function}}
+\DoxyCodeLine{01068\ \textcolor{comment}{//\ call\ returns\ 0\ (indicating\ success).\ \ Known\ limitation:\ this}}
+\DoxyCodeLine{01069\ \textcolor{comment}{//\ doesn't\ expand\ to\ a\ balanced\ 'if'\ statement,\ so\ enclose\ the\ macro}}
+\DoxyCodeLine{01070\ \textcolor{comment}{//\ in\ \{\}\ if\ you\ need\ to\ use\ it\ as\ the\ only\ statement\ in\ an\ 'if'}}
+\DoxyCodeLine{01071\ \textcolor{comment}{//\ branch.}}
+\DoxyCodeLine{01072\ \textcolor{preprocessor}{\#define\ GTEST\_CHECK\_POSIX\_SUCCESS\_(posix\_call)\ \(\backslash\)}}
+\DoxyCodeLine{01073\ \textcolor{preprocessor}{\ \ if\ (const\ int\ gtest\_error\ =\ (posix\_call))\ \(\backslash\)}}
+\DoxyCodeLine{01074\ \textcolor{preprocessor}{\ \ \ \ GTEST\_LOG\_(FATAL)\ <<\ \#posix\_call\ <<\ "{}failed\ with\ error\ "{}\ \(\backslash\)}}
+\DoxyCodeLine{01075\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ gtest\_error}}
+\DoxyCodeLine{01076\ }
+\DoxyCodeLine{01077\ \textcolor{comment}{//\ INTERNAL\ IMPLEMENTATION\ -\/\ DO\ NOT\ USE\ IN\ USER\ CODE.}}
+\DoxyCodeLine{01078\ \textcolor{comment}{//}}
+\DoxyCodeLine{01079\ \textcolor{comment}{//\ Use\ ImplicitCast\_\ as\ a\ safe\ version\ of\ static\_cast\ for\ upcasting\ in}}
+\DoxyCodeLine{01080\ \textcolor{comment}{//\ the\ type\ hierarchy\ (e.g.\ casting\ a\ Foo*\ to\ a\ SuperclassOfFoo*\ or\ a}}
+\DoxyCodeLine{01081\ \textcolor{comment}{//\ const\ Foo*).\ \ When\ you\ use\ ImplicitCast\_,\ the\ compiler\ checks\ that}}
+\DoxyCodeLine{01082\ \textcolor{comment}{//\ the\ cast\ is\ safe.\ \ Such\ explicit\ ImplicitCast\_s\ are\ necessary\ in}}
+\DoxyCodeLine{01083\ \textcolor{comment}{//\ surprisingly\ many\ situations\ where\ C++\ demands\ an\ exact\ type\ match}}
+\DoxyCodeLine{01084\ \textcolor{comment}{//\ instead\ of\ an\ argument\ type\ convertable\ to\ a\ target\ type.}}
+\DoxyCodeLine{01085\ \textcolor{comment}{//}}
+\DoxyCodeLine{01086\ \textcolor{comment}{//\ The\ syntax\ for\ using\ ImplicitCast\_\ is\ the\ same\ as\ for\ static\_cast:}}
+\DoxyCodeLine{01087\ \textcolor{comment}{//}}
+\DoxyCodeLine{01088\ \textcolor{comment}{//\ \ \ ImplicitCast\_<ToType>(expr)}}
+\DoxyCodeLine{01089\ \textcolor{comment}{//}}
+\DoxyCodeLine{01090\ \textcolor{comment}{//\ ImplicitCast\_\ would\ have\ been\ part\ of\ the\ C++\ standard\ library,}}
+\DoxyCodeLine{01091\ \textcolor{comment}{//\ but\ the\ proposal\ was\ submitted\ too\ late.\ \ It\ will\ probably\ make}}
+\DoxyCodeLine{01092\ \textcolor{comment}{//\ its\ way\ into\ the\ language\ in\ the\ future.}}
+\DoxyCodeLine{01093\ \textcolor{comment}{//}}
+\DoxyCodeLine{01094\ \textcolor{comment}{//\ This\ relatively\ ugly\ name\ is\ intentional.\ It\ prevents\ clashes\ with}}
+\DoxyCodeLine{01095\ \textcolor{comment}{//\ similar\ functions\ users\ may\ have\ (e.g.,\ implicit\_cast).\ The\ internal}}
+\DoxyCodeLine{01096\ \textcolor{comment}{//\ namespace\ alone\ is\ not\ enough\ because\ the\ function\ can\ be\ found\ by\ ADL.}}
+\DoxyCodeLine{01097\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ To>}
+\DoxyCodeLine{01098\ \textcolor{keyword}{inline}\ To\ ImplicitCast\_(To\ x)\ \{\ \textcolor{keywordflow}{return}\ x;\ \}}
+\DoxyCodeLine{01099\ }
+\DoxyCodeLine{01100\ \textcolor{comment}{//\ When\ you\ upcast\ (that\ is,\ cast\ a\ pointer\ from\ type\ Foo\ to\ type}}
+\DoxyCodeLine{01101\ \textcolor{comment}{//\ SuperclassOfFoo),\ it's\ fine\ to\ use\ ImplicitCast\_<>,\ since\ upcasts}}
+\DoxyCodeLine{01102\ \textcolor{comment}{//\ always\ succeed.\ \ When\ you\ downcast\ (that\ is,\ cast\ a\ pointer\ from}}
+\DoxyCodeLine{01103\ \textcolor{comment}{//\ type\ Foo\ to\ type\ SubclassOfFoo),\ static\_cast<>\ isn't\ safe,\ because}}
+\DoxyCodeLine{01104\ \textcolor{comment}{//\ how\ do\ you\ know\ the\ pointer\ is\ really\ of\ type\ SubclassOfFoo?\ \ It}}
+\DoxyCodeLine{01105\ \textcolor{comment}{//\ could\ be\ a\ bare\ Foo,\ or\ of\ type\ DifferentSubclassOfFoo.\ \ Thus,}}
+\DoxyCodeLine{01106\ \textcolor{comment}{//\ when\ you\ downcast,\ you\ should\ use\ this\ macro.\ \ In\ debug\ mode,\ we}}
+\DoxyCodeLine{01107\ \textcolor{comment}{//\ use\ dynamic\_cast<>\ to\ double-\/check\ the\ downcast\ is\ legal\ (we\ die}}
+\DoxyCodeLine{01108\ \textcolor{comment}{//\ if\ it's\ not).\ \ In\ normal\ mode,\ we\ do\ the\ efficient\ static\_cast<>}}
+\DoxyCodeLine{01109\ \textcolor{comment}{//\ instead.\ \ Thus,\ it's\ important\ to\ test\ in\ debug\ mode\ to\ make\ sure}}
+\DoxyCodeLine{01110\ \textcolor{comment}{//\ the\ cast\ is\ legal!}}
+\DoxyCodeLine{01111\ \textcolor{comment}{//\ \ \ \ This\ is\ the\ only\ place\ in\ the\ code\ we\ should\ use\ dynamic\_cast<>.}}
+\DoxyCodeLine{01112\ \textcolor{comment}{//\ In\ particular,\ you\ SHOULDN'T\ be\ using\ dynamic\_cast<>\ in\ order\ to}}
+\DoxyCodeLine{01113\ \textcolor{comment}{//\ do\ RTTI\ (eg\ code\ like\ this:}}
+\DoxyCodeLine{01114\ \textcolor{comment}{//\ \ \ \ if\ (dynamic\_cast<Subclass1>(foo))\ HandleASubclass1Object(foo);}}
+\DoxyCodeLine{01115\ \textcolor{comment}{//\ \ \ \ if\ (dynamic\_cast<Subclass2>(foo))\ HandleASubclass2Object(foo);}}
+\DoxyCodeLine{01116\ \textcolor{comment}{//\ You\ should\ design\ the\ code\ some\ other\ way\ not\ to\ need\ this.}}
+\DoxyCodeLine{01117\ \textcolor{comment}{//}}
+\DoxyCodeLine{01118\ \textcolor{comment}{//\ This\ relatively\ ugly\ name\ is\ intentional.\ It\ prevents\ clashes\ with}}
+\DoxyCodeLine{01119\ \textcolor{comment}{//\ similar\ functions\ users\ may\ have\ (e.g.,\ down\_cast).\ The\ internal}}
+\DoxyCodeLine{01120\ \textcolor{comment}{//\ namespace\ alone\ is\ not\ enough\ because\ the\ function\ can\ be\ found\ by\ ADL.}}
+\DoxyCodeLine{01121\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ To,\ \textcolor{keyword}{typename}\ From>\ \ \textcolor{comment}{//\ use\ like\ this:\ DownCast\_<T*>(foo);}}
+\DoxyCodeLine{01122\ \textcolor{keyword}{inline}\ To\ DownCast\_(From*\ f)\ \{\ \ \textcolor{comment}{//\ so\ we\ only\ accept\ pointers}}
+\DoxyCodeLine{01123\ \ \ \textcolor{comment}{//\ Ensures\ that\ To\ is\ a\ sub-\/type\ of\ From\ *.\ \ This\ test\ is\ here\ only}}
+\DoxyCodeLine{01124\ \ \ \textcolor{comment}{//\ for\ compile-\/time\ type\ checking,\ and\ has\ no\ overhead\ in\ an}}
+\DoxyCodeLine{01125\ \ \ \textcolor{comment}{//\ optimized\ build\ at\ run-\/time,\ as\ it\ will\ be\ optimized\ away}}
+\DoxyCodeLine{01126\ \ \ \textcolor{comment}{//\ completely.}}
+\DoxyCodeLine{01127\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{false})\ \{}
+\DoxyCodeLine{01128\ \ \ \ \ \textcolor{keyword}{const}\ To\ to\ =\ NULL;}
+\DoxyCodeLine{01129\ \ \ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{::testing::internal::ImplicitCast\_<From*>}}(to);}
+\DoxyCodeLine{01130\ \ \ \}}
+\DoxyCodeLine{01131\ }
+\DoxyCodeLine{01132\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_RTTI}}
+\DoxyCodeLine{01133\ \ \ \textcolor{comment}{//\ RTTI:\ debug\ mode\ only!}}
+\DoxyCodeLine{01134\ \ \ GTEST\_CHECK\_(f\ ==\ NULL\ ||\ \textcolor{keyword}{dynamic\_cast<}To\textcolor{keyword}{>}(f)\ !=\ NULL);}
+\DoxyCodeLine{01135\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01136\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}To\textcolor{keyword}{>}(f);}
+\DoxyCodeLine{01137\ \}}
+\DoxyCodeLine{01138\ }
+\DoxyCodeLine{01139\ \textcolor{comment}{//\ Downcasts\ the\ pointer\ of\ type\ Base\ to\ Derived.}}
+\DoxyCodeLine{01140\ \textcolor{comment}{//\ Derived\ must\ be\ a\ subclass\ of\ Base.\ The\ parameter\ MUST}}
+\DoxyCodeLine{01141\ \textcolor{comment}{//\ point\ to\ a\ class\ of\ type\ Derived,\ not\ any\ subclass\ of\ it.}}
+\DoxyCodeLine{01142\ \textcolor{comment}{//\ When\ RTTI\ is\ available,\ the\ function\ performs\ a\ runtime}}
+\DoxyCodeLine{01143\ \textcolor{comment}{//\ check\ to\ enforce\ this.}}
+\DoxyCodeLine{01144\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Derived,\ \textcolor{keyword}{class}\ Base>}
+\DoxyCodeLine{01145\ Derived*\ CheckedDowncastToActualType(Base*\ base)\ \{}
+\DoxyCodeLine{01146\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_RTTI}}
+\DoxyCodeLine{01147\ \ \ GTEST\_CHECK\_(\textcolor{keyword}{typeid}(*base)\ ==\ \textcolor{keyword}{typeid}(Derived));}
+\DoxyCodeLine{01148\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{dynamic\_cast<}Derived*\textcolor{keyword}{>}(base);\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{01149\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01150\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}Derived*\textcolor{keyword}{>}(base);\ \ \textcolor{comment}{//\ Poor\ man's\ downcast.}}
+\DoxyCodeLine{01151\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01152\ \}}
+\DoxyCodeLine{01153\ }
+\DoxyCodeLine{01154\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_STREAM\_REDIRECTION}}
+\DoxyCodeLine{01155\ }
+\DoxyCodeLine{01156\ \textcolor{comment}{//\ Defines\ the\ stderr\ capturer:}}
+\DoxyCodeLine{01157\ \textcolor{comment}{//\ \ \ CaptureStdout\ \ \ \ \ -\/\ starts\ capturing\ stdout.}}
+\DoxyCodeLine{01158\ \textcolor{comment}{//\ \ \ GetCapturedStdout\ -\/\ stops\ capturing\ stdout\ and\ returns\ the\ captured\ string.}}
+\DoxyCodeLine{01159\ \textcolor{comment}{//\ \ \ CaptureStderr\ \ \ \ \ -\/\ starts\ capturing\ stderr.}}
+\DoxyCodeLine{01160\ \textcolor{comment}{//\ \ \ GetCapturedStderr\ -\/\ stops\ capturing\ stderr\ and\ returns\ the\ captured\ string.}}
+\DoxyCodeLine{01161\ \textcolor{comment}{//}}
+\DoxyCodeLine{01162\ GTEST\_API\_\ \textcolor{keywordtype}{void}\ CaptureStdout();}
+\DoxyCodeLine{01163\ GTEST\_API\_\ std::string\ GetCapturedStdout();}
+\DoxyCodeLine{01164\ GTEST\_API\_\ \textcolor{keywordtype}{void}\ CaptureStderr();}
+\DoxyCodeLine{01165\ GTEST\_API\_\ std::string\ GetCapturedStderr();}
+\DoxyCodeLine{01166\ }
+\DoxyCodeLine{01167\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_STREAM\_REDIRECTION}}
+\DoxyCodeLine{01168\ }
+\DoxyCodeLine{01169\ }
+\DoxyCodeLine{01170\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_DEATH\_TEST}}
+\DoxyCodeLine{01171\ }
+\DoxyCodeLine{01172\ const\ ::std::vector<testing::internal::string>\&\ GetInjectableArgvs();}
+\DoxyCodeLine{01173\ \textcolor{keywordtype}{void}\ SetInjectableArgvs(const\ ::std::vector<testing::internal::string>*}
+\DoxyCodeLine{01174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ new\_argvs);}
+\DoxyCodeLine{01175\ }
+\DoxyCodeLine{01176\ \textcolor{comment}{//\ A\ copy\ of\ all\ command\ line\ arguments.\ \ Set\ by\ InitGoogleTest().}}
+\DoxyCodeLine{01177\ extern\ ::std::vector<testing::internal::string>\ g\_argvs;}
+\DoxyCodeLine{01178\ }
+\DoxyCodeLine{01179\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_DEATH\_TEST}}
+\DoxyCodeLine{01180\ }
+\DoxyCodeLine{01181\ \textcolor{comment}{//\ Defines\ synchronization\ primitives.}}
+\DoxyCodeLine{01182\ }
+\DoxyCodeLine{01183\ \textcolor{preprocessor}{\#if\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{01184\ }
+\DoxyCodeLine{01185\ \textcolor{comment}{//\ Sleeps\ for\ (roughly)\ n\ milli-\/seconds.\ \ This\ function\ is\ only\ for}}
+\DoxyCodeLine{01186\ \textcolor{comment}{//\ testing\ Google\ Test's\ own\ constructs.\ \ Don't\ use\ it\ in\ user\ tests,}}
+\DoxyCodeLine{01187\ \textcolor{comment}{//\ either\ directly\ or\ indirectly.}}
+\DoxyCodeLine{01188\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ SleepMilliseconds(\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{01189\ \ \ \textcolor{keyword}{const}\ timespec\ time\ =\ \{}
+\DoxyCodeLine{01190\ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ seconds.}}
+\DoxyCodeLine{01191\ \ \ \ \ n\ *\ 1000L\ *\ 1000L,\ \ \textcolor{comment}{//\ And\ n\ ms.}}
+\DoxyCodeLine{01192\ \ \ \};}
+\DoxyCodeLine{01193\ \ \ nanosleep(\&time,\ NULL);}
+\DoxyCodeLine{01194\ \}}
+\DoxyCodeLine{01195\ }
+\DoxyCodeLine{01196\ \textcolor{comment}{//\ Allows\ a\ controller\ thread\ to\ pause\ execution\ of\ newly\ created}}
+\DoxyCodeLine{01197\ \textcolor{comment}{//\ threads\ until\ notified.\ \ Instances\ of\ this\ class\ must\ be\ created}}
+\DoxyCodeLine{01198\ \textcolor{comment}{//\ and\ destroyed\ in\ the\ controller\ thread.}}
+\DoxyCodeLine{01199\ \textcolor{comment}{//}}
+\DoxyCodeLine{01200\ \textcolor{comment}{//\ This\ class\ is\ only\ for\ testing\ Google\ Test's\ own\ constructs.\ Do\ not}}
+\DoxyCodeLine{01201\ \textcolor{comment}{//\ use\ it\ in\ user\ tests,\ either\ directly\ or\ indirectly.}}
+\DoxyCodeLine{01202\ \textcolor{keyword}{class\ }Notification\ \{}
+\DoxyCodeLine{01203\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01204\ \ \ Notification()\ :\ notified\_(false)\ \{}
+\DoxyCodeLine{01205\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_mutex\_init(\&mutex\_,\ NULL));}
+\DoxyCodeLine{01206\ \ \ \}}
+\DoxyCodeLine{01207\ \ \ \string~Notification()\ \{}
+\DoxyCodeLine{01208\ \ \ \ \ pthread\_mutex\_destroy(\&mutex\_);}
+\DoxyCodeLine{01209\ \ \ \}}
+\DoxyCodeLine{01210\ }
+\DoxyCodeLine{01211\ \ \ \textcolor{comment}{//\ Notifies\ all\ threads\ created\ with\ this\ notification\ to\ start.\ Must}}
+\DoxyCodeLine{01212\ \ \ \textcolor{comment}{//\ be\ called\ from\ the\ controller\ thread.}}
+\DoxyCodeLine{01213\ \ \ \textcolor{keywordtype}{void}\ Notify()\ \{}
+\DoxyCodeLine{01214\ \ \ \ \ pthread\_mutex\_lock(\&mutex\_);}
+\DoxyCodeLine{01215\ \ \ \ \ notified\_\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01216\ \ \ \ \ pthread\_mutex\_unlock(\&mutex\_);}
+\DoxyCodeLine{01217\ \ \ \}}
+\DoxyCodeLine{01218\ }
+\DoxyCodeLine{01219\ \ \ \textcolor{comment}{//\ Blocks\ until\ the\ controller\ thread\ notifies.\ Must\ be\ called\ from\ a\ test}}
+\DoxyCodeLine{01220\ \ \ \textcolor{comment}{//\ thread.}}
+\DoxyCodeLine{01221\ \ \ \textcolor{keywordtype}{void}\ WaitForNotification()\ \{}
+\DoxyCodeLine{01222\ \ \ \ \ \textcolor{keywordflow}{for}\ (;;)\ \{}
+\DoxyCodeLine{01223\ \ \ \ \ \ \ pthread\_mutex\_lock(\&mutex\_);}
+\DoxyCodeLine{01224\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ notified\ =\ notified\_;}
+\DoxyCodeLine{01225\ \ \ \ \ \ \ pthread\_mutex\_unlock(\&mutex\_);}
+\DoxyCodeLine{01226\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (notified)}
+\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{01228\ \ \ \ \ \ \ SleepMilliseconds(10);}
+\DoxyCodeLine{01229\ \ \ \ \ \}}
+\DoxyCodeLine{01230\ \ \ \}}
+\DoxyCodeLine{01231\ }
+\DoxyCodeLine{01232\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01233\ \ \ pthread\_mutex\_t\ mutex\_;}
+\DoxyCodeLine{01234\ \ \ \textcolor{keywordtype}{bool}\ notified\_;}
+\DoxyCodeLine{01235\ }
+\DoxyCodeLine{01236\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(Notification);}
+\DoxyCodeLine{01237\ \};}
+\DoxyCodeLine{01238\ }
+\DoxyCodeLine{01239\ \textcolor{comment}{//\ As\ a\ C-\/function,\ ThreadFuncWithCLinkage\ cannot\ be\ templated\ itself.}}
+\DoxyCodeLine{01240\ \textcolor{comment}{//\ Consequently,\ it\ cannot\ select\ a\ correct\ instantiation\ of\ ThreadWithParam}}
+\DoxyCodeLine{01241\ \textcolor{comment}{//\ in\ order\ to\ call\ its\ Run().\ Introducing\ ThreadWithParamBase\ as\ a}}
+\DoxyCodeLine{01242\ \textcolor{comment}{//\ non-\/templated\ base\ class\ for\ ThreadWithParam\ allows\ us\ to\ bypass\ this}}
+\DoxyCodeLine{01243\ \textcolor{comment}{//\ problem.}}
+\DoxyCodeLine{01244\ \textcolor{keyword}{class\ }ThreadWithParamBase\ \{}
+\DoxyCodeLine{01245\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01246\ \ \ \textcolor{keyword}{virtual}\ \string~ThreadWithParamBase()\ \{\}}
+\DoxyCodeLine{01247\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ Run()\ =\ 0;}
+\DoxyCodeLine{01248\ \};}
+\DoxyCodeLine{01249\ }
+\DoxyCodeLine{01250\ \textcolor{comment}{//\ pthread\_create()\ accepts\ a\ pointer\ to\ a\ function\ type\ with\ the\ C\ linkage.}}
+\DoxyCodeLine{01251\ \textcolor{comment}{//\ According\ to\ the\ Standard\ (7.5/1),\ function\ types\ with\ different\ linkages}}
+\DoxyCodeLine{01252\ \textcolor{comment}{//\ are\ different\ even\ if\ they\ are\ otherwise\ identical.\ \ Some\ compilers\ (for}}
+\DoxyCodeLine{01253\ \textcolor{comment}{//\ example,\ SunStudio)\ treat\ them\ as\ different\ types.\ \ Since\ class\ methods}}
+\DoxyCodeLine{01254\ \textcolor{comment}{//\ cannot\ be\ defined\ with\ C-\/linkage\ we\ need\ to\ define\ a\ free\ C-\/function\ to}}
+\DoxyCodeLine{01255\ \textcolor{comment}{//\ pass\ into\ pthread\_create().}}
+\DoxyCodeLine{01256\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}*\ ThreadFuncWithCLinkage(\textcolor{keywordtype}{void}*\ thread)\ \{}
+\DoxyCodeLine{01257\ \ \ \textcolor{keyword}{static\_cast<}ThreadWithParamBase*\textcolor{keyword}{>}(thread)-\/>Run();}
+\DoxyCodeLine{01258\ \ \ \textcolor{keywordflow}{return}\ NULL;}
+\DoxyCodeLine{01259\ \}}
+\DoxyCodeLine{01260\ }
+\DoxyCodeLine{01261\ \textcolor{comment}{//\ Helper\ class\ for\ testing\ Google\ Test's\ multi-\/threading\ constructs.}}
+\DoxyCodeLine{01262\ \textcolor{comment}{//\ To\ use\ it,\ write:}}
+\DoxyCodeLine{01263\ \textcolor{comment}{//}}
+\DoxyCodeLine{01264\ \textcolor{comment}{//\ \ \ void\ ThreadFunc(int\ param)\ \{\ /*\ Do\ things\ with\ param\ */\ \}}}
+\DoxyCodeLine{01265\ \textcolor{comment}{//\ \ \ Notification\ thread\_can\_start;}}
+\DoxyCodeLine{01266\ \textcolor{comment}{//\ \ \ ...}}
+\DoxyCodeLine{01267\ \textcolor{comment}{//\ \ \ //\ The\ thread\_can\_start\ parameter\ is\ optional;\ you\ can\ supply\ NULL.}}
+\DoxyCodeLine{01268\ \textcolor{comment}{//\ \ \ ThreadWithParam<int>\ thread(\&ThreadFunc,\ 5,\ \&thread\_can\_start);}}
+\DoxyCodeLine{01269\ \textcolor{comment}{//\ \ \ thread\_can\_start.Notify();}}
+\DoxyCodeLine{01270\ \textcolor{comment}{//}}
+\DoxyCodeLine{01271\ \textcolor{comment}{//\ These\ classes\ are\ only\ for\ testing\ Google\ Test's\ own\ constructs.\ Do}}
+\DoxyCodeLine{01272\ \textcolor{comment}{//\ not\ use\ them\ in\ user\ tests,\ either\ directly\ or\ indirectly.}}
+\DoxyCodeLine{01273\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01274\ \textcolor{keyword}{class\ }ThreadWithParam\ :\ \textcolor{keyword}{public}\ ThreadWithParamBase\ \{}
+\DoxyCodeLine{01275\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01276\ \ \ \textcolor{keyword}{typedef}\ void\ (*UserThreadFunc)(T);}
+\DoxyCodeLine{01277\ }
+\DoxyCodeLine{01278\ \ \ ThreadWithParam(}
+\DoxyCodeLine{01279\ \ \ \ \ \ \ UserThreadFunc\ func,\ T\ param,\ Notification*\ thread\_can\_start)}
+\DoxyCodeLine{01280\ \ \ \ \ \ \ :\ func\_(func),}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ param\_(param),}
+\DoxyCodeLine{01282\ \ \ \ \ \ \ \ \ thread\_can\_start\_(thread\_can\_start),}
+\DoxyCodeLine{01283\ \ \ \ \ \ \ \ \ finished\_(false)\ \{}
+\DoxyCodeLine{01284\ \ \ \ \ ThreadWithParamBase*\ \textcolor{keyword}{const}\ base\ =\ \textcolor{keyword}{this};}
+\DoxyCodeLine{01285\ \ \ \ \ \textcolor{comment}{//\ The\ thread\ can\ be\ created\ only\ after\ all\ fields\ except\ thread\_}}
+\DoxyCodeLine{01286\ \ \ \ \ \textcolor{comment}{//\ have\ been\ initialized.}}
+\DoxyCodeLine{01287\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(}
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ pthread\_create(\&thread\_,\ 0,\ \&ThreadFuncWithCLinkage,\ base));}
+\DoxyCodeLine{01289\ \ \ \}}
+\DoxyCodeLine{01290\ \ \ \string~ThreadWithParam()\ \{\ Join();\ \}}
+\DoxyCodeLine{01291\ }
+\DoxyCodeLine{01292\ \ \ \textcolor{keywordtype}{void}\ Join()\ \{}
+\DoxyCodeLine{01293\ \ \ \ \ \textcolor{keywordflow}{if}\ (!finished\_)\ \{}
+\DoxyCodeLine{01294\ \ \ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_join(thread\_,\ 0));}
+\DoxyCodeLine{01295\ \ \ \ \ \ \ finished\_\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01296\ \ \ \ \ \}}
+\DoxyCodeLine{01297\ \ \ \}}
+\DoxyCodeLine{01298\ }
+\DoxyCodeLine{01299\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ Run()\ \{}
+\DoxyCodeLine{01300\ \ \ \ \ \textcolor{keywordflow}{if}\ (thread\_can\_start\_\ !=\ NULL)}
+\DoxyCodeLine{01301\ \ \ \ \ \ \ thread\_can\_start\_-\/>WaitForNotification();}
+\DoxyCodeLine{01302\ \ \ \ \ func\_(param\_);}
+\DoxyCodeLine{01303\ \ \ \}}
+\DoxyCodeLine{01304\ }
+\DoxyCodeLine{01305\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01306\ \ \ \textcolor{keyword}{const}\ UserThreadFunc\ func\_;\ \ \textcolor{comment}{//\ User-\/supplied\ thread\ function.}}
+\DoxyCodeLine{01307\ \ \ \textcolor{keyword}{const}\ T\ param\_;\ \ \textcolor{comment}{//\ User-\/supplied\ parameter\ to\ the\ thread\ function.}}
+\DoxyCodeLine{01308\ \ \ \textcolor{comment}{//\ When\ non-\/NULL,\ used\ to\ block\ execution\ until\ the\ controller\ thread}}
+\DoxyCodeLine{01309\ \ \ \textcolor{comment}{//\ notifies.}}
+\DoxyCodeLine{01310\ \ \ Notification*\ \textcolor{keyword}{const}\ thread\_can\_start\_;}
+\DoxyCodeLine{01311\ \ \ \textcolor{keywordtype}{bool}\ finished\_;\ \ \textcolor{comment}{//\ true\ iff\ we\ know\ that\ the\ thread\ function\ has\ finished.}}
+\DoxyCodeLine{01312\ \ \ pthread\_t\ thread\_;\ \ \textcolor{comment}{//\ The\ native\ thread\ object.}}
+\DoxyCodeLine{01313\ }
+\DoxyCodeLine{01314\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ThreadWithParam);}
+\DoxyCodeLine{01315\ \};}
+\DoxyCodeLine{01316\ }
+\DoxyCodeLine{01317\ \textcolor{comment}{//\ MutexBase\ and\ Mutex\ implement\ mutex\ on\ pthreads-\/based\ platforms.\ They}}
+\DoxyCodeLine{01318\ \textcolor{comment}{//\ are\ used\ in\ conjunction\ with\ class\ MutexLock:}}
+\DoxyCodeLine{01319\ \textcolor{comment}{//}}
+\DoxyCodeLine{01320\ \textcolor{comment}{//\ \ \ Mutex\ mutex;}}
+\DoxyCodeLine{01321\ \textcolor{comment}{//\ \ \ ...}}
+\DoxyCodeLine{01322\ \textcolor{comment}{//\ \ \ MutexLock\ lock(\&mutex);\ \ //\ Acquires\ the\ mutex\ and\ releases\ it\ at\ the\ end}}
+\DoxyCodeLine{01323\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ of\ the\ current\ scope.}}
+\DoxyCodeLine{01324\ \textcolor{comment}{//}}
+\DoxyCodeLine{01325\ \textcolor{comment}{//\ MutexBase\ implements\ behavior\ for\ both\ statically\ and\ dynamically}}
+\DoxyCodeLine{01326\ \textcolor{comment}{//\ allocated\ mutexes.\ \ Do\ not\ use\ MutexBase\ directly.\ \ Instead,\ write}}
+\DoxyCodeLine{01327\ \textcolor{comment}{//\ the\ following\ to\ define\ a\ static\ mutex:}}
+\DoxyCodeLine{01328\ \textcolor{comment}{//}}
+\DoxyCodeLine{01329\ \textcolor{comment}{//\ \ \ GTEST\_DEFINE\_STATIC\_MUTEX\_(g\_some\_mutex);}}
+\DoxyCodeLine{01330\ \textcolor{comment}{//}}
+\DoxyCodeLine{01331\ \textcolor{comment}{//\ You\ can\ forward\ declare\ a\ static\ mutex\ like\ this:}}
+\DoxyCodeLine{01332\ \textcolor{comment}{//}}
+\DoxyCodeLine{01333\ \textcolor{comment}{//\ \ \ GTEST\_DECLARE\_STATIC\_MUTEX\_(g\_some\_mutex);}}
+\DoxyCodeLine{01334\ \textcolor{comment}{//}}
+\DoxyCodeLine{01335\ \textcolor{comment}{//\ To\ create\ a\ dynamic\ mutex,\ just\ define\ an\ object\ of\ type\ Mutex.}}
+\DoxyCodeLine{01336\ \textcolor{keyword}{class\ }MutexBase\ \{}
+\DoxyCodeLine{01337\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01338\ \ \ \textcolor{comment}{//\ Acquires\ this\ mutex.}}
+\DoxyCodeLine{01339\ \ \ \textcolor{keywordtype}{void}\ Lock()\ \{}
+\DoxyCodeLine{01340\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_mutex\_lock(\&mutex\_));}
+\DoxyCodeLine{01341\ \ \ \ \ owner\_\ =\ pthread\_self();}
+\DoxyCodeLine{01342\ \ \ \ \ has\_owner\_\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01343\ \ \ \}}
+\DoxyCodeLine{01344\ }
+\DoxyCodeLine{01345\ \ \ \textcolor{comment}{//\ Releases\ this\ mutex.}}
+\DoxyCodeLine{01346\ \ \ \textcolor{keywordtype}{void}\ Unlock()\ \{}
+\DoxyCodeLine{01347\ \ \ \ \ \textcolor{comment}{//\ Since\ the\ lock\ is\ being\ released\ the\ owner\_\ field\ should\ no\ longer\ be}}
+\DoxyCodeLine{01348\ \ \ \ \ \textcolor{comment}{//\ considered\ valid.\ We\ don't\ protect\ writing\ to\ has\_owner\_\ here,\ as\ it's}}
+\DoxyCodeLine{01349\ \ \ \ \ \textcolor{comment}{//\ the\ caller's\ responsibility\ to\ ensure\ that\ the\ current\ thread\ holds\ the}}
+\DoxyCodeLine{01350\ \ \ \ \ \textcolor{comment}{//\ mutex\ when\ this\ is\ called.}}
+\DoxyCodeLine{01351\ \ \ \ \ has\_owner\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01352\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_mutex\_unlock(\&mutex\_));}
+\DoxyCodeLine{01353\ \ \ \}}
+\DoxyCodeLine{01354\ }
+\DoxyCodeLine{01355\ \ \ \textcolor{comment}{//\ Does\ nothing\ if\ the\ current\ thread\ holds\ the\ mutex.\ Otherwise,\ crashes}}
+\DoxyCodeLine{01356\ \ \ \textcolor{comment}{//\ with\ high\ probability.}}
+\DoxyCodeLine{01357\ \ \ \textcolor{keywordtype}{void}\ AssertHeld()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01358\ \ \ \ \ GTEST\_CHECK\_(has\_owner\_\ \&\&\ pthread\_equal(owner\_,\ pthread\_self()))}
+\DoxyCodeLine{01359\ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}The\ current\ thread\ is\ not\ holding\ the\ mutex\ @"{}}\ <<\ \textcolor{keyword}{this};}
+\DoxyCodeLine{01360\ \ \ \}}
+\DoxyCodeLine{01361\ }
+\DoxyCodeLine{01362\ \ \ \textcolor{comment}{//\ A\ static\ mutex\ may\ be\ used\ before\ main()\ is\ entered.\ \ It\ may\ even}}
+\DoxyCodeLine{01363\ \ \ \textcolor{comment}{//\ be\ used\ before\ the\ dynamic\ initialization\ stage.\ \ Therefore\ we}}
+\DoxyCodeLine{01364\ \ \ \textcolor{comment}{//\ must\ be\ able\ to\ initialize\ a\ static\ mutex\ object\ at\ link\ time.}}
+\DoxyCodeLine{01365\ \ \ \textcolor{comment}{//\ This\ means\ MutexBase\ has\ to\ be\ a\ POD\ and\ its\ member\ variables}}
+\DoxyCodeLine{01366\ \ \ \textcolor{comment}{//\ have\ to\ be\ public.}}
+\DoxyCodeLine{01367\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01368\ \ \ pthread\_mutex\_t\ mutex\_;\ \ \textcolor{comment}{//\ The\ underlying\ pthread\ mutex.}}
+\DoxyCodeLine{01369\ \ \ \textcolor{comment}{//\ has\_owner\_\ indicates\ whether\ the\ owner\_\ field\ below\ contains\ a\ valid\ thread}}
+\DoxyCodeLine{01370\ \ \ \textcolor{comment}{//\ ID\ and\ is\ therefore\ safe\ to\ inspect\ (e.g.,\ to\ use\ in\ pthread\_equal()).\ All}}
+\DoxyCodeLine{01371\ \ \ \textcolor{comment}{//\ accesses\ to\ the\ owner\_\ field\ should\ be\ protected\ by\ a\ check\ of\ this\ field.}}
+\DoxyCodeLine{01372\ \ \ \textcolor{comment}{//\ An\ alternative\ might\ be\ to\ memset()\ owner\_\ to\ all\ zeros,\ but\ there's\ no}}
+\DoxyCodeLine{01373\ \ \ \textcolor{comment}{//\ guarantee\ that\ a\ zero'd\ pthread\_t\ is\ necessarily\ invalid\ or\ even\ different}}
+\DoxyCodeLine{01374\ \ \ \textcolor{comment}{//\ from\ pthread\_self().}}
+\DoxyCodeLine{01375\ \ \ \textcolor{keywordtype}{bool}\ has\_owner\_;}
+\DoxyCodeLine{01376\ \ \ pthread\_t\ owner\_;\ \ \textcolor{comment}{//\ The\ thread\ holding\ the\ mutex.}}
+\DoxyCodeLine{01377\ \};}
+\DoxyCodeLine{01378\ }
+\DoxyCodeLine{01379\ \textcolor{comment}{//\ Forward-\/declares\ a\ static\ mutex.}}
+\DoxyCodeLine{01380\ \textcolor{preprocessor}{\#\ define\ GTEST\_DECLARE\_STATIC\_MUTEX\_(mutex)\ \(\backslash\)}}
+\DoxyCodeLine{01381\ \textcolor{preprocessor}{\ \ \ \ extern\ ::testing::internal::MutexBase\ mutex}}
+\DoxyCodeLine{01382\ }
+\DoxyCodeLine{01383\ \textcolor{comment}{//\ Defines\ and\ statically\ (i.e.\ at\ link\ time)\ initializes\ a\ static\ mutex.}}
+\DoxyCodeLine{01384\ \textcolor{comment}{//\ The\ initialization\ list\ here\ does\ not\ explicitly\ initialize\ each\ field,}}
+\DoxyCodeLine{01385\ \textcolor{comment}{//\ instead\ relying\ on\ default\ initialization\ for\ the\ unspecified\ fields.\ In}}
+\DoxyCodeLine{01386\ \textcolor{comment}{//\ particular,\ the\ owner\_\ field\ (a\ pthread\_t)\ is\ not\ explicitly\ initialized.}}
+\DoxyCodeLine{01387\ \textcolor{comment}{//\ This\ allows\ initialization\ to\ work\ whether\ pthread\_t\ is\ a\ scalar\ or\ struct.}}
+\DoxyCodeLine{01388\ \textcolor{comment}{//\ The\ flag\ -\/Wmissing-\/field-\/initializers\ must\ not\ be\ specified\ for\ this\ to\ work.}}
+\DoxyCodeLine{01389\ \textcolor{preprocessor}{\#\ define\ GTEST\_DEFINE\_STATIC\_MUTEX\_(mutex)\ \(\backslash\)}}
+\DoxyCodeLine{01390\ \textcolor{preprocessor}{\ \ \ \ ::testing::internal::MutexBase\ mutex\ =\ \{\ PTHREAD\_MUTEX\_INITIALIZER,\ false\ \}}}
+\DoxyCodeLine{01391\ }
+\DoxyCodeLine{01392\ \textcolor{comment}{//\ The\ Mutex\ class\ can\ only\ be\ used\ for\ mutexes\ created\ at\ runtime.\ It}}
+\DoxyCodeLine{01393\ \textcolor{comment}{//\ shares\ its\ API\ with\ MutexBase\ otherwise.}}
+\DoxyCodeLine{01394\ \textcolor{keyword}{class\ }Mutex\ :\ \textcolor{keyword}{public}\ MutexBase\ \{}
+\DoxyCodeLine{01395\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01396\ \ \ Mutex()\ \{}
+\DoxyCodeLine{01397\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_mutex\_init(\&mutex\_,\ NULL));}
+\DoxyCodeLine{01398\ \ \ \ \ has\_owner\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01399\ \ \ \}}
+\DoxyCodeLine{01400\ \ \ \string~Mutex()\ \{}
+\DoxyCodeLine{01401\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_mutex\_destroy(\&mutex\_));}
+\DoxyCodeLine{01402\ \ \ \}}
+\DoxyCodeLine{01403\ }
+\DoxyCodeLine{01404\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01405\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(Mutex);}
+\DoxyCodeLine{01406\ \};}
+\DoxyCodeLine{01407\ }
+\DoxyCodeLine{01408\ \textcolor{comment}{//\ We\ cannot\ name\ this\ class\ MutexLock\ as\ the\ ctor\ declaration\ would}}
+\DoxyCodeLine{01409\ \textcolor{comment}{//\ conflict\ with\ a\ macro\ named\ MutexLock,\ which\ is\ defined\ on\ some}}
+\DoxyCodeLine{01410\ \textcolor{comment}{//\ platforms.\ \ Hence\ the\ typedef\ trick\ below.}}
+\DoxyCodeLine{01411\ \textcolor{keyword}{class\ }GTestMutexLock\ \{}
+\DoxyCodeLine{01412\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01413\ \ \ \textcolor{keyword}{explicit}\ GTestMutexLock(MutexBase*\ mutex)}
+\DoxyCodeLine{01414\ \ \ \ \ \ \ :\ mutex\_(mutex)\ \{\ mutex\_-\/>Lock();\ \}}
+\DoxyCodeLine{01415\ }
+\DoxyCodeLine{01416\ \ \ \string~GTestMutexLock()\ \{\ mutex\_-\/>Unlock();\ \}}
+\DoxyCodeLine{01417\ }
+\DoxyCodeLine{01418\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01419\ \ \ MutexBase*\ \textcolor{keyword}{const}\ mutex\_;}
+\DoxyCodeLine{01420\ }
+\DoxyCodeLine{01421\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(GTestMutexLock);}
+\DoxyCodeLine{01422\ \};}
+\DoxyCodeLine{01423\ }
+\DoxyCodeLine{01424\ \textcolor{keyword}{typedef}\ GTestMutexLock\ MutexLock;}
+\DoxyCodeLine{01425\ }
+\DoxyCodeLine{01426\ \textcolor{comment}{//\ Helpers\ for\ ThreadLocal.}}
+\DoxyCodeLine{01427\ }
+\DoxyCodeLine{01428\ \textcolor{comment}{//\ pthread\_key\_create()\ requires\ DeleteThreadLocalValue()\ to\ have}}
+\DoxyCodeLine{01429\ \textcolor{comment}{//\ C-\/linkage.\ \ Therefore\ it\ cannot\ be\ templatized\ to\ access}}
+\DoxyCodeLine{01430\ \textcolor{comment}{//\ ThreadLocal<T>.\ \ Hence\ the\ need\ for\ class}}
+\DoxyCodeLine{01431\ \textcolor{comment}{//\ ThreadLocalValueHolderBase.}}
+\DoxyCodeLine{01432\ \textcolor{keyword}{class\ }ThreadLocalValueHolderBase\ \{}
+\DoxyCodeLine{01433\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01434\ \ \ \textcolor{keyword}{virtual}\ \string~ThreadLocalValueHolderBase()\ \{\}}
+\DoxyCodeLine{01435\ \};}
+\DoxyCodeLine{01436\ }
+\DoxyCodeLine{01437\ \textcolor{comment}{//\ Called\ by\ pthread\ to\ delete\ thread-\/local\ data\ stored\ by}}
+\DoxyCodeLine{01438\ \textcolor{comment}{//\ pthread\_setspecific().}}
+\DoxyCodeLine{01439\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ DeleteThreadLocalValue(\textcolor{keywordtype}{void}*\ value\_holder)\ \{}
+\DoxyCodeLine{01440\ \ \ \textcolor{keyword}{delete}\ \textcolor{keyword}{static\_cast<}ThreadLocalValueHolderBase*\textcolor{keyword}{>}(value\_holder);}
+\DoxyCodeLine{01441\ \}}
+\DoxyCodeLine{01442\ }
+\DoxyCodeLine{01443\ \textcolor{comment}{//\ Implements\ thread-\/local\ storage\ on\ pthreads-\/based\ systems.}}
+\DoxyCodeLine{01444\ \textcolor{comment}{//}}
+\DoxyCodeLine{01445\ \textcolor{comment}{//\ \ \ //\ Thread\ 1}}
+\DoxyCodeLine{01446\ \textcolor{comment}{//\ \ \ ThreadLocal<int>\ tl(100);\ \ //\ 100\ is\ the\ default\ value\ for\ each\ thread.}}
+\DoxyCodeLine{01447\ \textcolor{comment}{//}}
+\DoxyCodeLine{01448\ \textcolor{comment}{//\ \ \ //\ Thread\ 2}}
+\DoxyCodeLine{01449\ \textcolor{comment}{//\ \ \ tl.set(150);\ \ //\ Changes\ the\ value\ for\ thread\ 2\ only.}}
+\DoxyCodeLine{01450\ \textcolor{comment}{//\ \ \ EXPECT\_EQ(150,\ tl.get());}}
+\DoxyCodeLine{01451\ \textcolor{comment}{//}}
+\DoxyCodeLine{01452\ \textcolor{comment}{//\ \ \ //\ Thread\ 1}}
+\DoxyCodeLine{01453\ \textcolor{comment}{//\ \ \ EXPECT\_EQ(100,\ tl.get());\ \ //\ In\ thread\ 1,\ tl\ has\ the\ original\ value.}}
+\DoxyCodeLine{01454\ \textcolor{comment}{//\ \ \ tl.set(200);}}
+\DoxyCodeLine{01455\ \textcolor{comment}{//\ \ \ EXPECT\_EQ(200,\ tl.get());}}
+\DoxyCodeLine{01456\ \textcolor{comment}{//}}
+\DoxyCodeLine{01457\ \textcolor{comment}{//\ The\ template\ type\ argument\ T\ must\ have\ a\ public\ copy\ constructor.}}
+\DoxyCodeLine{01458\ \textcolor{comment}{//\ In\ addition,\ the\ default\ ThreadLocal\ constructor\ requires\ T\ to\ have}}
+\DoxyCodeLine{01459\ \textcolor{comment}{//\ a\ public\ default\ constructor.}}
+\DoxyCodeLine{01460\ \textcolor{comment}{//}}
+\DoxyCodeLine{01461\ \textcolor{comment}{//\ An\ object\ managed\ for\ a\ thread\ by\ a\ ThreadLocal\ instance\ is\ deleted}}
+\DoxyCodeLine{01462\ \textcolor{comment}{//\ when\ the\ thread\ exits.\ \ Or,\ if\ the\ ThreadLocal\ instance\ dies\ in}}
+\DoxyCodeLine{01463\ \textcolor{comment}{//\ that\ thread,\ when\ the\ ThreadLocal\ dies.\ \ It's\ the\ user's}}
+\DoxyCodeLine{01464\ \textcolor{comment}{//\ responsibility\ to\ ensure\ that\ all\ other\ threads\ using\ a\ ThreadLocal}}
+\DoxyCodeLine{01465\ \textcolor{comment}{//\ have\ exited\ when\ it\ dies,\ or\ the\ per-\/thread\ objects\ for\ those}}
+\DoxyCodeLine{01466\ \textcolor{comment}{//\ threads\ will\ not\ be\ deleted.}}
+\DoxyCodeLine{01467\ \textcolor{comment}{//}}
+\DoxyCodeLine{01468\ \textcolor{comment}{//\ Google\ Test\ only\ uses\ global\ ThreadLocal\ objects.\ \ That\ means\ they}}
+\DoxyCodeLine{01469\ \textcolor{comment}{//\ will\ die\ after\ main()\ has\ returned.\ \ Therefore,\ no\ per-\/thread}}
+\DoxyCodeLine{01470\ \textcolor{comment}{//\ object\ managed\ by\ Google\ Test\ will\ be\ leaked\ as\ long\ as\ all\ threads}}
+\DoxyCodeLine{01471\ \textcolor{comment}{//\ using\ Google\ Test\ have\ exited\ when\ main()\ returns.}}
+\DoxyCodeLine{01472\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01473\ \textcolor{keyword}{class\ }ThreadLocal\ \{}
+\DoxyCodeLine{01474\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01475\ \ \ ThreadLocal()\ :\ key\_(CreateKey()),}
+\DoxyCodeLine{01476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_()\ \{\}}
+\DoxyCodeLine{01477\ \ \ \textcolor{keyword}{explicit}\ ThreadLocal(\textcolor{keyword}{const}\ T\&\ value)\ :\ key\_(CreateKey()),}
+\DoxyCodeLine{01478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_(value)\ \{\}}
+\DoxyCodeLine{01479\ }
+\DoxyCodeLine{01480\ \ \ \string~ThreadLocal()\ \{}
+\DoxyCodeLine{01481\ \ \ \ \ \textcolor{comment}{//\ Destroys\ the\ managed\ object\ for\ the\ current\ thread,\ if\ any.}}
+\DoxyCodeLine{01482\ \ \ \ \ DeleteThreadLocalValue(pthread\_getspecific(key\_));}
+\DoxyCodeLine{01483\ }
+\DoxyCodeLine{01484\ \ \ \ \ \textcolor{comment}{//\ Releases\ resources\ associated\ with\ the\ key.\ \ This\ will\ *not*}}
+\DoxyCodeLine{01485\ \ \ \ \ \textcolor{comment}{//\ delete\ managed\ objects\ for\ other\ threads.}}
+\DoxyCodeLine{01486\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_key\_delete(key\_));}
+\DoxyCodeLine{01487\ \ \ \}}
+\DoxyCodeLine{01488\ }
+\DoxyCodeLine{01489\ \ \ T*\ pointer()\ \{\ \textcolor{keywordflow}{return}\ GetOrCreateValue();\ \}}
+\DoxyCodeLine{01490\ \ \ \textcolor{keyword}{const}\ T*\ pointer()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ GetOrCreateValue();\ \}}
+\DoxyCodeLine{01491\ \ \ \textcolor{keyword}{const}\ T\&\ get()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *pointer();\ \}}
+\DoxyCodeLine{01492\ \ \ \textcolor{keywordtype}{void}\ set(\textcolor{keyword}{const}\ T\&\ value)\ \{\ *pointer()\ =\ value;\ \}}
+\DoxyCodeLine{01493\ }
+\DoxyCodeLine{01494\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01495\ \ \ \textcolor{comment}{//\ Holds\ a\ value\ of\ type\ T.}}
+\DoxyCodeLine{01496\ \ \ \textcolor{keyword}{class\ }ValueHolder\ :\ \textcolor{keyword}{public}\ ThreadLocalValueHolderBase\ \{}
+\DoxyCodeLine{01497\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01498\ \ \ \ \ \textcolor{keyword}{explicit}\ ValueHolder(\textcolor{keyword}{const}\ T\&\ value)\ :\ value\_(value)\ \{\}}
+\DoxyCodeLine{01499\ }
+\DoxyCodeLine{01500\ \ \ \ \ T*\ pointer()\ \{\ \textcolor{keywordflow}{return}\ \&value\_;\ \}}
+\DoxyCodeLine{01501\ }
+\DoxyCodeLine{01502\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01503\ \ \ \ \ T\ value\_;}
+\DoxyCodeLine{01504\ \ \ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ValueHolder);}
+\DoxyCodeLine{01505\ \ \ \};}
+\DoxyCodeLine{01506\ }
+\DoxyCodeLine{01507\ \ \ \textcolor{keyword}{static}\ pthread\_key\_t\ CreateKey()\ \{}
+\DoxyCodeLine{01508\ \ \ \ \ pthread\_key\_t\ key;}
+\DoxyCodeLine{01509\ \ \ \ \ \textcolor{comment}{//\ When\ a\ thread\ exits,\ DeleteThreadLocalValue()\ will\ be\ called\ on}}
+\DoxyCodeLine{01510\ \ \ \ \ \textcolor{comment}{//\ the\ object\ managed\ for\ that\ thread.}}
+\DoxyCodeLine{01511\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(}
+\DoxyCodeLine{01512\ \ \ \ \ \ \ \ \ pthread\_key\_create(\&key,\ \&DeleteThreadLocalValue));}
+\DoxyCodeLine{01513\ \ \ \ \ \textcolor{keywordflow}{return}\ key;}
+\DoxyCodeLine{01514\ \ \ \}}
+\DoxyCodeLine{01515\ }
+\DoxyCodeLine{01516\ \ \ T*\ GetOrCreateValue()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01517\ \ \ \ \ ThreadLocalValueHolderBase*\ \textcolor{keyword}{const}\ holder\ =}
+\DoxyCodeLine{01518\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}ThreadLocalValueHolderBase*\textcolor{keyword}{>}(pthread\_getspecific(key\_));}
+\DoxyCodeLine{01519\ \ \ \ \ \textcolor{keywordflow}{if}\ (holder\ !=\ NULL)\ \{}
+\DoxyCodeLine{01520\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CheckedDowncastToActualType<ValueHolder>(holder)-\/>pointer();}
+\DoxyCodeLine{01521\ \ \ \ \ \}}
+\DoxyCodeLine{01522\ }
+\DoxyCodeLine{01523\ \ \ \ \ ValueHolder*\ \textcolor{keyword}{const}\ new\_holder\ =\ \textcolor{keyword}{new}\ ValueHolder(default\_);}
+\DoxyCodeLine{01524\ \ \ \ \ ThreadLocalValueHolderBase*\ \textcolor{keyword}{const}\ holder\_base\ =\ new\_holder;}
+\DoxyCodeLine{01525\ \ \ \ \ GTEST\_CHECK\_POSIX\_SUCCESS\_(pthread\_setspecific(key\_,\ holder\_base));}
+\DoxyCodeLine{01526\ \ \ \ \ \textcolor{keywordflow}{return}\ new\_holder-\/>pointer();}
+\DoxyCodeLine{01527\ \ \ \}}
+\DoxyCodeLine{01528\ }
+\DoxyCodeLine{01529\ \ \ \textcolor{comment}{//\ A\ key\ pthreads\ uses\ for\ looking\ up\ per-\/thread\ values.}}
+\DoxyCodeLine{01530\ \ \ \textcolor{keyword}{const}\ pthread\_key\_t\ key\_;}
+\DoxyCodeLine{01531\ \ \ \textcolor{keyword}{const}\ T\ default\_;\ \ \textcolor{comment}{//\ The\ default\ value\ for\ each\ thread.}}
+\DoxyCodeLine{01532\ }
+\DoxyCodeLine{01533\ \ \ GTEST\_DISALLOW\_COPY\_AND\_ASSIGN\_(ThreadLocal);}
+\DoxyCodeLine{01534\ \};}
+\DoxyCodeLine{01535\ }
+\DoxyCodeLine{01536\ \textcolor{preprocessor}{\#\ define\ GTEST\_IS\_THREADSAFE\ 1}}
+\DoxyCodeLine{01537\ }
+\DoxyCodeLine{01538\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{//\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{01539\ }
+\DoxyCodeLine{01540\ \textcolor{comment}{//\ A\ dummy\ implementation\ of\ synchronization\ primitives\ (mutex,\ lock,}}
+\DoxyCodeLine{01541\ \textcolor{comment}{//\ and\ thread-\/local\ variable).\ \ Necessary\ for\ compiling\ Google\ Test\ where}}
+\DoxyCodeLine{01542\ \textcolor{comment}{//\ mutex\ is\ not\ supported\ -\/\ using\ Google\ Test\ in\ multiple\ threads\ is\ not}}
+\DoxyCodeLine{01543\ \textcolor{comment}{//\ supported\ on\ such\ platforms.}}
+\DoxyCodeLine{01544\ }
+\DoxyCodeLine{01545\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_mutex}{Mutex}}\ \{}
+\DoxyCodeLine{01546\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01547\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_mutex}{Mutex}}()\ \{\}}
+\DoxyCodeLine{01548\ \ \ \textcolor{keywordtype}{void}\ Lock()\ \{\}}
+\DoxyCodeLine{01549\ \ \ \textcolor{keywordtype}{void}\ Unlock()\ \{\}}
+\DoxyCodeLine{01550\ \ \ \textcolor{keywordtype}{void}\ AssertHeld()\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{01551\ \};}
+\DoxyCodeLine{01552\ }
+\DoxyCodeLine{01553\ \textcolor{preprocessor}{\#\ define\ GTEST\_DECLARE\_STATIC\_MUTEX\_(mutex)\ \(\backslash\)}}
+\DoxyCodeLine{01554\ \textcolor{preprocessor}{\ \ extern\ ::testing::internal::Mutex\ mutex}}
+\DoxyCodeLine{01555\ }
+\DoxyCodeLine{01556\ \textcolor{preprocessor}{\#\ define\ GTEST\_DEFINE\_STATIC\_MUTEX\_(mutex)\ ::testing::internal::Mutex\ mutex}}
+\DoxyCodeLine{01557\ }
+\DoxyCodeLine{01558\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_mutex_lock}{GTestMutexLock}}\ \{}
+\DoxyCodeLine{01559\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01560\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_mutex_lock}{GTestMutexLock}}(\mbox{\hyperlink{classtesting_1_1internal_1_1_mutex}{Mutex}}*)\ \{\}\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{01561\ \};}
+\DoxyCodeLine{01562\ }
+\DoxyCodeLine{01563\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_mutex_lock}{GTestMutexLock}}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_g_test_mutex_lock}{MutexLock}};}
+\DoxyCodeLine{01564\ }
+\DoxyCodeLine{01565\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01566\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_thread_local}{ThreadLocal}}\ \{}
+\DoxyCodeLine{01567\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01568\ \ \ \mbox{\hyperlink{classtesting_1_1internal_1_1_thread_local}{ThreadLocal}}()\ :\ value\_()\ \{\}}
+\DoxyCodeLine{01569\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_thread_local}{ThreadLocal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\&\ value)\ :\ value\_(value)\ \{\}}
+\DoxyCodeLine{01570\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ pointer()\ \{\ \textcolor{keywordflow}{return}\ \&value\_;\ \}}
+\DoxyCodeLine{01571\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*\ pointer()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \&value\_;\ \}}
+\DoxyCodeLine{01572\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\&\ get()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ value\_;\ \}}
+\DoxyCodeLine{01573\ \ \ \textcolor{keywordtype}{void}\ set(\textcolor{keyword}{const}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\&\ value)\ \{\ value\_\ =\ value;\ \}}
+\DoxyCodeLine{01574\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01575\ \ \ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\ value\_;}
+\DoxyCodeLine{01576\ \};}
+\DoxyCodeLine{01577\ }
+\DoxyCodeLine{01578\ \textcolor{comment}{//\ The\ above\ synchronization\ primitives\ have\ dummy\ implementations.}}
+\DoxyCodeLine{01579\ \textcolor{comment}{//\ Therefore\ Google\ Test\ is\ not\ thread-\/safe.}}
+\DoxyCodeLine{01580\ \textcolor{preprocessor}{\#\ define\ GTEST\_IS\_THREADSAFE\ 0}}
+\DoxyCodeLine{01581\ }
+\DoxyCodeLine{01582\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_HAS\_PTHREAD}}
+\DoxyCodeLine{01583\ }
+\DoxyCodeLine{01584\ \textcolor{comment}{//\ Returns\ the\ number\ of\ threads\ running\ in\ the\ process,\ or\ 0\ to\ indicate\ that}}
+\DoxyCodeLine{01585\ \textcolor{comment}{//\ we\ cannot\ detect\ it.}}
+\DoxyCodeLine{01586\ GTEST\_API\_\ \textcolor{keywordtype}{size\_t}\ GetThreadCount();}
+\DoxyCodeLine{01587\ }
+\DoxyCodeLine{01588\ \textcolor{comment}{//\ Passing\ non-\/POD\ classes\ through\ ellipsis\ (...)\ crashes\ the\ ARM}}
+\DoxyCodeLine{01589\ \textcolor{comment}{//\ compiler\ and\ generates\ a\ warning\ in\ Sun\ Studio.\ \ The\ Nokia\ Symbian}}
+\DoxyCodeLine{01590\ \textcolor{comment}{//\ and\ the\ IBM\ XL\ C/C++\ compiler\ try\ to\ instantiate\ a\ copy\ constructor}}
+\DoxyCodeLine{01591\ \textcolor{comment}{//\ for\ objects\ passed\ through\ ellipsis\ (...),\ failing\ for\ uncopyable}}
+\DoxyCodeLine{01592\ \textcolor{comment}{//\ objects.\ \ We\ define\ this\ to\ ensure\ that\ only\ POD\ is\ passed\ through}}
+\DoxyCodeLine{01593\ \textcolor{comment}{//\ ellipsis\ on\ these\ systems.}}
+\DoxyCodeLine{01594\ \textcolor{preprocessor}{\#if\ defined(\_\_SYMBIAN32\_\_)\ ||\ defined(\_\_IBMCPP\_\_)\ ||\ defined(\_\_SUNPRO\_CC)}}
+\DoxyCodeLine{01595\ \textcolor{comment}{//\ We\ lose\ support\ for\ NULL\ detection\ where\ the\ compiler\ doesn't\ like}}
+\DoxyCodeLine{01596\ \textcolor{comment}{//\ passing\ non-\/POD\ classes\ through\ ellipsis\ (...).}}
+\DoxyCodeLine{01597\ \textcolor{preprocessor}{\#\ define\ GTEST\_ELLIPSIS\_NEEDS\_POD\_\ 1}}
+\DoxyCodeLine{01598\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01599\ \textcolor{preprocessor}{\#\ define\ GTEST\_CAN\_COMPARE\_NULL\ 1}}
+\DoxyCodeLine{01600\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01601\ }
+\DoxyCodeLine{01602\ \textcolor{comment}{//\ The\ Nokia\ Symbian\ and\ IBM\ XL\ C/C++\ compilers\ cannot\ decide\ between}}
+\DoxyCodeLine{01603\ \textcolor{comment}{//\ const\ T\&\ and\ const\ T*\ in\ a\ function\ template.\ \ These\ compilers}}
+\DoxyCodeLine{01604\ \textcolor{comment}{//\ \_can\_\ decide\ between\ class\ template\ specializations\ for\ T\ and\ T*,}}
+\DoxyCodeLine{01605\ \textcolor{comment}{//\ so\ a\ tr1::type\_traits-\/like\ is\_pointer\ works.}}
+\DoxyCodeLine{01606\ \textcolor{preprocessor}{\#if\ defined(\_\_SYMBIAN32\_\_)\ ||\ defined(\_\_IBMCPP\_\_)}}
+\DoxyCodeLine{01607\ \textcolor{preprocessor}{\#\ define\ GTEST\_NEEDS\_IS\_POINTER\_\ 1}}
+\DoxyCodeLine{01608\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01609\ }
+\DoxyCodeLine{01610\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{bool}\ \textcolor{keywordtype}{bool}\_value>}
+\DoxyCodeLine{01611\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{bool\_constant}}\ \{}
+\DoxyCodeLine{01612\ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{bool\_constant<bool\_value>}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{type}};}
+\DoxyCodeLine{01613\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ value\ =\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{bool\_value}};}
+\DoxyCodeLine{01614\ \};}
+\DoxyCodeLine{01615\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{bool}\ \textcolor{keywordtype}{bool}\_value>\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{bool\_constant<bool\_value>::value}};}
+\DoxyCodeLine{01616\ }
+\DoxyCodeLine{01617\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{bool\_constant<false>}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{false\_type}};}
+\DoxyCodeLine{01618\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{bool\_constant<true>}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{true\_type}};}
+\DoxyCodeLine{01619\ }
+\DoxyCodeLine{01620\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01621\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1is__pointer}{is\_pointer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{false\_type}}\ \{\};}
+\DoxyCodeLine{01622\ }
+\DoxyCodeLine{01623\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01624\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1is__pointer}{is\_pointer}}<\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structtesting_1_1internal_1_1bool__constant}{true\_type}}\ \{\};}
+\DoxyCodeLine{01625\ }
+\DoxyCodeLine{01626\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Iterator>}
+\DoxyCodeLine{01627\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{IteratorTraits}}\ \{}
+\DoxyCodeLine{01628\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{typename}\ Iterator::value\_type\ value\_type;}
+\DoxyCodeLine{01629\ \};}
+\DoxyCodeLine{01630\ }
+\DoxyCodeLine{01631\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01632\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{IteratorTraits}}<\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*>\ \{}
+\DoxyCodeLine{01633\ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{value\_type}};}
+\DoxyCodeLine{01634\ \};}
+\DoxyCodeLine{01635\ }
+\DoxyCodeLine{01636\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{01637\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{IteratorTraits}}<\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{const}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}*>\ \{}
+\DoxyCodeLine{01638\ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{T}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{value\_type}};}
+\DoxyCodeLine{01639\ \};}
+\DoxyCodeLine{01640\ }
+\DoxyCodeLine{01641\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01642\ \textcolor{preprocessor}{\#\ define\ GTEST\_PATH\_SEP\_\ "{}\(\backslash\)\(\backslash\)"{}}}
+\DoxyCodeLine{01643\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_ALT\_PATH\_SEP\_\ 1}}
+\DoxyCodeLine{01644\ \textcolor{comment}{//\ The\ biggest\ signed\ integer\ type\ the\ compiler\ supports.}}
+\DoxyCodeLine{01645\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{\_\_int64}}\ BiggestInt;}
+\DoxyCodeLine{01646\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01647\ \textcolor{preprocessor}{\#\ define\ GTEST\_PATH\_SEP\_\ "{}/"{}}}
+\DoxyCodeLine{01648\ \textcolor{preprocessor}{\#\ define\ GTEST\_HAS\_ALT\_PATH\_SEP\_\ 0}}
+\DoxyCodeLine{01649\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ BiggestInt;\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{01650\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01651\ }
+\DoxyCodeLine{01652\ \textcolor{comment}{//\ Utilities\ for\ char.}}
+\DoxyCodeLine{01653\ }
+\DoxyCodeLine{01654\ \textcolor{comment}{//\ isspace(int\ ch)\ and\ friends\ accept\ an\ unsigned\ char\ or\ EOF.\ \ char}}
+\DoxyCodeLine{01655\ \textcolor{comment}{//\ may\ be\ signed,\ depending\ on\ the\ compiler\ (or\ compiler\ flags).}}
+\DoxyCodeLine{01656\ \textcolor{comment}{//\ Therefore\ we\ need\ to\ cast\ a\ char\ to\ unsigned\ char\ before\ calling}}
+\DoxyCodeLine{01657\ \textcolor{comment}{//\ isspace(),\ etc.}}
+\DoxyCodeLine{01658\ }
+\DoxyCodeLine{01659\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsAlpha(\textcolor{keywordtype}{char}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{ch}})\ \{}
+\DoxyCodeLine{01660\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{isalpha}}(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(\mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{ch}}))\ !=\ 0;}
+\DoxyCodeLine{01661\ \}}
+\DoxyCodeLine{01662\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsAlNum(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01663\ \ \ \textcolor{keywordflow}{return}\ isalnum(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01664\ \}}
+\DoxyCodeLine{01665\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsDigit(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01666\ \ \ \textcolor{keywordflow}{return}\ isdigit(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01667\ \}}
+\DoxyCodeLine{01668\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsLower(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01669\ \ \ \textcolor{keywordflow}{return}\ islower(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01670\ \}}
+\DoxyCodeLine{01671\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsSpace(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01672\ \ \ \textcolor{keywordflow}{return}\ isspace(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01673\ \}}
+\DoxyCodeLine{01674\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsUpper(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01675\ \ \ \textcolor{keywordflow}{return}\ isupper(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01676\ \}}
+\DoxyCodeLine{01677\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsXDigit(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01678\ \ \ \textcolor{keywordflow}{return}\ isxdigit(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch))\ !=\ 0;}
+\DoxyCodeLine{01679\ \}}
+\DoxyCodeLine{01680\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsXDigit(\textcolor{keywordtype}{wchar\_t}\ ch)\ \{}
+\DoxyCodeLine{01681\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\ low\_byte\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch);}
+\DoxyCodeLine{01682\ \ \ \textcolor{keywordflow}{return}\ ch\ ==\ low\_byte\ \&\&\ isxdigit(low\_byte)\ !=\ 0;}
+\DoxyCodeLine{01683\ \}}
+\DoxyCodeLine{01684\ }
+\DoxyCodeLine{01685\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{char}\ ToLower(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01686\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{char}\textcolor{keyword}{>}(tolower(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch)));}
+\DoxyCodeLine{01687\ \}}
+\DoxyCodeLine{01688\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{char}\ ToUpper(\textcolor{keywordtype}{char}\ ch)\ \{}
+\DoxyCodeLine{01689\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{char}\textcolor{keyword}{>}(toupper(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\textcolor{keyword}{>}(ch)));}
+\DoxyCodeLine{01690\ \}}
+\DoxyCodeLine{01691\ }
+\DoxyCodeLine{01692\ \textcolor{comment}{//\ The\ testing::internal::posix\ namespace\ holds\ wrappers\ for\ common}}
+\DoxyCodeLine{01693\ \textcolor{comment}{//\ POSIX\ functions.\ \ These\ wrappers\ hide\ the\ differences\ between}}
+\DoxyCodeLine{01694\ \textcolor{comment}{//\ Windows/MSVC\ and\ POSIX\ systems.\ \ Since\ some\ compilers\ define\ these}}
+\DoxyCodeLine{01695\ \textcolor{comment}{//\ standard\ functions\ as\ macros,\ the\ wrapper\ cannot\ have\ the\ same\ name}}
+\DoxyCodeLine{01696\ \textcolor{comment}{//\ as\ the\ wrapped\ function.}}
+\DoxyCodeLine{01697\ }
+\DoxyCodeLine{01698\ \textcolor{keyword}{namespace\ }posix\ \{}
+\DoxyCodeLine{01699\ }
+\DoxyCodeLine{01700\ \textcolor{comment}{//\ Functions\ with\ a\ different\ name\ on\ Windows.}}
+\DoxyCodeLine{01701\ }
+\DoxyCodeLine{01702\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01703\ }
+\DoxyCodeLine{01704\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\_stat\ StatStruct;}
+\DoxyCodeLine{01705\ }
+\DoxyCodeLine{01706\ \textcolor{preprocessor}{\#\ ifdef\ \_\_BORLANDC\_\_}}
+\DoxyCodeLine{01707\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ IsATTY(\textcolor{keywordtype}{int}\ fd)\ \{\ \textcolor{keywordflow}{return}\ isatty(fd);\ \}}
+\DoxyCodeLine{01708\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ StrCaseCmp(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s1,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s2)\ \{}
+\DoxyCodeLine{01709\ \ \ \textcolor{keywordflow}{return}\ stricmp(s1,\ s2);}
+\DoxyCodeLine{01710\ \}}
+\DoxyCodeLine{01711\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{char}*\ StrDup(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ src)\ \{\ \textcolor{keywordflow}{return}\ strdup(src);\ \}}
+\DoxyCodeLine{01712\ \textcolor{preprocessor}{\#\ else\ \ }\textcolor{comment}{//\ !\_\_BORLANDC\_\_}}
+\DoxyCodeLine{01713\ \textcolor{preprocessor}{\#\ \ if\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01714\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ IsATTY(\textcolor{keywordtype}{int}\ \textcolor{comment}{/*\ fd\ */})\ \{\ \textcolor{keywordflow}{return}\ 0;\ \}}
+\DoxyCodeLine{01715\ \textcolor{preprocessor}{\#\ \ else}}
+\DoxyCodeLine{01716\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ IsATTY(\textcolor{keywordtype}{int}\ fd)\ \{\ \textcolor{keywordflow}{return}\ \_isatty(fd);\ \}}
+\DoxyCodeLine{01717\ \textcolor{preprocessor}{\#\ \ endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01718\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ StrCaseCmp(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s1,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s2)\ \{}
+\DoxyCodeLine{01719\ \ \ \textcolor{keywordflow}{return}\ \_stricmp(s1,\ s2);}
+\DoxyCodeLine{01720\ \}}
+\DoxyCodeLine{01721\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{char}*\ StrDup(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ src)\ \{\ \textcolor{keywordflow}{return}\ \_strdup(src);\ \}}
+\DoxyCodeLine{01722\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ \_\_BORLANDC\_\_}}
+\DoxyCodeLine{01723\ }
+\DoxyCodeLine{01724\ \textcolor{preprocessor}{\#\ if\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01725\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ FileNo(FILE*\ file)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\_fileno(file));\ \}}
+\DoxyCodeLine{01726\ \textcolor{comment}{//\ Stat(),\ RmDir(),\ and\ IsDir()\ are\ not\ needed\ on\ Windows\ CE\ at\ this}}
+\DoxyCodeLine{01727\ \textcolor{comment}{//\ time\ and\ thus\ not\ defined\ there.}}
+\DoxyCodeLine{01728\ \textcolor{preprocessor}{\#\ else}}
+\DoxyCodeLine{01729\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ FileNo(FILE*\ file)\ \{\ \textcolor{keywordflow}{return}\ \_fileno(file);\ \}}
+\DoxyCodeLine{01730\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ Stat(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path,\ StatStruct*\ buf)\ \{\ \textcolor{keywordflow}{return}\ \_stat(path,\ buf);\ \}}
+\DoxyCodeLine{01731\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ RmDir(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ dir)\ \{\ \textcolor{keywordflow}{return}\ \_rmdir(dir);\ \}}
+\DoxyCodeLine{01732\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsDir(\textcolor{keyword}{const}\ StatStruct\&\ st)\ \{}
+\DoxyCodeLine{01733\ \ \ \textcolor{keywordflow}{return}\ (\_S\_IFDIR\ \&\ st.st\_mode)\ !=\ 0;}
+\DoxyCodeLine{01734\ \}}
+\DoxyCodeLine{01735\ \textcolor{preprocessor}{\#\ endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01736\ }
+\DoxyCodeLine{01737\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01738\ }
+\DoxyCodeLine{01739\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }stat\ StatStruct;}
+\DoxyCodeLine{01740\ }
+\DoxyCodeLine{01741\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ FileNo(FILE*\ file)\ \{\ \textcolor{keywordflow}{return}\ fileno(file);\ \}}
+\DoxyCodeLine{01742\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ IsATTY(\textcolor{keywordtype}{int}\ fd)\ \{\ \textcolor{keywordflow}{return}\ isatty(fd);\ \}}
+\DoxyCodeLine{01743\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ Stat(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path,\ StatStruct*\ buf)\ \{\ \textcolor{keywordflow}{return}\ stat(path,\ buf);\ \}}
+\DoxyCodeLine{01744\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ StrCaseCmp(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s1,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ s2)\ \{}
+\DoxyCodeLine{01745\ \ \ \textcolor{keywordflow}{return}\ strcasecmp(s1,\ s2);}
+\DoxyCodeLine{01746\ \}}
+\DoxyCodeLine{01747\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{char}*\ StrDup(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ src)\ \{\ \textcolor{keywordflow}{return}\ strdup(src);\ \}}
+\DoxyCodeLine{01748\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ RmDir(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ dir)\ \{\ \textcolor{keywordflow}{return}\ rmdir(dir);\ \}}
+\DoxyCodeLine{01749\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ IsDir(\textcolor{keyword}{const}\ StatStruct\&\ st)\ \{\ \textcolor{keywordflow}{return}\ S\_ISDIR(st.st\_mode);\ \}}
+\DoxyCodeLine{01750\ }
+\DoxyCodeLine{01751\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01752\ }
+\DoxyCodeLine{01753\ \textcolor{comment}{//\ Functions\ deprecated\ by\ MSVC\ 8.0.}}
+\DoxyCodeLine{01754\ }
+\DoxyCodeLine{01755\ \textcolor{preprocessor}{\#ifdef\ \_MSC\_VER}}
+\DoxyCodeLine{01756\ \textcolor{comment}{//\ Temporarily\ disable\ warning\ 4996\ (deprecated\ function).}}
+\DoxyCodeLine{01757\ \textcolor{preprocessor}{\#\ pragma\ warning(push)}}
+\DoxyCodeLine{01758\ \textcolor{preprocessor}{\#\ pragma\ warning(disable:4996)}}
+\DoxyCodeLine{01759\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01760\ }
+\DoxyCodeLine{01761\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ StrNCpy(\textcolor{keywordtype}{char}*\ dest,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ src,\ \textcolor{keywordtype}{size\_t}\ n)\ \{}
+\DoxyCodeLine{01762\ \ \ \textcolor{keywordflow}{return}\ strncpy(dest,\ src,\ n);}
+\DoxyCodeLine{01763\ \}}
+\DoxyCodeLine{01764\ }
+\DoxyCodeLine{01765\ \textcolor{comment}{//\ ChDir(),\ FReopen(),\ FDOpen(),\ Read(),\ Write(),\ Close(),\ and}}
+\DoxyCodeLine{01766\ \textcolor{comment}{//\ StrError()\ aren't\ needed\ on\ Windows\ CE\ at\ this\ time\ and\ thus\ not}}
+\DoxyCodeLine{01767\ \textcolor{comment}{//\ defined\ there.}}
+\DoxyCodeLine{01768\ }
+\DoxyCodeLine{01769\ \textcolor{preprocessor}{\#if\ !GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01770\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ ChDir(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ dir)\ \{\ \textcolor{keywordflow}{return}\ chdir(dir);\ \}}
+\DoxyCodeLine{01771\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01772\ \textcolor{keyword}{inline}\ FILE*\ FOpen(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ mode)\ \{}
+\DoxyCodeLine{01773\ \ \ \textcolor{keywordflow}{return}\ fopen(path,\ mode);}
+\DoxyCodeLine{01774\ \}}
+\DoxyCodeLine{01775\ \textcolor{preprocessor}{\#if\ !GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01776\ \textcolor{keyword}{inline}\ FILE\ *FReopen(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ mode,\ FILE*\ stream)\ \{}
+\DoxyCodeLine{01777\ \ \ \textcolor{keywordflow}{return}\ freopen(path,\ mode,\ stream);}
+\DoxyCodeLine{01778\ \}}
+\DoxyCodeLine{01779\ \textcolor{keyword}{inline}\ FILE*\ FDOpen(\textcolor{keywordtype}{int}\ fd,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ mode)\ \{\ \textcolor{keywordflow}{return}\ fdopen(fd,\ mode);\ \}}
+\DoxyCodeLine{01780\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01781\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ FClose(FILE*\ fp)\ \{\ \textcolor{keywordflow}{return}\ fclose(fp);\ \}}
+\DoxyCodeLine{01782\ \textcolor{preprocessor}{\#if\ !GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01783\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ Read(\textcolor{keywordtype}{int}\ fd,\ \textcolor{keywordtype}{void}*\ buf,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ count)\ \{}
+\DoxyCodeLine{01784\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(read(fd,\ buf,\ count));}
+\DoxyCodeLine{01785\ \}}
+\DoxyCodeLine{01786\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ Write(\textcolor{keywordtype}{int}\ fd,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ buf,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ count)\ \{}
+\DoxyCodeLine{01787\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(write(fd,\ buf,\ count));}
+\DoxyCodeLine{01788\ \}}
+\DoxyCodeLine{01789\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ Close(\textcolor{keywordtype}{int}\ fd)\ \{\ \textcolor{keywordflow}{return}\ close(fd);\ \}}
+\DoxyCodeLine{01790\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ StrError(\textcolor{keywordtype}{int}\ errnum)\ \{\ \textcolor{keywordflow}{return}\ strerror(errnum);\ \}}
+\DoxyCodeLine{01791\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01792\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ GetEnv(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name)\ \{}
+\DoxyCodeLine{01793\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01794\ \ \ \textcolor{comment}{//\ We\ are\ on\ Windows\ CE,\ which\ has\ no\ environment\ variables.}}
+\DoxyCodeLine{01795\ \ \ \textcolor{keywordflow}{return}\ NULL;}
+\DoxyCodeLine{01796\ \textcolor{preprocessor}{\#elif\ defined(\_\_BORLANDC\_\_)\ ||\ defined(\_\_SunOS\_5\_8)\ ||\ defined(\_\_SunOS\_5\_9)}}
+\DoxyCodeLine{01797\ \ \ \textcolor{comment}{//\ Environment\ variables\ which\ we\ programmatically\ clear\ will\ be\ set\ to\ the}}
+\DoxyCodeLine{01798\ \ \ \textcolor{comment}{//\ empty\ string\ rather\ than\ unset\ (NULL).\ \ Handle\ that\ case.}}
+\DoxyCodeLine{01799\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \textcolor{keyword}{const}\ env\ =\ getenv(name);}
+\DoxyCodeLine{01800\ \ \ \textcolor{keywordflow}{return}\ (env\ !=\ NULL\ \&\&\ env[0]\ !=\ \textcolor{charliteral}{'\(\backslash\)0'})\ ?\ env\ :\ NULL;}
+\DoxyCodeLine{01801\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01802\ \ \ \textcolor{keywordflow}{return}\ getenv(name);}
+\DoxyCodeLine{01803\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01804\ \}}
+\DoxyCodeLine{01805\ }
+\DoxyCodeLine{01806\ \textcolor{preprocessor}{\#ifdef\ \_MSC\_VER}}
+\DoxyCodeLine{01807\ \textcolor{preprocessor}{\#\ pragma\ warning(pop)\ \ }\textcolor{comment}{//\ Restores\ the\ warning\ state.}}
+\DoxyCodeLine{01808\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01809\ }
+\DoxyCodeLine{01810\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01811\ \textcolor{comment}{//\ Windows\ CE\ has\ no\ C\ library.\ The\ abort()\ function\ is\ used\ in}}
+\DoxyCodeLine{01812\ \textcolor{comment}{//\ several\ places\ in\ Google\ Test.\ This\ implementation\ provides\ a\ reasonable}}
+\DoxyCodeLine{01813\ \textcolor{comment}{//\ imitation\ of\ standard\ behaviour.}}
+\DoxyCodeLine{01814\ \textcolor{keywordtype}{void}\ Abort();}
+\DoxyCodeLine{01815\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01816\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ Abort()\ \{\ abort();\ \}}
+\DoxyCodeLine{01817\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01818\ }
+\DoxyCodeLine{01819\ \}\ \ \textcolor{comment}{//\ namespace\ posix}}
+\DoxyCodeLine{01820\ }
+\DoxyCodeLine{01821\ \textcolor{comment}{//\ MSVC\ "{}deprecates"{}\ snprintf\ and\ issues\ warnings\ wherever\ it\ is\ used.\ \ In}}
+\DoxyCodeLine{01822\ \textcolor{comment}{//\ order\ to\ avoid\ these\ warnings,\ we\ need\ to\ use\ \_snprintf\ or\ \_snprintf\_s\ on}}
+\DoxyCodeLine{01823\ \textcolor{comment}{//\ MSVC-\/based\ platforms.\ \ We\ map\ the\ GTEST\_SNPRINTF\_\ macro\ to\ the\ appropriate}}
+\DoxyCodeLine{01824\ \textcolor{comment}{//\ function\ in\ order\ to\ achieve\ that.\ \ We\ use\ macro\ definition\ here\ because}}
+\DoxyCodeLine{01825\ \textcolor{comment}{//\ snprintf\ is\ a\ variadic\ function.}}
+\DoxyCodeLine{01826\ \textcolor{preprocessor}{\#if\ \_MSC\_VER\ >=\ 1400\ \&\&\ !GTEST\_OS\_WINDOWS\_MOBILE}}
+\DoxyCodeLine{01827\ \textcolor{comment}{//\ MSVC\ 2005\ and\ above\ support\ variadic\ macros.}}
+\DoxyCodeLine{01828\ \textcolor{preprocessor}{\#\ define\ GTEST\_SNPRINTF\_(buffer,\ size,\ format,\ ...)\ \(\backslash\)}}
+\DoxyCodeLine{01829\ \textcolor{preprocessor}{\ \ \ \ \ \_snprintf\_s(buffer,\ size,\ size,\ format,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{01830\ \textcolor{preprocessor}{\#elif\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{01831\ \textcolor{comment}{//\ Windows\ CE\ does\ not\ define\ \_snprintf\_s\ and\ MSVC\ prior\ to\ 2005\ doesn't}}
+\DoxyCodeLine{01832\ \textcolor{comment}{//\ complain\ about\ \_snprintf.}}
+\DoxyCodeLine{01833\ \textcolor{preprocessor}{\#\ define\ GTEST\_SNPRINTF\_\ \_snprintf}}
+\DoxyCodeLine{01834\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01835\ \textcolor{preprocessor}{\#\ define\ GTEST\_SNPRINTF\_\ snprintf}}
+\DoxyCodeLine{01836\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{01837\ }
+\DoxyCodeLine{01838\ \textcolor{comment}{//\ The\ maximum\ number\ a\ BiggestInt\ can\ represent.\ \ This\ definition}}
+\DoxyCodeLine{01839\ \textcolor{comment}{//\ works\ no\ matter\ BiggestInt\ is\ represented\ in\ one's\ complement\ or}}
+\DoxyCodeLine{01840\ \textcolor{comment}{//\ two's\ complement.}}
+\DoxyCodeLine{01841\ \textcolor{comment}{//}}
+\DoxyCodeLine{01842\ \textcolor{comment}{//\ We\ cannot\ rely\ on\ numeric\_limits\ in\ STL,\ as\ \_\_int64\ and\ long\ long}}
+\DoxyCodeLine{01843\ \textcolor{comment}{//\ are\ not\ part\ of\ standard\ C++\ and\ numeric\_limits\ doesn't\ need\ to\ be}}
+\DoxyCodeLine{01844\ \textcolor{comment}{//\ defined\ for\ them.}}
+\DoxyCodeLine{01845\ \textcolor{keyword}{const}\ BiggestInt\ kMaxBiggestInt\ =}
+\DoxyCodeLine{01846\ \ \ \ \ \string~(\textcolor{keyword}{static\_cast<}BiggestInt\textcolor{keyword}{>}(1)\ <<\ (8*\textcolor{keyword}{sizeof}(BiggestInt)\ -\/\ 1));}
+\DoxyCodeLine{01847\ }
+\DoxyCodeLine{01848\ \textcolor{comment}{//\ This\ template\ class\ serves\ as\ a\ compile-\/time\ function\ from\ size\ to}}
+\DoxyCodeLine{01849\ \textcolor{comment}{//\ type.\ \ It\ maps\ a\ size\ in\ bytes\ to\ a\ primitive\ type\ with\ that}}
+\DoxyCodeLine{01850\ \textcolor{comment}{//\ size.\ e.g.}}
+\DoxyCodeLine{01851\ \textcolor{comment}{//}}
+\DoxyCodeLine{01852\ \textcolor{comment}{//\ \ \ TypeWithSize<4>::UInt}}
+\DoxyCodeLine{01853\ \textcolor{comment}{//}}
+\DoxyCodeLine{01854\ \textcolor{comment}{//\ is\ typedef-\/ed\ to\ be\ unsigned\ int\ (unsigned\ integer\ made\ up\ of\ 4}}
+\DoxyCodeLine{01855\ \textcolor{comment}{//\ bytes).}}
+\DoxyCodeLine{01856\ \textcolor{comment}{//}}
+\DoxyCodeLine{01857\ \textcolor{comment}{//\ Such\ functionality\ should\ belong\ to\ STL,\ but\ I\ cannot\ find\ it}}
+\DoxyCodeLine{01858\ \textcolor{comment}{//\ there.}}
+\DoxyCodeLine{01859\ \textcolor{comment}{//}}
+\DoxyCodeLine{01860\ \textcolor{comment}{//\ Google\ Test\ uses\ this\ class\ in\ the\ implementation\ of\ floating-\/point}}
+\DoxyCodeLine{01861\ \textcolor{comment}{//\ comparison.}}
+\DoxyCodeLine{01862\ \textcolor{comment}{//}}
+\DoxyCodeLine{01863\ \textcolor{comment}{//\ For\ now\ it\ only\ handles\ UInt\ (unsigned\ int)\ as\ that's\ all\ Google\ Test}}
+\DoxyCodeLine{01864\ \textcolor{comment}{//\ needs.\ \ Other\ types\ can\ be\ easily\ added\ in\ the\ future\ if\ need}}
+\DoxyCodeLine{01865\ \textcolor{comment}{//\ arises.}}
+\DoxyCodeLine{01866\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ size>}
+\DoxyCodeLine{01867\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize}}\ \{}
+\DoxyCodeLine{01868\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01869\ \ \ \textcolor{comment}{//\ This\ prevents\ the\ user\ from\ using\ TypeWithSize<N>\ with\ incorrect}}
+\DoxyCodeLine{01870\ \ \ \textcolor{comment}{//\ values\ of\ N.}}
+\DoxyCodeLine{01871\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt}};}
+\DoxyCodeLine{01872\ \};}
+\DoxyCodeLine{01873\ }
+\DoxyCodeLine{01874\ \textcolor{comment}{//\ The\ specialization\ for\ size\ 4.}}
+\DoxyCodeLine{01875\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{01876\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize}}<4>\ \{}
+\DoxyCodeLine{01877\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01878\ \ \ \textcolor{comment}{//\ unsigned\ int\ has\ size\ 4\ in\ both\ gcc\ and\ MSVC.}}
+\DoxyCodeLine{01879\ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{01880\ \ \ \textcolor{comment}{//\ As\ base/basictypes.h\ doesn't\ compile\ on\ Windows,\ we\ cannot\ use}}
+\DoxyCodeLine{01881\ \ \ \textcolor{comment}{//\ uint32,\ uint64,\ and\ etc\ here.}}
+\DoxyCodeLine{01882\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{Int}};}
+\DoxyCodeLine{01883\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt}};}
+\DoxyCodeLine{01884\ \};}
+\DoxyCodeLine{01885\ }
+\DoxyCodeLine{01886\ \textcolor{comment}{//\ The\ specialization\ for\ size\ 8.}}
+\DoxyCodeLine{01887\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{01888\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize}}<8>\ \{}
+\DoxyCodeLine{01889\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{01890\ \textcolor{preprocessor}{\#if\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01891\ \ \ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{\_\_int64}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{Int}};}
+\DoxyCodeLine{01892\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{\_\_int64}}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt}};}
+\DoxyCodeLine{01893\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01894\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{Int}};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{01895\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt}};\ \ \textcolor{comment}{//\ NOLINT}}
+\DoxyCodeLine{01896\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_OS\_WINDOWS}}
+\DoxyCodeLine{01897\ \};}
+\DoxyCodeLine{01898\ }
+\DoxyCodeLine{01899\ \textcolor{comment}{//\ Integer\ types\ of\ known\ sizes.}}
+\DoxyCodeLine{01900\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize<4>::Int}}\ Int32;}
+\DoxyCodeLine{01901\ \textcolor{keyword}{typedef}\ TypeWithSize<4>::UInt\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt32}};}
+\DoxyCodeLine{01902\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize<8>::Int}}\ Int64;}
+\DoxyCodeLine{01903\ \textcolor{keyword}{typedef}\ TypeWithSize<8>::UInt\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{UInt64}};}
+\DoxyCodeLine{01904\ \textcolor{keyword}{typedef}\ \mbox{\hyperlink{classtesting_1_1internal_1_1_type_with_size}{TypeWithSize<8>::Int}}\ TimeInMillis;\ \ \textcolor{comment}{//\ Represents\ time\ in\ milliseconds.}}
+\DoxyCodeLine{01905\ }
+\DoxyCodeLine{01906\ \textcolor{comment}{//\ Utilities\ for\ command\ line\ flags\ and\ environment\ variables.}}
+\DoxyCodeLine{01907\ }
+\DoxyCodeLine{01908\ \textcolor{comment}{//\ Macro\ for\ referencing\ flags.}}
+\DoxyCodeLine{01909\ \textcolor{preprocessor}{\#define\ GTEST\_FLAG(name)\ FLAGS\_gtest\_\#\#name}}
+\DoxyCodeLine{01910\ }
+\DoxyCodeLine{01911\ \textcolor{comment}{//\ Macros\ for\ declaring\ flags.}}
+\DoxyCodeLine{01912\ \textcolor{preprocessor}{\#define\ GTEST\_DECLARE\_bool\_(name)\ GTEST\_API\_\ extern\ bool\ GTEST\_FLAG(name)}}
+\DoxyCodeLine{01913\ \textcolor{preprocessor}{\#define\ GTEST\_DECLARE\_int32\_(name)\ \(\backslash\)}}
+\DoxyCodeLine{01914\ \textcolor{preprocessor}{\ \ \ \ GTEST\_API\_\ extern\ ::testing::internal::Int32\ GTEST\_FLAG(name)}}
+\DoxyCodeLine{01915\ \textcolor{preprocessor}{\#define\ GTEST\_DECLARE\_string\_(name)\ \(\backslash\)}}
+\DoxyCodeLine{01916\ \textcolor{preprocessor}{\ \ \ \ GTEST\_API\_\ extern\ ::std::string\ GTEST\_FLAG(name)}}
+\DoxyCodeLine{01917\ }
+\DoxyCodeLine{01918\ \textcolor{comment}{//\ Macros\ for\ defining\ flags.}}
+\DoxyCodeLine{01919\ \textcolor{preprocessor}{\#define\ GTEST\_DEFINE\_bool\_(name,\ default\_val,\ doc)\ \(\backslash\)}}
+\DoxyCodeLine{01920\ \textcolor{preprocessor}{\ \ \ \ GTEST\_API\_\ bool\ GTEST\_FLAG(name)\ =\ (default\_val)}}
+\DoxyCodeLine{01921\ \textcolor{preprocessor}{\#define\ GTEST\_DEFINE\_int32\_(name,\ default\_val,\ doc)\ \(\backslash\)}}
+\DoxyCodeLine{01922\ \textcolor{preprocessor}{\ \ \ \ GTEST\_API\_\ ::testing::internal::Int32\ GTEST\_FLAG(name)\ =\ (default\_val)}}
+\DoxyCodeLine{01923\ \textcolor{preprocessor}{\#define\ GTEST\_DEFINE\_string\_(name,\ default\_val,\ doc)\ \(\backslash\)}}
+\DoxyCodeLine{01924\ \textcolor{preprocessor}{\ \ \ \ GTEST\_API\_\ ::std::string\ GTEST\_FLAG(name)\ =\ (default\_val)}}
+\DoxyCodeLine{01925\ }
+\DoxyCodeLine{01926\ \textcolor{comment}{//\ Thread\ annotations}}
+\DoxyCodeLine{01927\ \textcolor{preprocessor}{\#define\ GTEST\_EXCLUSIVE\_LOCK\_REQUIRED\_(locks)}}
+\DoxyCodeLine{01928\ \textcolor{preprocessor}{\#define\ GTEST\_LOCK\_EXCLUDED\_(locks)}}
+\DoxyCodeLine{01929\ }
+\DoxyCodeLine{01930\ \textcolor{comment}{//\ Parses\ 'str'\ for\ a\ 32-\/bit\ signed\ integer.\ \ If\ successful,\ writes\ the\ result}}
+\DoxyCodeLine{01931\ \textcolor{comment}{//\ to\ *value\ and\ returns\ true;\ otherwise\ leaves\ *value\ unchanged\ and\ returns}}
+\DoxyCodeLine{01932\ \textcolor{comment}{//\ false.}}
+\DoxyCodeLine{01933\ \textcolor{comment}{//\ TODO(chandlerc):\ Find\ a\ better\ way\ to\ refactor\ flag\ and\ environment\ parsing}}
+\DoxyCodeLine{01934\ \textcolor{comment}{//\ out\ of\ both\ gtest-\/port.cc\ and\ gtest.cc\ to\ avoid\ exporting\ this\ utility}}
+\DoxyCodeLine{01935\ \textcolor{comment}{//\ function.}}
+\DoxyCodeLine{01936\ \textcolor{keywordtype}{bool}\ ParseInt32(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtesting_1_1_message}{Message}}\&\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{src\_text}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ str,\ Int32*\ value);}
+\DoxyCodeLine{01937\ }
+\DoxyCodeLine{01938\ \textcolor{comment}{//\ Parses\ a\ bool/Int32/string\ from\ the\ environment\ variable}}
+\DoxyCodeLine{01939\ \textcolor{comment}{//\ corresponding\ to\ the\ given\ Google\ Test\ flag.}}
+\DoxyCodeLine{01940\ \textcolor{keywordtype}{bool}\ BoolFromGTestEnv(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{flag}},\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{default\_val}});}
+\DoxyCodeLine{01941\ GTEST\_API\_\ Int32\ Int32FromGTestEnv(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{flag}},\ Int32\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{default\_val}});}
+\DoxyCodeLine{01942\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ StringFromGTestEnv(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{flag}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structtesting_1_1internal_1_1_iterator_traits}{default\_val}});}
+\DoxyCodeLine{01943\ }
+\DoxyCodeLine{01944\ \}\ \ \textcolor{comment}{//\ namespace\ internal}}
+\DoxyCodeLine{01945\ \}\ \ \textcolor{comment}{//\ namespace\ testing}}
+\DoxyCodeLine{01946\ }
+\DoxyCodeLine{01947\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{//\ GTEST\_INCLUDE\_GTEST\_INTERNAL\_GTEST\_PORT\_H\_}}
+
+\end{DoxyCode}

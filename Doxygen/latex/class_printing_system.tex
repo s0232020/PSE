@@ -1,0 +1,88 @@
+\doxysection{Printing\+System Class Reference}
+\hypertarget{class_printing_system}{}\label{class_printing_system}\index{PrintingSystem@{PrintingSystem}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Load\+Error \mbox{\hyperlink{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}{load\+From\+File}} (const std\+::string \&filename)
+\item 
+bool \mbox{\hyperlink{class_printing_system_ade75d7f752e6de7d135c384fe91ab336}{generate\+Status\+Report}} (const std\+::string \&filename)
+\item 
+void \mbox{\hyperlink{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba}{process\+Job}} (const std\+::string \&printer\+Name)
+\item 
+void \mbox{\hyperlink{class_printing_system_a03019cfbb871ebef1bd1fe1670261abb}{add\+Jobs\+To\+Printers}} (\mbox{\hyperlink{class_printing_system}{Printing\+System}} \&system)
+\item 
+\Hypertarget{class_printing_system_aa75a50e159600ab8dc8ce96e2647db75}\label{class_printing_system_aa75a50e159600ab8dc8ce96e2647db75} 
+void {\bfseries process\+Automatically} (\mbox{\hyperlink{class_printing_system}{Printing\+System}} \&system)
+\item 
+\Hypertarget{class_printing_system_ad4f8e012061a7ce76024f0004e7d44ad}\label{class_printing_system_ad4f8e012061a7ce76024f0004e7d44ad} 
+int {\bfseries get\+Printer\+Count} () const
+\item 
+\Hypertarget{class_printing_system_aeac6f8930df6176f71934f1f1fe75ec1}\label{class_printing_system_aeac6f8930df6176f71934f1f1fe75ec1} 
+int {\bfseries get\+Job\+Count} () const
+\item 
+\Hypertarget{class_printing_system_af429414b9b73dca3a0395f568853276d}\label{class_printing_system_af429414b9b73dca3a0395f568853276d} 
+void {\bfseries add\+Printer} (\mbox{\hyperlink{class_printer}{Printer}} \&printer)
+\item 
+\Hypertarget{class_printing_system_adceb2fc911104c7dc7a21de403a46eff}\label{class_printing_system_adceb2fc911104c7dc7a21de403a46eff} 
+void {\bfseries add\+Job} (\mbox{\hyperlink{class_job}{Job}} \&job)
+\item 
+\Hypertarget{class_printing_system_ac48b92711564398ada6bbf7b3945e421}\label{class_printing_system_ac48b92711564398ada6bbf7b3945e421} 
+std\+::vector$<$ \mbox{\hyperlink{class_printer}{Printer}} $>$ \& {\bfseries get\+Printers} ()
+\item 
+\Hypertarget{class_printing_system_a2e27ab3c5fcbffaf44ecb5f92bc3f9bd}\label{class_printing_system_a2e27ab3c5fcbffaf44ecb5f92bc3f9bd} 
+std\+::vector$<$ \mbox{\hyperlink{class_job}{Job}} $>$ \& {\bfseries get\+Jobs} ()
+\item 
+\Hypertarget{class_printing_system_aed2eda4cfa4ee7724b06b5de604fac9d}\label{class_printing_system_aed2eda4cfa4ee7724b06b5de604fac9d} 
+std\+::vector$<$ \mbox{\hyperlink{class_climate_compensation_initiative}{Climate\+Compensation\+Initiative}} $>$ {\bfseries get\+Climate\+Compensation\+Initiatives} () const
+\item 
+\Hypertarget{class_printing_system_a7e54089f1ba7d22fdb0357a5cd378912}\label{class_printing_system_a7e54089f1ba7d22fdb0357a5cd378912} 
+std\+::vector$<$ \mbox{\hyperlink{class_climate_compensation_initiative}{Climate\+Compensation\+Initiative}} $>$ {\bfseries set\+Climate\+Compensation\+Initiatives} ()
+\item 
+\Hypertarget{class_printing_system_ab515fd82982a68f3695cc7fa033f7d62}\label{class_printing_system_ab515fd82982a68f3695cc7fa033f7d62} 
+void {\bfseries add\+Climate\+Compensation\+Initiative} (\mbox{\hyperlink{class_climate_compensation_initiative}{Climate\+Compensation\+Initiative}} \&initiative)
+\item 
+\Hypertarget{class_printing_system_aa0401328c4c5adfbcb9b5a83035f0dd2}\label{class_printing_system_aa0401328c4c5adfbcb9b5a83035f0dd2} 
+void {\bfseries delete\+Job} (int job\+Number)
+\item 
+\Hypertarget{class_printing_system_af742b5d1c88b8d72752a60995dbbd000}\label{class_printing_system_af742b5d1c88b8d72752a60995dbbd000} 
+void {\bfseries delete\+Printer} (const std\+::string \&printer\+Name)
+\item 
+\Hypertarget{class_printing_system_a46d515dc740314b8ab346c206c8e0a60}\label{class_printing_system_a46d515dc740314b8ab346c206c8e0a60} 
+int {\bfseries calculate\+Total\+CO2\+Emissions} ()
+\item 
+\Hypertarget{class_printing_system_aa41ed195b441702bce735cb0467ba30c}\label{class_printing_system_aa41ed195b441702bce735cb0467ba30c} 
+void {\bfseries add\+Uncompleted\+Job} (\mbox{\hyperlink{class_job}{Job}} \&job)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_printing_system_a03019cfbb871ebef1bd1fe1670261abb}\label{class_printing_system_a03019cfbb871ebef1bd1fe1670261abb} 
+\index{PrintingSystem@{PrintingSystem}!addJobsToPrinters@{addJobsToPrinters}}
+\index{addJobsToPrinters@{addJobsToPrinters}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{addJobsToPrinters()}{addJobsToPrinters()}}
+{\footnotesize\ttfamily void Printing\+System\+::add\+Jobs\+To\+Printers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_printing_system}{Printing\+System}} \&}]{system }\end{DoxyParamCaption})}
+
+This function adds all jobs in the system to the first printer in the system. It then deletes the jobs from the system.\Hypertarget{class_printing_system_ade75d7f752e6de7d135c384fe91ab336}\label{class_printing_system_ade75d7f752e6de7d135c384fe91ab336} 
+\index{PrintingSystem@{PrintingSystem}!generateStatusReport@{generateStatusReport}}
+\index{generateStatusReport@{generateStatusReport}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{generateStatusReport()}{generateStatusReport()}}
+{\footnotesize\ttfamily bool Printing\+System\+::generate\+Status\+Report (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+This function generates a status report for the printing system. It includes information about the devices (printers), jobs, and climate compensation initiatives. The report is saved to a file with the given filename. If the report is successfully generated, it returns true; otherwise, it returns false.\Hypertarget{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776}\label{class_printing_system_a86014f4c22b7bf47e7dd29e26a791776} 
+\index{PrintingSystem@{PrintingSystem}!loadFromFile@{loadFromFile}}
+\index{loadFromFile@{loadFromFile}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{loadFromFile()}{loadFromFile()}}
+{\footnotesize\ttfamily Load\+Error Printing\+System\+::load\+From\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+This function loads the printing system configuration from an XML file. It parses the file, extracts the data for printers and jobs, and stores them in the respective objects. If the file is not valid or there\textquotesingle{}s an issue with its content, it returns an appropriate Load\+Error. Otherwise, it returns Load\+Error\+::\+NO\+\_\+\+ERROR to indicate successful loading.\Hypertarget{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba}\label{class_printing_system_a84273cb67f53f1cc0da8b0b7fdc216ba} 
+\index{PrintingSystem@{PrintingSystem}!processJob@{processJob}}
+\index{processJob@{processJob}!PrintingSystem@{PrintingSystem}}
+\doxysubsubsection{\texorpdfstring{processJob()}{processJob()}}
+{\footnotesize\ttfamily void Printing\+System\+::process\+Job (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{printer\+Name }\end{DoxyParamCaption})}
+
+This function processes the jobs in the printer job queue. It processes each page of the job based on the job type (color, bw, scan). After processing all pages, it moves the job to the completed job queue.
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Printing\+System.\+h\item 
+src/Printing\+System.\+cpp\end{DoxyCompactItemize}
