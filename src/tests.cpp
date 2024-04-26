@@ -29,7 +29,8 @@ public:
         // Check if both files are open
         if (!expectedFile.is_open() || !validFile.is_open())
         {
-            std::cerr << "Failed to open one or more files" << std::endl;
+            std::cout << "Failed to open one or more files" << std::endl;
+            return false;
         }
 
         // Read characters from each file and compare them
@@ -66,7 +67,8 @@ public:
 
         if (!expected_outputtxt.is_open() || !actual_outputtxt.is_open())
         {
-            std::cerr << "Failed to open file: line 69" << std::endl;
+            std::cout << "Failed to open file: line 69" << std::endl;
+            return false;
         }
 
         char expectedChar, actualChar;
@@ -245,3 +247,30 @@ TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
     bool result = matchFilesReleaseTarget("release_target_expected_output.txt", "release_target_actual_output.txt");
     EXPECT_TRUE(result);
 }
+
+TEST_F(PrintingSystemTest, AddJobsToPrintersHandlesEmptyJobList)
+{
+    systemTest.loadFromFile("no_jobs.xml");
+    EXPECT_NO_THROW(systemTest.addJobsToPrinters(systemTest));
+}
+
+TEST_F(PrintingSystemTest, GenerateStatusReportCreatesFileWithCorrectName)
+{
+    systemTest.loadFromFile("valid.xml");
+    systemTest.addJobsToPrinters(systemTest);
+    systemTest.generateStatusReport("status_report.txt");
+    EXPECT_TRUE(std::filesystem::exists("status_report.txt"));
+}
+
+TEST_F(PrintingSystemTest, ProcessAutomaticallyHandlesNoJobsInQueue)
+{
+    systemTest.loadFromFile("no_jobs.xml");
+    EXPECT_NO_THROW(systemTest.processAutomatically(systemTest));
+}
+
+TEST_F(PrintingSystemTest, MatchFilesHandlesNonExistentFiles)
+{
+    bool result = matchFiles("non_existent.txt", "valid.xml");
+    EXPECT_FALSE(result);
+}
+
