@@ -13,11 +13,14 @@ class Printer {
      * The speeds are specified in the following unit: pages per minute
      * **/
 public:
-    Printer(const std::string& name, int emissions, int speed, float cost, std::string& type) :
+    Printer(const std::string& name, int emissions, int speed, float cost, const std::string& type) :
             name_(name), emissions_(emissions), speed_(speed), cost_(cost), type_(type) {}
+
+    Printer(){}
 
     std::string getName() const
     {
+
         REQUIRE (!name_.empty(), "Invalid name value");
         return name_;
     }
@@ -30,13 +33,13 @@ public:
 
     int getSpeed() const
     {
-        REQUIRE (speed_ >= 0, "Invalid speed value");
+        REQUIRE (speed_ > 0, "Invalid speed value");
         return speed_;
     }
 
     int getCostPerPage() const
     {
-        REQUIRE (cost_ >= 0, "Invalid cost value");
+        REQUIRE (cost_ > 0, "Invalid cost value");
         return cost_;
     }
 

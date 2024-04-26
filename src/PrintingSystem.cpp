@@ -32,18 +32,18 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
 
     TiXmlElement* element = systemElement->FirstChildElement();
 
-    std::string name = "";
-    int emissions = 0;
-    int speed = 0;
-    float cost = 0;
-    std::string printerType = "";
-    int jobNumber = 0;
-    int pageCount = 0;
-    const char* userName = "";
-    std::string jobType = "";
-
     while (element != nullptr)
     {
+        std::string name = "";
+        int emissions = 0;
+        int speed = 0;
+        float cost = 0;
+        std::string printerType = "";
+        int jobNumber = 0;
+        int pageCount = 0;
+        const char* userName = "";
+        std::string jobType = "";
+
         const char* elementName = element->Value();
 
         if (strcmp(elementName, "DEVICE") == 0)
@@ -105,6 +105,12 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             }
 
             Printer printer(name, emissions, speed, cost, printerType);
+//            Printer printer;
+//            printer.setName(name);
+//            printer.setEmissions(emissions);
+//            printer.setSpeed(speed);
+//            printer.setCostPerPage(cost);
+//            printer.setTypes(printerType);
             addPrinter(printer);
 
             DeviceSeen = true;
@@ -158,6 +164,11 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
             }
 
             Job job(jobNumber, pageCount, userName, jobType);
+//            Job job;
+//            job.setJobNumber(jobNumber);
+//            job.setPageCount(pageCount);
+//            job.setType(jobType);
+//            job.setUserName(userName);
             job.setTotalPages(pageCount);
             addJob(job);
 

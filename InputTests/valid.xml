@@ -8,10 +8,10 @@
     </DEVICE>
     <DEVICE>
         <name>Office_Printer6</name>
-        <emissions>3</emissions>
+        <emissions>2</emissions>
         <type>bw</type>
-        <speed>40</speed>
-        <cost>20</cost>
+        <speed>30</speed>
+        <cost>30</cost>
     </DEVICE>
     <JOB>
         <jobNumber>89751</jobNumber>

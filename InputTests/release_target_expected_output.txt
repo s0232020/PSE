@@ -8,7 +8,7 @@ Printer "Office_Printer6" finished bw job:
 Number: 2189
 Submitted by "anonymous_user"
 3 pages
-CO2 emissions: 9
+CO2 emissions: 6
 
 Printer "Default Scanner" finished scan job:
 Number: 98632
@@ -22,4 +22,4 @@ Submitted by "Bob"
 6 pages
 CO2 emissions: 136
 
-Total CO2 emissions: 151
+Total CO2 emissions: 148

@@ -110,10 +110,6 @@ protected:
     PrintingSystem systemTest;
 };
 
-
-std::ofstream outputFile;
-//make it so that all the output from the tests regarding any cout goes to a txt file
-
 TEST_F(PrintingSystemTest, MissingTests)
 {
     LoadError error = systemTest.loadFromFile("missing_name.xml");
@@ -272,5 +268,12 @@ TEST_F(PrintingSystemTest, MatchFilesHandlesNonExistentFiles)
 {
     bool result = matchFiles("non_existent.txt", "valid.xml");
     EXPECT_FALSE(result);
+}
+
+TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsZeroForNoJobs)
+{
+    systemTest.loadFromFile("no_jobs.xml");
+    int expectedPages = calculateExpectedAddedPages();
+    EXPECT_EQ(expectedPages, 0);
 }
 
