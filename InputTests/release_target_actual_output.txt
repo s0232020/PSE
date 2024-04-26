@@ -1,0 +1,25 @@
+Printer "Office_Printer5" finished color job:
+Number: 89751
+Submitted by "SergeDemeyer"
+2 pages
+CO2 emissions: 6
+
+Printer "Office_Printer6" finished bw job:
+Number: 2189
+Submitted by "anonymous_user"
+3 pages
+CO2 emissions: 9
+
+Printer "Default Scanner" finished scan job:
+Number: 98632
+Submitted by "Peter Selie"
+11 pages
+CO2 emissions: 88
+
+Printer "Default Scanner" finished scan job:
+Number: 98633
+Submitted by "Bob"
+6 pages
+CO2 emissions: 136
+
+Total CO2 emissions: 151

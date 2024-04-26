@@ -253,7 +253,7 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
     {
         outputFile << printer.getName() << ":\n";
         outputFile << "* CO2: " << printer.getEmissions() << "g/page\n";
-        outputFile << "* Pages per minute: " << printer.getPagesPerMinute() << "\n";
+        outputFile << "* Pages per minute: " << printer.getSpeed() << "\n";
         outputFile << "* Type: " << printer.getType() << "\n";
         outputFile << "* Cost per page: " << printer.getCostPerPage() << " cents\n\n";
     }

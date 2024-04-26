@@ -5,7 +5,8 @@
 
 
 
-class PrintingSystemTest : public ::testing::Test {
+class PrintingSystemTest : public ::testing::Test
+        {
     /**
      * This is a class for testing the xml files
      **/
@@ -26,14 +27,17 @@ public:
         std::ifstream validFile(filenametxt);
 
         // Check if both files are open
-        if (!expectedFile.is_open() || !validFile.is_open()) {
+        if (!expectedFile.is_open() || !validFile.is_open())
+        {
             std::cerr << "Failed to open one or more files" << std::endl;
         }
 
         // Read characters from each file and compare them
         char expectedChar, Char;
-        while (expectedFile.get(expectedChar) && validFile.get(Char)) {
-            if (expectedChar != Char) {
+        while (expectedFile.get(expectedChar) && validFile.get(Char))
+        {
+            if (expectedChar != Char)
+            {
                 expectedFile.close();
                 validFile.close();
                 std::filesystem::remove(filenametxt);
@@ -45,9 +49,11 @@ public:
         return true;
     }
 
-    int calculateExpectedAddedPages() {
+    int calculateExpectedAddedPages()
+    {
         int total_pages = 0;
-        for (const Job& job : systemTest.getJobs()) {
+        for (const Job& job : systemTest.getJobs())
+        {
             total_pages += job.getPageCount();
         }
         return total_pages;
@@ -56,7 +62,8 @@ public:
 protected:
     std::streambuf* orig_cout;
     std::ofstream out_file;
-    virtual void SetUp() override {
+    virtual void SetUp() override
+    {
         // Save old buf
         orig_cout = std::cout.rdbuf();
         // Open the output file
@@ -64,7 +71,8 @@ protected:
         // Redirect std::cout to the output file
         std::cout.rdbuf(out_file.rdbuf());
     }
-    virtual void TearDown() override {
+    virtual void TearDown() override
+    {
         // Restore old buf
         std::cout.rdbuf(orig_cout);
         // Close the output file
@@ -116,23 +124,27 @@ TEST_F(PrintingSystemTest, MissingTests)
     EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
-TEST_F(PrintingSystemTest, HappyDay) {
+TEST_F(PrintingSystemTest, HappyDay)
+{
     // Assert whether files match or not
     EXPECT_TRUE(matchFiles("expected_output.txt", "valid.xml"));
     EXPECT_FALSE(matchFiles("non_expected_output.txt", "valid.xml"));
 }
 
-TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingEmissionsErrorForFileWithoutEmissions) {
+TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingEmissionsErrorForFileWithoutEmissions)
+{
     LoadError error = systemTest.loadFromFile("missing_emissions.xml");
     EXPECT_EQ(LoadError::MISSING_EMISSIONS, error);
 }
 
-TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingCostErrorForFileWithoutCost) {
+TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingCostErrorForFileWithoutCost)
+{
     LoadError error = systemTest.loadFromFile("missing_cost.xml");
     EXPECT_EQ(LoadError::MISSING_COST, error);
 }
 
-TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitablePrinter) {
+TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitablePrinter)
+{
     /*
      * The test is checking if the error message is found in the output file.
      * The std::string::find method returns the position of the first occurrence
@@ -150,31 +162,60 @@ TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitab
     EXPECT_NE(output.find("Error: No device exists for the job type bw. The job could not be printed."), std::string::npos);
 }
 
-TEST_F(PrintingSystemTest, LoadFromFileReturnsNoErrorForValidFile) {
+TEST_F(PrintingSystemTest, LoadFromFileReturnsNoErrorForValidFile)
+{
     LoadError error = systemTest.loadFromFile("valid.xml");
     EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
-TEST_F(PrintingSystemTest, MatchFilesReturnsFalseForMismatchedFiles) {
+TEST_F(PrintingSystemTest, MatchFilesReturnsFalseForMismatchedFiles)
+{
     bool result = matchFiles("expected_output.txt", "invalid.xml");
     EXPECT_FALSE(result);
 }
 
-TEST_F(PrintingSystemTest, MatchFilesReturnsTrueForIdenticalFiles) {
+TEST_F(PrintingSystemTest, MatchFilesReturnsTrueForIdenticalFiles)
+{
     bool result = matchFiles("expected_output.txt", "valid.xml");
     EXPECT_TRUE(result);
 }
 
-TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsCorrectTotalForMultipleJobs) {
+TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsCorrectTotalForMultipleJobs)
+{
     systemTest.loadFromFile("multiple_jobs.xml");
     int expectedPages = calculateExpectedAddedPages();
     EXPECT_EQ(expectedPages, 50); // assuming the total pages in multiple_jobs.xml.xml is 50
 }
 
-TEST_F(PrintingSystemTest, AddJobsToPrintersIncreasesQueuePagesForValidJobs) {
+TEST_F(PrintingSystemTest, AddJobsToPrintersIncreasesQueuePagesForValidJobs)
+{
     systemTest.loadFromFile("valid.xml");
     Printer& printer = systemTest.getPrinters().back();
     int initialQueuePages = printer.getQueuePages();
     systemTest.addJobsToPrinters(systemTest);
     EXPECT_GT(printer.getQueuePages(), initialQueuePages);
 }
+
+//TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
+//{
+//  Not fully functional yet
+//    // Save the old buffer
+//    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+//
+//    // Open your file
+//    std::ofstream out("release_target_actual_output.txt");
+//
+//    // Redirect std::cout to your file
+//    std::cout.rdbuf(out.rdbuf());
+//
+//    // Now, everything you print to std::cout will go to output.txt
+//    systemTest.loadFromFile("valid.xml");
+//    systemTest.addJobsToPrinters(systemTest);
+//    systemTest.processAutomatically(systemTest);
+//
+//    // When done, restore the old std::cout buffer
+//    std::cout.rdbuf(oldCoutBuffer);
+//
+//    bool result = matchFiles("release_target_expected_output.txt", "release_target_actual_output.txt");
+//    EXPECT_TRUE(result);
+//}

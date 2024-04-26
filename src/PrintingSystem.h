@@ -17,7 +17,7 @@ public:
     void processAutomatically(PrintingSystem& system);
 
     int getPrinterCount() const
-    { // Keep count of how many printers there are
+    {
         REQUIRE (printers_.size() >= 0, "Invalid printer count");
         return printers_.size();
     }
@@ -30,16 +30,24 @@ public:
 
     void addPrinter(Printer &printer)
     {
-        //REQUIRE (printer.getName() != "", "Invalid printer name");
+        #ifndef TESTING
+        REQUIRE (printer.getName() != "", "Invalid printer name");
+        #endif
         printers_.emplace_back(printer);
-        //ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
+        #ifndef TESTING
+        ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
+        #endif
     }
 
     void addJob(Job &job)
     {
-        //REQUIRE (job.getUserName() != "", "Invalid user name");
+        #ifndef TESTING
+        REQUIRE (job.getUserName() != "", "Invalid user name");
+        #endif
         jobs_.emplace_back(job);
-        //ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
+        #ifndef TESTING
+        ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
+        #endif
     }
 
 
@@ -75,6 +83,7 @@ public:
 
     void deleteJob(int jobNumber)
     {
+        REQUIRE (jobNumber >= 0, "Invalid job number");
         // Find the job with the specified job number
         auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](const Job& job) {
             return job.getJobNumber() == jobNumber;
@@ -88,6 +97,7 @@ public:
 
     void deletePrinter(const std::string &printerName)
     {
+        REQUIRE (printerName != "", "Invalid printer name");
         // Find the printer with the specified name
         auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer& printer) {
             return printer.getName() == printerName;
@@ -101,6 +111,7 @@ public:
 
     int calculateTotalCO2Emissions()
     {
+        REQUIRE (printers_.size() > 0, "Invalid printer count");
         for (Printer& printer : printers_)
         {
             CO2_emissions += printer.getCO2Emissions();
@@ -110,7 +121,9 @@ public:
 
     void addUncompletedJob(Job& job)
     {
+        REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
         uncompletedJobs_.emplace_back(job);
+        ENSURE (uncompletedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
     }
 
 private:
