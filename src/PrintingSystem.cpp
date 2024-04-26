@@ -342,14 +342,6 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
      **/
 
 
-#ifdef DEBUG_SOURCE_FILES
-    // Save old buf
-    std::streambuf* orig_cout = std::cout.rdbuf();
-    std::ofstream null_stream("/dev/null");
-    // Redirect std::cout to null_stream only in debug mode
-    std::cout.rdbuf(null_stream.rdbuf());
-#endif
-
     while (system.getJobCount() > 0)
     {
         Job job = system.getJobs().front();
@@ -358,9 +350,6 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
         {
             if (printer.getType() == job.getType())
             {
-                printer.addJobToPrinter(job);
-                system.deleteJob(job.getJobNumber());
-                break;
                 suitablePrinters.push_back(&printer);
             }
         }
@@ -400,10 +389,7 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
             system.deleteJob(job.getJobNumber());
         }
     }
-#ifdef DEBUG_SOURCE_FILES
-    // Restore old buf only in debug mode
-    std::cout.rdbuf(orig_cout);
-#endif
+
 }
 
 
