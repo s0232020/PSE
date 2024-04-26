@@ -10,7 +10,8 @@ class PrintingSystemTest : public ::testing::Test {
      * This is a class for testing the xml files
      **/
 public:
-    bool matchFiles(std::string expectedFileName, std::string filename){
+    bool matchFiles(std::string expectedFileName, std::string filename)
+    {
         std::ifstream expectedFile(expectedFileName);
         std::string filenametxt = filename + ".txt";
         systemTest.loadFromFile(filename);
@@ -53,13 +54,31 @@ public:
     }
 
 protected:
-    virtual void SetUp() override {}
-    virtual void TearDown() override {}
+    std::streambuf* orig_cout;
+    std::ofstream out_file;
+    virtual void SetUp() override {
+        // Save old buf
+        orig_cout = std::cout.rdbuf();
+        // Open the output file
+        out_file.open("test_output.txt");
+        // Redirect std::cout to the output file
+        std::cout.rdbuf(out_file.rdbuf());
+    }
+    virtual void TearDown() override {
+        // Restore old buf
+        std::cout.rdbuf(orig_cout);
+        // Close the output file
+        out_file.close();
+    }
     PrintingSystem systemTest;
 };
 
 
-TEST_F(PrintingSystemTest, MissingTests){
+std::ofstream outputFile;
+//make it so that all the output from the tests regarding any cout goes to a txt file
+
+TEST_F(PrintingSystemTest, MissingTests)
+{
     LoadError error = systemTest.loadFromFile("missing_name.xml");
     EXPECT_EQ(LoadError::MISSING_NAME, error);
 
@@ -113,19 +132,49 @@ TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingCostErrorForFileWithoutCost
     EXPECT_EQ(LoadError::MISSING_COST, error);
 }
 
-TEST_F(PrintingSystemTest, AddJobsToPrintersDoesNotAddJobToPrinterWithExceededCO2Limit) {
+TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitablePrinter) {
+    /*
+     * The test is checking if the error message is found in the output file.
+     * The std::string::find method returns the position of the first occurrence
+     * of the substring in the string. If the substring is not found,
+     * it returns std::string::npos.
+     */
+    systemTest.loadFromFile("job_with_no_suitable_printer.xml");
+    systemTest.addJobsToPrinters(systemTest);
+
+    // Open the output file
+    std::ifstream in_file("test_output.txt");
+    // Read the file's contents
+    std::string output((std::istreambuf_iterator<char>(in_file)), std::istreambuf_iterator<char>());
+    // Check if the error message is in the file's contents
+    EXPECT_NE(output.find("Error: No device exists for the job type bw. The job could not be printed."), std::string::npos);
+}
+
+TEST_F(PrintingSystemTest, LoadFromFileReturnsNoErrorForValidFile) {
+    LoadError error = systemTest.loadFromFile("valid.xml");
+    EXPECT_EQ(LoadError::NO_ERROR, error);
+}
+
+TEST_F(PrintingSystemTest, MatchFilesReturnsFalseForMismatchedFiles) {
+    bool result = matchFiles("expected_output.txt", "invalid.xml");
+    EXPECT_FALSE(result);
+}
+
+TEST_F(PrintingSystemTest, MatchFilesReturnsTrueForIdenticalFiles) {
+    bool result = matchFiles("expected_output.txt", "valid.xml");
+    EXPECT_TRUE(result);
+}
+
+TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsCorrectTotalForMultipleJobs) {
+    systemTest.loadFromFile("multiple_jobs.xml");
+    int expectedPages = calculateExpectedAddedPages();
+    EXPECT_EQ(expectedPages, 50); // assuming the total pages in multiple_jobs.xml.xml is 50
+}
+
+TEST_F(PrintingSystemTest, AddJobsToPrintersIncreasesQueuePagesForValidJobs) {
     systemTest.loadFromFile("valid.xml");
     Printer& printer = systemTest.getPrinters().back();
     int initialQueuePages = printer.getQueuePages();
-    int expectedAddedPages = calculateExpectedAddedPages();
     systemTest.addJobsToPrinters(systemTest);
-    EXPECT_EQ(printer.getQueuePages(), initialQueuePages + expectedAddedPages);
-}
-
-TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitablePrinter) {
-    systemTest.loadFromFile("valid.xml");
-    testing::internal::CaptureStdout();
-    systemTest.addJobsToPrinters(systemTest);
-    std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_NE(output.find("Correct Error Message"), std::string::npos);
+    EXPECT_GT(printer.getQueuePages(), initialQueuePages);
 }

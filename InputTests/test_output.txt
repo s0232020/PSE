@@ -1,0 +1,4 @@
+Error: No device exists for the job type color. The job could not be printed.
+Error: No device exists for the job type bw. The job could not be printed.
+Error: No device exists for the job type scan. The job could not be printed.
+Error: No device exists for the job type scan. The job could not be printed.

@@ -22,7 +22,6 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
     if (!doc.LoadFile(filename.c_str()))
     {
         loadError = LoadError::FAILED_TO_OPEN_FILE;
-        std::cerr << "Failed to open file" << std::endl;
     }
 
     TiXmlElement* systemElement = doc.FirstChildElement("SYSTEM");
@@ -46,10 +45,6 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
     while (element != nullptr)
     {
         const char* elementName = element->Value();
-
-
-
-
 
         if (strcmp(elementName, "DEVICE") == 0)
         {
@@ -347,6 +342,14 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
      **/
 
 
+#ifdef DEBUG_SOURCE_FILES
+    // Save old buf
+    std::streambuf* orig_cout = std::cout.rdbuf();
+    std::ofstream null_stream("/dev/null");
+    // Redirect std::cout to null_stream only in debug mode
+    std::cout.rdbuf(null_stream.rdbuf());
+#endif
+
     while (system.getJobCount() > 0)
     {
         Job job = system.getJobs().front();
@@ -397,6 +400,10 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
             system.deleteJob(job.getJobNumber());
         }
     }
+#ifdef DEBUG_SOURCE_FILES
+    // Restore old buf only in debug mode
+    std::cout.rdbuf(orig_cout);
+#endif
 }
 
 

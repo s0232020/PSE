@@ -1,0 +1,23 @@
+<SYSTEM>
+    <DEVICE>
+        <name>Office_Printer5</name>
+        <emissions>3</emissions>
+        <type>color</type>
+        <speed>40</speed>
+        <cost>20</cost>
+    </DEVICE>
+    <DEVICE>
+        <name>Office_Printer6</name>
+        <emissions>3</emissions>
+        <type>bw</type>
+        <speed>40</speed>
+        <cost>20</cost>
+    </DEVICE>
+    <DEVICE>
+        <name>Default Scanner</name>
+        <emissions>8</emissions>
+        <type>scan</type>
+        <speed>11</speed>
+        <cost>110</cost>
+    </DEVICE>
+</SYSTEM>
