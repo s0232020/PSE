@@ -3,6 +3,7 @@
 #include "../TinyXML/tinyxml.h"
 #include "main.h"
 #include "Job.h"
+#include <climits>
 
 LoadError PrintingSystem::loadFromFile(const std::string &filename)
 {
