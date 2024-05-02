@@ -2,6 +2,7 @@
 #define PROJECTTITLE_JOB_H
 
 #include <string>
+#include "DesignByContract.h"
 
 class Job {
 public:
@@ -10,110 +11,57 @@ public:
     Job(int jobNumber, int pageCount, const std::string& userName, const std::string& type) :
             jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName), type_(type) {}
 
-    int getJobNumber() const
-    {
-        REQUIRE (jobNumber_ > 0, "JobNumber cannot be a negative value");
-        return jobNumber_;
-    }
+            //REQUIRE (jobNumber_ > 0, "JobNumber cannot be a negative value");
+    int getJobNumber() const;
 
-    int getPageCount() const
-    {
-        REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
-        return pageCount_;
-    }
+    //REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
+    int getPageCount() const;
 
-    const std::string& getUserName() const
-    {
-        REQUIRE (!userName_.empty(), "Invalid username value");
-        return userName_;
-    }
+    //REQUIRE (!userName_.empty(), "Invalid username value");
+    const std::string& getUserName() const;
 
-    std::string getType() const
-    {
-        REQUIRE (!type_.empty(), "Invalid type value");
-        return type_;
-    }
+    //REQUIRE (!type_.empty(), "Invalid type value");
+    std::string getType() const;
 
-    void setJobNumber(int jobNumber)
-    {
-        REQUIRE (jobNumber > 0, "JobNumber cannot be a negative value");
-        jobNumber_ = jobNumber;
-    }
+    //REQUIRE (jobNumber > 0, "JobNumber cannot be a negative value");
+    void setJobNumber(int jobNumber);
 
-    void setPageCount(int pageCount)
-    {
-        REQUIRE (pageCount > 0, "PageCount cannot be a negative value");
-        pageCount_ = pageCount;
-        ENSURE (pageCount_ == pageCount, "PageCount not updated correctly");
-    }
+    //REQUIRE (pageCount > 0, "PageCount cannot be a negative value");
+    //ENSURE (pageCount_ == pageCount, "PageCount not updated correctly");
+    void setPageCount(int pageCount);
 
-    void setUserName(const std::string& userName)
-    {
-        REQUIRE (!userName.empty(), "Invalid username value");
-        userName_ = userName;
-        ENSURE (userName_ == userName, "Username not updated correctly");
-    }
+    //REQUIRE (!userName.empty(), "Invalid username value");
+    //ENSURE (userName_ == userName, "Username not updated correctly");
+    void setUserName(const std::string& userName);
 
-    void setType(const std::string& type)
-    {
-        REQUIRE (!type.empty(), "Invalid type value");
-        type_ = type;
-        ENSURE (type_ == type, "Type not updated correctly");
-    }
+    //REQUIRE (!type.empty(), "Invalid type value");
+    //ENSURE (type_ == type, "Type not updated correctly");
+    void setType(const std::string& type);
 
-    bool processPage()
-    {
-        REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-        if (pageCount_ > 0) {
-            --pageCount_;
-            return true;
-        }
-        return false;
-    }
+    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
+    bool processPage();
 
-    bool isCompleted() const
-    {
-        REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
-        return pageCount_ == 0;
-    }
+    //REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
+    bool isCompleted() const;
 
-    void processScanPage()
-    {
-        REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-        --pageCount_;
-        ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    }
+    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
+    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
+    void processScanPage();
 
-    void processColorPage()
-    {
-        REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-        --pageCount_;
-        ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    }
+    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
+    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
+    void processColorPage();
 
-    void processBWPage()
-    {
-        REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-        --pageCount_;
-        ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    }
+    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
+    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
+    void processBWPage();
 
-    void setTotalPages(int Totalpages)
-    {
-        #ifndef TESTING
-        REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
-        #endif
-        totalpages_ = Totalpages;
-        ENSURE (totalpages_ == Totalpages, "Totalpages not updated correctly");
-    }
+    //REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
+    //ENSURE (totalpages_ == Totalpages, "Totalpages not updated correctly");
+    void setTotalPages(int Totalpages);
 
-    int getTotalPages()
-    {
-        #ifndef TESTING
-        REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
-        #endif
-        return totalpages_;
-    }
+    //REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
+    int getTotalPages();
 
 
 
