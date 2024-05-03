@@ -26,7 +26,7 @@ public:
     std::string getType() const; //REQUIRE (!type_.empty(), "Invalid type value");
     const Job getCurrentJob() const; //REQUIRE (!printerjobs_.empty(), "No current job"); ENSURE (printerjobs_.front().getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
     std::vector<Job> getJobQueue() const; //REQUIRE (printerjobs_.size() >= 0, "Invalid job count"); ENSURE (printerjobs_.size() == getJobQueue().size(), "Job queue not returned correctly");
-    std::vector<Job> getPrinterJobs() const; //REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
+    std::vector<Job*> getPrinterJobs() const; //REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
     void addCompletedJob(Job& job); //REQUIRE (job.getJobNumber() >= 0, "Invalid job number"); ENSURE (completedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
     std::string getStatus(const Job& job) const; //REQUIRE (job.getJobNumber() >= 0, "Invalid job number"); ENSURE (getStatus(job) == "Job is currently being processed" || getStatus(job) == "Job is currently in queue #" + std::to_string(getQueueNumber(job)), "Status not returned correctly");
     int getQueueNumber(const Job& jobR) const; //REQUIRE (jobR.getJobNumber() >= 0, "Invalid job number");

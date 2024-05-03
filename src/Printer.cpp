@@ -86,7 +86,7 @@ std::vector<Job> Printer::getJobQueue() const
     ENSURE (printerjobs_.size() == getJobQueue().size(), "Job queue not returned correctly");
 }
 
-std::vector<Job> Printer::getPrinterJobs() const
+std::vector<Job*> Printer::getPrinterJobs() const
 {
     REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
     return printerjobs_;

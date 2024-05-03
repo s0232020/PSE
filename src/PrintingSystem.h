@@ -35,7 +35,7 @@ public:
     std::vector<Printer>& getPrinters();
 
     //REQUIRE (jobs_.size() > 0, "Invalid job count");
-    std::vector<Job>& getJobs();
+    std::vector<Job*>& getJobs();
 
     //REQUIRE (jobNumber >= 0, "Invalid job number");
     void deleteJob(int jobNumber);
@@ -52,7 +52,7 @@ public:
 
 private:
     std::vector<Printer> printers_;
-    std::vector<Job> jobs_;
+    std::vector<Job*> jobs_;
     std::vector<Job> uncompletedJobs_;
     std::vector<ClimateCompensationInitiative> climateCompensationInitiatives_;
     int CO2_emissions = 0;
