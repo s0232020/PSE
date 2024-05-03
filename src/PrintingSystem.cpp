@@ -5,6 +5,99 @@
 #include "Job.h"
 #include <climits>
 
+int PrintingSystem::getPrinterCount() const
+{
+    REQUIRE (printers_.size() >= 0, "Invalid printer count");
+    return printers_.size();
+}
+
+int PrintingSystem::getJobCount() const
+{
+    REQUIRE (jobs_.size() >= 0, "Invalid job count");
+    return jobs_.size();
+}
+
+void PrintingSystem::addPrinter(Printer &printer)
+{
+#ifndef TESTING
+    REQUIRE (printer.getName() != "", "Invalid printer name");
+#endif
+    printers_.emplace_back(printer);
+#ifndef TESTING
+    ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
+#endif
+}
+
+void PrintingSystem::addJob(Job &job)
+{
+#ifndef TESTING
+    REQUIRE (job.getUserName() != "", "Invalid user name");
+#endif
+    jobs_.emplace_back(job);
+#ifndef TESTING
+    ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
+#endif
+}
+
+std::vector<Printer>& PrintingSystem::getPrinters()
+{
+    REQUIRE (printers_.size() > 0, "Invalid printer count");
+    return printers_;
+}
+
+std::vector<Job>& PrintingSystem::getJobs()
+{
+#ifndef TESTING
+    REQUIRE (jobs_.size() > 0, "Invalid job count");
+#endif
+    return jobs_;
+}
+
+void PrintingSystem::deleteJob(int jobNumber)
+{
+    REQUIRE (jobNumber >= 0, "Invalid job number");
+    auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](const Job &job) {
+        return job.getJobNumber() == jobNumber;
+    });
+
+    // If the job was found, delete it
+    if (it != jobs_.end()) {
+        jobs_.erase(it);
+    }
+}
+
+void PrintingSystem::deletePrinter(const std::string& printerName)
+{
+    REQUIRE (printerName != "", "Invalid printer name");
+    // Find the printer with the specified name
+    auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer& printer) {
+        return printer.getName() == printerName;
+    });
+
+    // If the printer was found, delete it
+    if (it != printers_.end()) {
+        printers_.erase(it);
+    }
+}
+
+int PrintingSystem::calculateTotalCO2Emissions()
+{
+    REQUIRE (printers_.size() > 0, "Invalid printer count");
+    for (Printer& printer : printers_)
+    {
+        CO2_emissions += printer.getCO2Emissions();
+    }
+    return CO2_emissions;
+}
+
+void PrintingSystem::addUncompletedJob(Job& job)
+{
+    REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
+    uncompletedJobs_.emplace_back(job);
+    ENSURE (uncompletedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
+}
+
+
 LoadError PrintingSystem::loadFromFile(const std::string &filename)
 {
     /**
@@ -284,14 +377,6 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
             outputFile << "* Total CO2: " << printer.calculateCO2(job) << "g CO2\n";
             outputFile << "Total cost: " << printer.calculateCost(job) << "\n\n";
         }
-    }
-
-    // Print climate compensation initiatives
-    outputFile << "--== Co2 Compensation initiatives ==--\n";
-    // Assuming you have a method to retrieve initiatives
-    for (const auto &initiative : getClimateCompensationInitiatives())
-    {
-        outputFile << initiative.getName() << " [#" << initiative.getID() << "]\n";
     }
 
     // Close output file
