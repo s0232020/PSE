@@ -52,11 +52,11 @@ void Printer::setName(std::string name)
     ENSURE (name == getName(), "Name value not updated correctly");
 }
 
-void Printer::addJobToPrinter(const Job& job)
+void Printer::addJobToPrinter(Job* job)
 {
-    REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     printerjobs_.emplace_back(job);
-    ENSURE (printerjobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
+    ENSURE (printerjobs_.back()->getJobNumber() == job->getJobNumber(), "Job number not added correctly");
 }
 
 void Printer::setTypes(const std::string &type)
@@ -75,11 +75,11 @@ std::string Printer::getType() const
 const Job Printer::getCurrentJob() const
 {
     REQUIRE (!printerjobs_.empty(), "No current job");
-    return printerjobs_.front();
-    ENSURE (printerjobs_.front().getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
+    return *printerjobs_.front();
+    ENSURE (printerjobs_.front()->getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
 }
 
-std::vector<Job> Printer::getJobQueue() const
+std::vector<Job*> Printer::getJobQueue() const
 {
     REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
     return printerjobs_;
@@ -92,18 +92,18 @@ std::vector<Job*> Printer::getPrinterJobs() const
     return printerjobs_;
 }
 
-void Printer::addCompletedJob(Job &job)
+void Printer::addCompletedJob(Job* job)
 {
-    REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     completedJobs_.emplace_back(job);
     printerjobs_.erase(printerjobs_.begin());
-    ENSURE (completedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
+    ENSURE (completedJobs_.back()->getJobNumber() == job->getJobNumber(), "Job number not added correctly");
 }
 
-std::string Printer::getStatus(const Job& job) const
+std::string Printer::getStatus(const Job* job) const
 {
-    REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
-    if (getCurrentJob().getJobNumber() == job.getJobNumber())
+    REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
+    if (getCurrentJob().getJobNumber() == job->getJobNumber())
     {
         return "Job is currently being processed";
     } else {
@@ -112,13 +112,13 @@ std::string Printer::getStatus(const Job& job) const
     ENSURE (getStatus(job) == "Job is currently being processed" || getStatus(job) == "Job is currently in queue #" + std::to_string(getQueueNumber(job)), "Status not returned correctly");
 }
 
-int Printer::getQueueNumber(const Job& jobR) const
+int Printer::getQueueNumber(const Job* jobR) const
 {
-    REQUIRE (jobR.getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (jobR->getJobNumber() >= 0, "Invalid job number");
     int result = 0;
-    for (Job job : getJobQueue())
+    for (Job* job : getJobQueue())
     {
-        if (job.getJobNumber() == jobR.getJobNumber())
+        if (job->getJobNumber() == jobR->getJobNumber())
         {
             return result;
         } else {
@@ -148,7 +148,7 @@ void Printer::incrementCO2Emissions()
     ENSURE (CO2_emissions == getCO2Emissions(), "CO2 emissions not updated correctly");
 }
 
-int Printer::getCO2Emissions()
+int Printer::getCO2Emissions() const
 {
     REQUIRE (CO2_emissions >= 0, "Invalid CO2 emissions value");
     return CO2_emissions;
@@ -158,8 +158,8 @@ int Printer::getQueuePages()
 {
     REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
     int total_pages = 0;
-    for (const Job& job : printerjobs_) {
-        total_pages += job.getPageCount();
+    for (const Job* job : printerjobs_) {
+        total_pages += job->getPageCount();
     }
     return total_pages;
 }

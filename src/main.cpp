@@ -1,10 +1,10 @@
 #include "PrintingSystem.h"
 
 int main() {
-    PrintingSystem system;
+    PrintingSystem* system = new PrintingSystem;
 
 
-    system.loadFromFile("valid.xml");
+    system->loadFromFile("valid.xml");
     //system.loadFromFile("job_with_no_suitable_printer.xml");
     //system.loadFromFile("missing_cost.xml");
     //system.loadFromFile("missing_name.xml");
@@ -14,9 +14,8 @@ int main() {
     //system.loadFromFile("negative_emissions.xml");
 
 
-    system.addJobsToPrinters(system);
-    system.generateStatusReport("valid_output.txt");
-    system.processJob("Office_Printer5");
-    system.processAutomatically(system);
+    system->addJobsToPrinters(system);
+    system->generateStatusReport("valid_output.txt");
+    system->processAutomatically(system);
     return 0;
 }

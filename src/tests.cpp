@@ -15,15 +15,15 @@ public:
     {
         std::ifstream expectedFile(expectedFileName);
         std::string filenametxt = filename + ".txt";
-        systemTest.loadFromFile(filename);
-        systemTest.addJobsToPrinters(systemTest);
+        systemTest->loadFromFile(filename);
+        systemTest->addJobsToPrinters(systemTest);
         if (std::filesystem::exists(filenametxt))
         {
             std::ifstream validFile(filenametxt);
             validFile.close();
             std::filesystem::remove(filenametxt);
         }
-        systemTest.generateStatusReport(filenametxt);
+        systemTest->generateStatusReport(filenametxt);
         std::ifstream validFile(filenametxt);
 
         // Check if both files are open
@@ -53,9 +53,9 @@ public:
     int calculateExpectedAddedPages()
     {
         int total_pages = 0;
-        for (const Job& job : systemTest.getJobs())
+        for (const Job* job : systemTest->getJobs())
         {
-            total_pages += job.getPageCount();
+            total_pages += job->getPageCount();
         }
         return total_pages;
     }
@@ -107,45 +107,45 @@ protected:
         // Close the output file
         out_file.close();
     }
-    PrintingSystem systemTest;
+    PrintingSystem* systemTest = new PrintingSystem;
 };
 
 TEST_F(PrintingSystemTest, MissingTests)
 {
-    LoadError error = systemTest.loadFromFile("missing_name.xml");
+    LoadError error = systemTest->loadFromFile("missing_name.xml");
     EXPECT_EQ(LoadError::MISSING_NAME, error);
 
-    error = systemTest.loadFromFile("missing_speed.xml");
+    error = systemTest->loadFromFile("missing_speed.xml");
     EXPECT_EQ(LoadError::MISSING_SPEED, error);
 
-    error = systemTest.loadFromFile("missing_emissions.xml");
+    error = systemTest->loadFromFile("missing_emissions.xml");
     EXPECT_EQ(LoadError::MISSING_EMISSIONS, error);
 
-    error = systemTest.loadFromFile("missing_device.xml");
+    error = systemTest->loadFromFile("missing_device.xml");
     EXPECT_EQ(LoadError::MISSING_DEVICE, error);
 
-    error = systemTest.loadFromFile("missing_user.xml");
+    error = systemTest->loadFromFile("missing_user.xml");
     EXPECT_EQ(LoadError::MISSING_USER_NAME, error);
 
-    error = systemTest.loadFromFile("missing_job_number.xml");
+    error = systemTest->loadFromFile("missing_job_number.xml");
     EXPECT_EQ(LoadError::MISSING_JOB_NUMBER, error);
 
-    error = systemTest.loadFromFile("missing_page_count.xml");
+    error = systemTest->loadFromFile("missing_page_count.xml");
     EXPECT_EQ(LoadError::MISSING_PAGE_COUNT, error);
 
-    error = systemTest.loadFromFile("negative_emissions.xml");
+    error = systemTest->loadFromFile("negative_emissions.xml");
     EXPECT_EQ(LoadError::NEGATIVE_VALUE_EMISSIONS, error);
 
-    error = systemTest.loadFromFile("negative_page_count.xml");
+    error = systemTest->loadFromFile("negative_page_count.xml");
     EXPECT_EQ(LoadError::NEGATIVE_VALUE_PAGE_COUNT, error);
 
-    error = systemTest.loadFromFile("negative_job_number.xml");
+    error = systemTest->loadFromFile("negative_job_number.xml");
     EXPECT_EQ(LoadError::NEGATIVE_VALUE_JOB_NUMBER, error);
 
-    error = systemTest.loadFromFile("negative_speed.xml");
+    error = systemTest->loadFromFile("negative_speed.xml");
     EXPECT_EQ(LoadError::NEGATIVE_VALUE_SPEED, error);
 
-    error = systemTest.loadFromFile("valid.xml");
+    error = systemTest->loadFromFile("valid.xml");
     EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
@@ -158,13 +158,13 @@ TEST_F(PrintingSystemTest, HappyDay)
 
 TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingEmissionsErrorForFileWithoutEmissions)
 {
-    LoadError error = systemTest.loadFromFile("missing_emissions.xml");
+    LoadError error = systemTest->loadFromFile("missing_emissions.xml");
     EXPECT_EQ(LoadError::MISSING_EMISSIONS, error);
 }
 
 TEST_F(PrintingSystemTest, LoadFromFileReturnsMissingCostErrorForFileWithoutCost)
 {
-    LoadError error = systemTest.loadFromFile("missing_cost.xml");
+    LoadError error = systemTest->loadFromFile("missing_cost.xml");
     EXPECT_EQ(LoadError::MISSING_COST, error);
 }
 
@@ -176,8 +176,8 @@ TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitab
      * of the substring in the string. If the substring is not found,
      * it returns std::string::npos.
      */
-    systemTest.loadFromFile("job_with_no_suitable_printer.xml");
-    systemTest.addJobsToPrinters(systemTest);
+    systemTest->loadFromFile("job_with_no_suitable_printer.xml");
+    systemTest->addJobsToPrinters(systemTest);
 
     // Open the output file
     std::ifstream in_file("test_output.txt");
@@ -189,7 +189,7 @@ TEST_F(PrintingSystemTest, AddJobsToPrintersPrintsErrorMessageForJobWithNoSuitab
 
 TEST_F(PrintingSystemTest, LoadFromFileReturnsNoErrorForValidFile)
 {
-    LoadError error = systemTest.loadFromFile("valid.xml");
+    LoadError error = systemTest->loadFromFile("valid.xml");
     EXPECT_EQ(LoadError::NO_ERROR, error);
 }
 
@@ -207,18 +207,18 @@ TEST_F(PrintingSystemTest, MatchFilesReturnsTrueForIdenticalFiles)
 
 TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsCorrectTotalForMultipleJobs)
 {
-    systemTest.loadFromFile("multiple_jobs.xml");
+    systemTest->loadFromFile("multiple_jobs.xml");
     int expectedPages = calculateExpectedAddedPages();
     EXPECT_EQ(expectedPages, 50); // assuming the total pages in multiple_jobs.xml.xml is 50
 }
 
 TEST_F(PrintingSystemTest, AddJobsToPrintersIncreasesQueuePagesForValidJobs)
 {
-    systemTest.loadFromFile("valid.xml");
-    Printer& printer = systemTest.getPrinters().back();
-    int initialQueuePages = printer.getQueuePages();
-    systemTest.addJobsToPrinters(systemTest);
-    EXPECT_GT(printer.getQueuePages(), initialQueuePages);
+    systemTest->loadFromFile("valid.xml");
+    Printer* printer = systemTest->getPrinters().back();
+    int initialQueuePages = printer->getQueuePages();
+    systemTest->addJobsToPrinters(systemTest);
+    EXPECT_GT(printer->getQueuePages(), initialQueuePages);
 }
 
 TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
@@ -233,9 +233,9 @@ TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
     std::cout.rdbuf(out.rdbuf());
 
     // Now, everything you print to std::cout will go to output.txt
-    systemTest.loadFromFile("valid.xml");
-    systemTest.addJobsToPrinters(systemTest);
-    systemTest.processAutomatically(systemTest);
+    systemTest->loadFromFile("valid.xml");
+    systemTest->addJobsToPrinters(systemTest);
+    systemTest->processAutomatically(systemTest);
 
     // When done, restore the old std::cout buffer
     std::cout.rdbuf(oldCoutBuffer);
@@ -246,22 +246,22 @@ TEST_F(PrintingSystemTest, TestReleaseTargetOutput)
 
 TEST_F(PrintingSystemTest, AddJobsToPrintersHandlesEmptyJobList)
 {
-    systemTest.loadFromFile("no_jobs.xml");
-    EXPECT_NO_THROW(systemTest.addJobsToPrinters(systemTest));
+    systemTest->loadFromFile("no_jobs.xml");
+    EXPECT_NO_THROW(systemTest->addJobsToPrinters(systemTest));
 }
 
 TEST_F(PrintingSystemTest, GenerateStatusReportCreatesFileWithCorrectName)
 {
-    systemTest.loadFromFile("valid.xml");
-    systemTest.addJobsToPrinters(systemTest);
-    systemTest.generateStatusReport("status_report.txt");
+    systemTest->loadFromFile("valid.xml");
+    systemTest->addJobsToPrinters(systemTest);
+    systemTest->generateStatusReport("status_report.txt");
     EXPECT_TRUE(std::filesystem::exists("status_report.txt"));
 }
 
 TEST_F(PrintingSystemTest, ProcessAutomaticallyHandlesNoJobsInQueue)
 {
-    systemTest.loadFromFile("no_jobs.xml");
-    EXPECT_NO_THROW(systemTest.processAutomatically(systemTest));
+    systemTest->loadFromFile("no_jobs.xml");
+    EXPECT_NO_THROW(systemTest->processAutomatically(systemTest));
 }
 
 TEST_F(PrintingSystemTest, MatchFilesHandlesNonExistentFiles)
@@ -272,7 +272,7 @@ TEST_F(PrintingSystemTest, MatchFilesHandlesNonExistentFiles)
 
 TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsZeroForNoJobs)
 {
-    systemTest.loadFromFile("no_jobs.xml");
+    systemTest->loadFromFile("no_jobs.xml");
     int expectedPages = calculateExpectedAddedPages();
     EXPECT_EQ(expectedPages, 0);
 }

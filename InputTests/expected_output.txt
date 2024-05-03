@@ -52,5 +52,4 @@ Total cost: 1210 cents
 * Total CO2: 48g CO2
 Total cost: 660 cents
 
---== Co2 Compensation initiatives ==--
 # ======================= #

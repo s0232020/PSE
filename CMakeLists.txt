@@ -28,6 +28,8 @@ set(RELEASE_SOURCE_FILES src/main.cpp
         src/Job.cpp
         src/Printer.cpp
         src/Printer.cpp
+        src/Logger.cpp
+        src/Logger.h
 )
 
 # Set source files for DEBUG target
@@ -44,7 +46,9 @@ set(DEBUG_SOURCE_FILES TinyXML/tinystr.cpp
         src/Job.cpp
         src/Job.cpp
         src/Printer.cpp
-        src/Printer.cpp)
+        src/Printer.cpp
+        src/Logger.cpp
+        src/Logger.h)
 
 # Create RELEASE target
 add_executable(release_target ${RELEASE_SOURCE_FILES})

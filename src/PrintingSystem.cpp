@@ -4,6 +4,7 @@
 #include "main.h"
 #include "Job.h"
 #include <climits>
+#include "Logger.h"
 
 int PrintingSystem::getPrinterCount() const
 {
@@ -17,7 +18,7 @@ int PrintingSystem::getJobCount() const
     return jobs_.size();
 }
 
-void PrintingSystem::addPrinter(Printer &printer)
+void PrintingSystem::addPrinter(Printer* printer)
 {
 #ifndef TESTING
     REQUIRE (printer.getName() != "", "Invalid printer name");
@@ -28,18 +29,18 @@ void PrintingSystem::addPrinter(Printer &printer)
 #endif
 }
 
-void PrintingSystem::addJob(Job &job)
+void PrintingSystem::addJob(Job* job)
 {
 #ifndef TESTING
     REQUIRE (job.getUserName() != "", "Invalid user name");
 #endif
-    jobs_.emplace_back(&job);
+    jobs_.emplace_back(job);
 #ifndef TESTING
     ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
 #endif
 }
 
-std::vector<Printer>& PrintingSystem::getPrinters()
+std::vector<Printer*>& PrintingSystem::getPrinters()
 {
     REQUIRE (printers_.size() > 0, "Invalid printer count");
     return printers_;
@@ -56,8 +57,8 @@ std::vector<Job*>& PrintingSystem::getJobs()
 void PrintingSystem::deleteJob(int jobNumber)
 {
     REQUIRE (jobNumber >= 0, "Invalid job number");
-    auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](const Job &job) {
-        return job.getJobNumber() == jobNumber;
+    auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](Job *job) {
+        return job->getJobNumber() == jobNumber;
     });
 
     // If the job was found, delete it
@@ -70,8 +71,8 @@ void PrintingSystem::deletePrinter(const std::string& printerName)
 {
     REQUIRE (printerName != "", "Invalid printer name");
     // Find the printer with the specified name
-    auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer& printer) {
-        return printer.getName() == printerName;
+    auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer* printer) {
+        return printer->getName() == printerName;
     });
 
     // If the printer was found, delete it
@@ -83,18 +84,18 @@ void PrintingSystem::deletePrinter(const std::string& printerName)
 int PrintingSystem::calculateTotalCO2Emissions()
 {
     REQUIRE (printers_.size() > 0, "Invalid printer count");
-    for (Printer& printer : printers_)
+    for (Printer* printer : printers_)
     {
-        CO2_emissions += printer.getCO2Emissions();
+        CO2_emissions += printer->getCO2Emissions();
     }
     return CO2_emissions;
 }
 
-void PrintingSystem::addUncompletedJob(Job& job)
+void PrintingSystem::addUncompletedJob(Job* job)
 {
-    REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     uncompletedJobs_.emplace_back(job);
-    ENSURE (uncompletedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
+    ENSURE (uncompletedJobs_.back()->getJobNumber() == job->getJobNumber(), "Job number not added correctly");
 }
 
 
@@ -198,7 +199,7 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 printerType = printerTypeElement->GetText();
             }
 
-            Printer printer(name, emissions, speed, cost, printerType);
+            Printer* printer = new Printer(name, emissions, speed, cost, printerType);
 //            Printer printer;
 //            printer.setName(name);
 //            printer.setEmissions(emissions);
@@ -257,13 +258,13 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 jobType = jobTypeElement->GetText();
             }
 
-            Job job(jobNumber, pageCount, userName, jobType);
+            Job* job = new Job(jobNumber, pageCount, userName, jobType);
 //            Job job;
 //            job.setJobNumber(jobNumber);
 //            job.setPageCount(pageCount);
 //            job.setType(jobType);
 //            job.setUserName(userName);
-            job.setTotalPages(pageCount);
+            job->setTotalPages(pageCount);
             addJob(job);
 
             JobSeen = true;
@@ -356,26 +357,26 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
     outputFile << "--== Devices ==--\n";
     for (const auto &printer : getPrinters())
     {
-        outputFile << printer.getName() << ":\n";
-        outputFile << "* CO2: " << printer.getEmissions() << "g/page\n";
-        outputFile << "* Pages per minute: " << printer.getSpeed() << "\n";
-        outputFile << "* Type: " << printer.getType() << "\n";
-        outputFile << "* Cost per page: " << printer.getCostPerPage() << " cents\n\n";
+        outputFile << printer->getName() << ":\n";
+        outputFile << "* CO2: " << printer->getEmissions() << "g/page\n";
+        outputFile << "* Pages per minute: " << printer->getSpeed() << "\n";
+        outputFile << "* Type: " << printer->getType() << "\n";
+        outputFile << "* Cost per page: " << printer->getCostPerPage() << " cents\n\n";
     }
 
     // Print job information
     outputFile << "--== Jobs ==--\n";
-    for (Printer &printer : getPrinters())
+    for (Printer* printer : getPrinters())
     {
-        for (Job job : printer.getJobQueue())
+        for (Job* job : printer->getJobQueue())
         {
-            outputFile << "[Job #" << job.getJobNumber() << "]\n";
-            outputFile << "* Owner: " << job.getUserName() << std::endl;
-            outputFile << "* Device: " << printer.getName() << std::endl;
-            outputFile << "* Status: " << printer.getStatus(job) << std::endl;
-            outputFile << "* Total pages: " << job.getTotalPages() << std::endl;
-            outputFile << "* Total CO2: " << printer.calculateCO2(job) << "g CO2\n";
-            outputFile << "Total cost: " << printer.calculateCost(job) << "\n\n";
+            outputFile << "[Job #" << job->getJobNumber() << "]\n";
+            outputFile << "* Owner: " << job->getUserName() << std::endl;
+            outputFile << "* Device: " << printer->getName() << std::endl;
+            outputFile << "* Status: " << printer->getStatus(job) << std::endl;
+            outputFile << "* Total pages: " << job->getTotalPages() << std::endl;
+            outputFile << "* Total CO2: " << printer->calculateCO2(*job) << "g CO2\n";
+            outputFile << "Total cost: " << printer->calculateCost(*job) << "\n\n";
         }
     }
 
@@ -388,50 +389,39 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
 }
 
 
-void PrintingSystem::processJob(const std::string &printerName) {
+void PrintingSystem::processJob(Job* job, Printer* printer) {
     /**
      * This function processes the jobs in the printer job queue.
      * It processes each page of the job based on the job type (color, bw, scan).
      * After processing all pages, it moves the job to the completed job queue.
      **/
-    for (auto& printer : getPrinters()) {
-        if (printer.getName() == printerName) {
-            while (!printer.getPrinterJobs().empty()) {
-                Job* job = printer.getPrinterJobs().front();
+
                 int pageCount = job->getPageCount();
                 // Process each page based on the job type
                 if (job->getType() == "color") {
                     while (job->getPageCount() > 0) {
                         job->processColorPage();
-                        printer.incrementCO2Emissions();
+                        printer->incrementCO2Emissions();
                     }
                 } else if (job->getType() == "bw") {
                     while (job->getPageCount() > 0) {
                         job->processBWPage();
-                        printer.incrementCO2Emissions();
+                        printer->incrementCO2Emissions();
                     }
                 } else if (job->getType() == "scan") {
                     while (job->getPageCount() > 0) {
                         job->processScanPage();
-                        printer.incrementCO2Emissions();
+                        printer->incrementCO2Emissions();
                     }
                 }
 
-                std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
-                std::cout << "Number: " << job->getJobNumber() << "\n";
-                std::cout << "Submitted by \"" << job->getUserName() << "\"\n";
-                std::cout << pageCount << " pages\n";
-                std::cout << "CO2 emissions: " << printer.getCO2Emissions() << "\n\n";
+                Logger::logJobCompletion(job, printer, pageCount);
 
-
-                printer.addCompletedJob(*job);
+                printer->addCompletedJob(job);
             }
-        }
-    }
-}
 
 
-void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
+void PrintingSystem::addJobsToPrinters(PrintingSystem* system)
 {
     /**
      * This function adds all jobs in the system to the first printer in the system.
@@ -439,15 +429,15 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
      **/
 
 
-    while (system.getJobCount() > 0)
+    while (system->getJobCount() > 0)
     {
-        Job* job = system.getJobs().at(0);
+        Job* job = system->getJobs().at(0);
         std::vector<Printer*> suitablePrinters;
-        for (Printer& printer : system.getPrinters())
+        for (Printer* printer : system->getPrinters())
         {
-            if (printer.getType() == job->getType())
+            if (printer->getType() == job->getType())
             {
-                suitablePrinters.push_back(&printer);
+                suitablePrinters.emplace_back(printer);
             }
         }
 
@@ -476,34 +466,26 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem& system)
 
         if (chosenPrinter != nullptr)
         {
-            chosenPrinter->addJobToPrinter(*job);
-            system.deleteJob(job->getJobNumber());
+            chosenPrinter->addJobToPrinter(job);
+            system->deleteJob(job->getJobNumber());
         }
         else
         {
             std::cout << "Error: No device exists for the job type " << job->getType() << ". The job could not be printed." << std::endl;
-            system.addUncompletedJob(*job);
-            system.deleteJob(job->getJobNumber());
+            system->addUncompletedJob(job);
+            system->deleteJob(job->getJobNumber());
         }
     }
 
 }
 
 
-void PrintingSystem::processAutomatically(PrintingSystem& system)
+void PrintingSystem::processAutomatically(PrintingSystem* system)
 {
-    for (auto& printer : getPrinters()) {
-            while (!printer.getPrinterJobs().empty()) {
-                Job* job = printer.getPrinterJobs().at(0);
-                this->processJob(printer.getName());
-
-                std::cout << "Printer \"" << printer.getName() << "\" finished " << printer.getType() << " job:\n";
-                std::cout << "Number: " << job->getJobNumber() << "\n";
-                std::cout << "Submitted by \"" << job->getUserName() << "\"\n";
-                std::cout << job->getPageCount() << " pages\n";
-                std::cout << "CO2 emissions: " << printer.getCO2Emissions() << "\n\n";
-
-                printer.addCompletedJob(*job);
+    for (Printer* printer : getPrinters()) {
+            while (!printer->getPrinterJobs().empty()) {
+                Job* job = printer->getPrinterJobs().at(0);
+                this->processJob(job, printer);
             }
     }
     std::cout << "Total CO2 emissions: " << calculateTotalCO2Emissions() << std::endl;

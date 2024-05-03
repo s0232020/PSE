@@ -12,9 +12,9 @@ class PrintingSystem{
 public:
     LoadError loadFromFile(const std::string& filename);
     bool generateStatusReport(const std::string &filename);
-    void processJob(const std::string &printerName);
-    void addJobsToPrinters(PrintingSystem &system);
-    void processAutomatically(PrintingSystem& system);
+    void processJob(Job* job, Printer* printer);
+    void addJobsToPrinters(PrintingSystem* system);
+    void processAutomatically(PrintingSystem* system);
 
     //REQUIRE (printers_.size() >= 0, "Invalid printer count");
     int getPrinterCount() const;
@@ -24,15 +24,15 @@ public:
 
     //REQUIRE (printer.getName() != "", "Invalid printer name");
     //ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
-    void addPrinter(Printer &printer);
+    void addPrinter(Printer* printer);
 
     //REQUIRE (job.getUserName() != "", "Invalid user name");
     //ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
-    void addJob(Job &job);
+    void addJob(Job* job);
 
 
     //REQUIRE (printers_.size() > 0, "Invalid printer count");
-    std::vector<Printer>& getPrinters();
+    std::vector<Printer*>& getPrinters();
 
     //REQUIRE (jobs_.size() > 0, "Invalid job count");
     std::vector<Job*>& getJobs();
@@ -48,12 +48,12 @@ public:
 
     //REQUIRE (job.getJobNumber() >= 0, "Invalid job number");
     //ENSURE (uncompletedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
-    void addUncompletedJob(Job& job);
+    void addUncompletedJob(Job* job);
 
 private:
-    std::vector<Printer> printers_;
+    std::vector<Printer*> printers_;
     std::vector<Job*> jobs_;
-    std::vector<Job> uncompletedJobs_;
+    std::vector<Job*> uncompletedJobs_;
     std::vector<ClimateCompensationInitiative> climateCompensationInitiatives_;
     int CO2_emissions = 0;
 
