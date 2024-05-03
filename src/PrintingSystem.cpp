@@ -338,51 +338,20 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
      * If the report is successfully generated, it returns true; otherwise, it returns false.
      **/
 
-    std::ofstream outputFile;
+    std::ofstream* outputFile = new std::ofstream;
     std::string outputFilename = filename;
 
     // Open output file with new filename
-    outputFile.open(outputFilename);
+    outputFile->open(outputFilename);
 
     // Check if output file is opened, if not, print error message and return false
-    if (!outputFile.is_open()) {
+    if (!outputFile->is_open()) {
         std::cout << "Failed to create output file: " << filename << "\n";
         return false;
     }
 
-    // Print header
-    outputFile << "# === [System Status] === #\n\n";
-
-    // Print device information
-    outputFile << "--== Devices ==--\n";
-    for (const auto &printer : getPrinters())
-    {
-        outputFile << printer->getName() << ":\n";
-        outputFile << "* CO2: " << printer->getEmissions() << "g/page\n";
-        outputFile << "* Pages per minute: " << printer->getSpeed() << "\n";
-        outputFile << "* Type: " << printer->getType() << "\n";
-        outputFile << "* Cost per page: " << printer->getCostPerPage() << " cents\n\n";
-    }
-
-    // Print job information
-    outputFile << "--== Jobs ==--\n";
-    for (Printer* printer : getPrinters())
-    {
-        for (Job* job : printer->getJobQueue())
-        {
-            outputFile << "[Job #" << job->getJobNumber() << "]\n";
-            outputFile << "* Owner: " << job->getUserName() << std::endl;
-            outputFile << "* Device: " << printer->getName() << std::endl;
-            outputFile << "* Status: " << printer->getStatus(job) << std::endl;
-            outputFile << "* Total pages: " << job->getTotalPages() << std::endl;
-            outputFile << "* Total CO2: " << printer->calculateCO2(*job) << "g CO2\n";
-            outputFile << "Total cost: " << printer->calculateCost(*job) << "\n\n";
-        }
-    }
-
-    // Close output file
-    outputFile << "# ======================= #\n";
-    outputFile.close();
+    Logger::logGenerateStatusReport(outputFile, this);
+    outputFile->close();
 
     // Return true indicating successful generation of the report
     return true;
