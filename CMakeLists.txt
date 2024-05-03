@@ -24,10 +24,6 @@ set(RELEASE_SOURCE_FILES src/main.cpp
         TinyXML/tinyxmlparser.cpp
         src/PrintingSystem.cpp
         src/main.cpp
-        src/Job.cpp
-        src/Job.cpp
-        src/Printer.cpp
-        src/Printer.cpp
 )
 
 # Set source files for DEBUG target
@@ -40,11 +36,7 @@ set(DEBUG_SOURCE_FILES TinyXML/tinystr.cpp
         src/tests.cpp
         src/PrintingSystem.cpp
         src/ClimateCompensationInitiative.h
-        src/ClimateCompensationInitiative.cpp
-        src/Job.cpp
-        src/Job.cpp
-        src/Printer.cpp
-        src/Printer.cpp)
+        src/ClimateCompensationInitiative.cpp)
 
 # Create RELEASE target
 add_executable(release_target ${RELEASE_SOURCE_FILES})
