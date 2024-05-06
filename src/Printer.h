@@ -24,14 +24,14 @@ public:
     void addJobToPrinter(Job* job); //REQUIRE (job.getJobNumber() >= 0, "Invalid job number"); ENSURE (printerjobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
     void setTypes(const std::string& type); //REQUIRE (!type.empty(), "Invalid type value"); ENSURE (type == getType(), "Type value not updated correctly");
     std::string getType() const; //REQUIRE (!type_.empty(), "Invalid type value");
-    const Job getCurrentJob() const; //REQUIRE (!printerjobs_.empty(), "No current job"); ENSURE (printerjobs_.front().getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
+    const Job* getCurrentJob() const; //REQUIRE (!printerjobs_.empty(), "No current job"); ENSURE (printerjobs_.front().getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
     std::vector<Job*> getJobQueue() const; //REQUIRE (printerjobs_.size() >= 0, "Invalid job count"); ENSURE (printerjobs_.size() == getJobQueue().size(), "Job queue not returned correctly");
     std::vector<Job*> getPrinterJobs() const; //REQUIRE (printerjobs_.size() >= 0, "Invalid job count");
     void addCompletedJob(Job* job); //REQUIRE (job.getJobNumber() >= 0, "Invalid job number"); ENSURE (completedJobs_.back().getJobNumber() == job.getJobNumber(), "Job number not added correctly");
     std::string getStatus(const Job* job) const; //REQUIRE (job.getJobNumber() >= 0, "Invalid job number"); ENSURE (getStatus(job) == "Job is currently being processed" || getStatus(job) == "Job is currently in queue #" + std::to_string(getQueueNumber(job)), "Status not returned correctly");
     int getQueueNumber(const Job* jobR) const; //REQUIRE (jobR.getJobNumber() >= 0, "Invalid job number");
-    int calculateCO2(Job job); //REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
-    std::string calculateCost(Job job); //REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
+    int calculateCO2(Job* job); //REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
+    std::string calculateCost(Job* job); //REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
     void incrementCO2Emissions(); //REQUIRE (emissions_ >= 0, "Invalid emissions value"); ENSURE (CO2_emissions == getCO2Emissions(), "CO2 emissions not updated correctly");
     int getCO2Emissions() const; //REQUIRE (CO2_emissions >= 0, "Invalid CO2 emissions value");
     int getQueuePages(); //REQUIRE (printerjobs_.size() >= 0, "Invalid job count");

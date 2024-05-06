@@ -258,14 +258,11 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 jobType = jobTypeElement->GetText();
             }
 
-            Job* job = new Job(jobNumber, pageCount, userName, jobType);
-//            Job job;
-//            job.setJobNumber(jobNumber);
-//            job.setPageCount(pageCount);
-//            job.setType(jobType);
-//            job.setUserName(userName);
-            job->setTotalPages(pageCount);
-            addJob(job);
+            Job* job = JobFactory::createJob(jobType, jobNumber, pageCount, userName);
+            if (job != nullptr) {
+                job->setTotalPages(pageCount);
+                addJob(job);
+            }
 
             JobSeen = true;
 
@@ -366,26 +363,13 @@ void PrintingSystem::processJob(Job* job, Printer* printer) {
      **/
 
                 int pageCount = job->getPageCount();
-                // Process each page based on the job type
-                if (job->getType() == "color") {
-                    while (job->getPageCount() > 0) {
-                        job->processColorPage();
-                        printer->incrementCO2Emissions();
-                    }
-                } else if (job->getType() == "bw") {
-                    while (job->getPageCount() > 0) {
-                        job->processBWPage();
-                        printer->incrementCO2Emissions();
-                    }
-                } else if (job->getType() == "scan") {
-                    while (job->getPageCount() > 0) {
-                        job->processScanPage();
-                        printer->incrementCO2Emissions();
-                    }
+                while (job->getPageCount() > 0)
+                {
+                    job->processPage();
+                    printer->incrementCO2Emissions();
                 }
 
                 Logger::logJobCompletion(job, printer, pageCount);
-
                 printer->addCompletedJob(job);
             }
 

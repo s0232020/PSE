@@ -6,7 +6,6 @@
 
 class Job {
 public:
-    Job() {}
 
     Job(int jobNumber, int pageCount, const std::string& userName, const std::string& type) :
             jobNumber_(jobNumber), pageCount_(pageCount), userName_(userName), type_(type) {}
@@ -39,22 +38,10 @@ public:
     void setType(const std::string& type);
 
     //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    bool processPage();
+    virtual void processPage() = 0;
 
     //REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
     bool isCompleted() const;
-
-    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    void processScanPage();
-
-    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    void processColorPage();
-
-    //REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    //ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-    void processBWPage();
 
     //REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
     //ENSURE (totalpages_ == Totalpages, "Totalpages not updated correctly");
@@ -71,6 +58,46 @@ private:
     std::string userName_;
     std::string type_;
     int totalpages_;
+};
+
+class ColorJob : public Job {
+public:
+    ColorJob(int jobNumber, int pageCount, const std::string& userName)
+            : Job(jobNumber, pageCount, userName, "color") {}
+
+    void processPage()
+    {
+        REQUIRE (getPageCount() > 0, "PageCount cannot be a negative value");
+        setPageCount(getPageCount() - 1);
+    }
+};
+
+class BWJob : public Job {
+public:
+    BWJob(int jobNumber, int pageCount, const std::string& userName)
+            : Job(jobNumber, pageCount, userName, "bw") {}
+    void processPage()
+    {
+        REQUIRE (getPageCount() > 0, "PageCount cannot be a negative value");
+        setPageCount(getPageCount() - 1);
+    }
+};
+
+class ScanJob : public Job{
+public:
+    ScanJob(int jobNumber, int pageCount, const std::string& userName)
+            : Job(jobNumber, pageCount, userName, "scan") {}
+    void processPage()
+    {
+        REQUIRE (getPageCount() > 0, "PageCount cannot be a negative value");
+        setPageCount(getPageCount() - 1);
+    }
+};
+
+class JobFactory{
+public:
+    static Job* createJob(const std::string& type, int jobNumber, int pageCount, const std::string& userName);
+
 };
 
 #endif //PROJECTTITLE_JOB_H

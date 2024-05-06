@@ -72,11 +72,11 @@ std::string Printer::getType() const
     return type_;
 }
 
-const Job Printer::getCurrentJob() const
+const Job* Printer::getCurrentJob() const
 {
     REQUIRE (!printerjobs_.empty(), "No current job");
-    return *printerjobs_.front();
-    ENSURE (printerjobs_.front()->getJobNumber() == getCurrentJob().getJobNumber(), "Current job not returned correctly");
+    return printerjobs_.front();
+    ENSURE (printerjobs_.front()->getJobNumber() == getCurrentJob()->getJobNumber(), "Current job not returned correctly");
 }
 
 std::vector<Job*> Printer::getJobQueue() const
@@ -103,7 +103,7 @@ void Printer::addCompletedJob(Job* job)
 std::string Printer::getStatus(const Job* job) const
 {
     REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
-    if (getCurrentJob().getJobNumber() == job->getJobNumber())
+    if (getCurrentJob()->getJobNumber() == job->getJobNumber())
     {
         return "Job is currently being processed";
     } else {
@@ -128,16 +128,16 @@ int Printer::getQueueNumber(const Job* jobR) const
     return result;
 }
 
-int Printer::calculateCO2(Job job)
+int Printer::calculateCO2(Job* job)
 {
-    REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
-    return job.getTotalPages() * emissions_;
+    REQUIRE (job->getTotalPages() >= 0, "Invalid page count");
+    return job->getTotalPages() * emissions_;
 }
 
-std::string Printer::calculateCost(Job job)
+std::string Printer::calculateCost(Job* job)
 {
-    REQUIRE (job.getTotalPages() >= 0, "Invalid page count");
-    int result = job.getTotalPages() * cost_;
+    REQUIRE (job->getTotalPages() >= 0, "Invalid page count");
+    int result = job->getTotalPages() * cost_;
     return std::to_string(result) + " cents";
 }
 

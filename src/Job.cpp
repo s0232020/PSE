@@ -32,7 +32,7 @@ void Job::setJobNumber(int jobNumber)
 
 void Job::setPageCount(int pageCount)
 {
-    REQUIRE (pageCount > 0, "PageCount cannot be a negative value");
+    REQUIRE (pageCount >= 0, "PageCount cannot be a negative value");
     pageCount_ = pageCount;
     ENSURE (pageCount_ == pageCount, "PageCount not updated correctly");
 }
@@ -51,41 +51,10 @@ void Job::setType(const std::string& type)
     ENSURE (type_ == type, "Type not updated correctly");
 }
 
-bool Job::processPage()
-{
-    REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    if (pageCount_ > 0) {
-        --pageCount_;
-        return true;
-    }
-    return false;
-}
-
 bool Job::isCompleted() const
 {
     REQUIRE (pageCount_ >= 0, "PageCount cannot be a negative value");
     return pageCount_ == 0;
-}
-
-void Job::processScanPage()
-{
-    REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    --pageCount_;
-    ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-}
-
-void Job::processColorPage()
-{
-    REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    --pageCount_;
-    ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
-}
-
-void Job::processBWPage()
-{
-    REQUIRE (pageCount_ > 0, "PageCount cannot be a negative value");
-    --pageCount_;
-    ENSURE (pageCount_ >= 0, "PageCount cannot be a negative value");
 }
 
 void Job::setTotalPages(int Totalpages)
@@ -103,4 +72,17 @@ int Job::getTotalPages()
     REQUIRE (totalpages_ > 0, "Totalpages cannot be a negative value");
 #endif
     return totalpages_;
+}
+
+Job* JobFactory::createJob(const std::string& type, int jobNumber, int pageCount, const std::string& userName) {
+    if (type == "color") {
+        return new ColorJob(jobNumber, pageCount, userName);
+    } else if (type == "bw") {
+        return new BWJob(jobNumber, pageCount, userName);
+    } else if (type == "scan") {
+        return new ScanJob(jobNumber, pageCount, userName);
+    } else {
+        // Handle unknown job type
+        return nullptr;
+    }
 }

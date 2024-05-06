@@ -35,8 +35,8 @@ void Logger::logGenerateStatusReport(std::ofstream* outputFile, PrintingSystem* 
             *outputFile << "* Device: " << printer->getName() << std::endl;
             *outputFile << "* Status: " << printer->getStatus(job) << std::endl;
             *outputFile << "* Total pages: " << job->getTotalPages() << std::endl;
-            *outputFile << "* Total CO2: " << printer->calculateCO2(*job) << "g CO2\n";
-            *outputFile << "Total cost: " << printer->calculateCost(*job) << "\n\n";
+            *outputFile << "* Total CO2: " << printer->calculateCO2(job) << "g CO2\n";
+            *outputFile << "Total cost: " << printer->calculateCost(job) << "\n\n";
         }
     }
 
