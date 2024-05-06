@@ -26,21 +26,21 @@ int Printer::getCostPerPage() const
 
 void Printer::setCostPerPage(int cost)
 {
-    REQUIRE(cost >= 0, "Invalid cost value");
+    REQUIRE(cost > 0 && cost <= 100, "Invalid cost value");
     cost_ = cost;
     ENSURE(cost == getCostPerPage(), "Cost value not updated correctly");
 }
 
 void Printer::setEmissions(int emissions)
 {
-    REQUIRE(emissions >= 0, "Invalid emissions value");
+    REQUIRE(emissions > 0, "Invalid emissions value");
     emissions_ = emissions;
     ENSURE(emissions == getEmissions(), "Emissions value not updated correctly");
 }
 
 void Printer::setSpeed(int speed)
 {
-    REQUIRE (speed >= 0, "Invalid speed value");
+    REQUIRE (speed > 0 && speed <= 1000, "Invalid speed value");
     speed_ = speed;
     ENSURE (speed == getSpeed(), "Speed value not updated correctly");
 }
@@ -48,6 +48,7 @@ void Printer::setSpeed(int speed)
 void Printer::setName(std::string name)
 {
     REQUIRE (!name.empty(), "Invalid name value");
+    REQUIRE (name.length() <= 50, "Name is too long");
     name_ = name;
     ENSURE (name == getName(), "Name value not updated correctly");
 }
@@ -55,6 +56,7 @@ void Printer::setName(std::string name)
 void Printer::addJobToPrinter(Job* job)
 {
     REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (job != nullptr, "Job cannot be null");
     printerjobs_.emplace_back(job);
     ENSURE (printerjobs_.back()->getJobNumber() == job->getJobNumber(), "Job number not added correctly");
 }
@@ -94,6 +96,7 @@ std::vector<Job*> Printer::getPrinterJobs() const
 
 void Printer::addCompletedJob(Job* job)
 {
+    REQUIRE (job != nullptr, "Job cannot be null");
     REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     completedJobs_.emplace_back(job);
     printerjobs_.erase(printerjobs_.begin());
@@ -102,6 +105,7 @@ void Printer::addCompletedJob(Job* job)
 
 std::string Printer::getStatus(const Job* job) const
 {
+    REQUIRE (job != nullptr, "Job cannot be null");
     REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     if (getCurrentJob()->getJobNumber() == job->getJobNumber())
     {
@@ -115,6 +119,7 @@ std::string Printer::getStatus(const Job* job) const
 int Printer::getQueueNumber(const Job* jobR) const
 {
     REQUIRE (jobR->getJobNumber() >= 0, "Invalid job number");
+    REQUIRE (jobR != nullptr, "Job cannot be null");
     int result = 0;
     for (Job* job : getJobQueue())
     {
@@ -131,12 +136,14 @@ int Printer::getQueueNumber(const Job* jobR) const
 int Printer::calculateCO2(Job* job)
 {
     REQUIRE (job->getTotalPages() >= 0, "Invalid page count");
+    REQUIRE (job != nullptr, "Job cannot be null");
     return job->getTotalPages() * emissions_;
 }
 
 std::string Printer::calculateCost(Job* job)
 {
     REQUIRE (job->getTotalPages() >= 0, "Invalid page count");
+    REQUIRE (job != nullptr, "Job cannot be null");
     int result = job->getTotalPages() * cost_;
     return std::to_string(result) + " cents";
 }
@@ -162,4 +169,18 @@ int Printer::getQueuePages()
         total_pages += job->getPageCount();
     }
     return total_pages;
+}
+
+Printer* PrinterFactory::createPrinter(const std::string& name, int emissions, int speed, float cost, const std::string& type)
+{
+    if (type == "color") {
+        return new ColorPrinter(name, emissions, speed, cost);
+    } else if (type == "bw") {
+        return new BWPrinter(name, emissions, speed, cost);
+    } else if (type == "scan") {
+        return new Scanner(name, emissions, speed, cost);
+    } else {
+        // Handle unknown job type
+        return nullptr;
+    }
 }

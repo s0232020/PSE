@@ -199,14 +199,10 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
                 printerType = printerTypeElement->GetText();
             }
 
-            Printer* printer = new Printer(name, emissions, speed, cost, printerType);
-//            Printer printer;
-//            printer.setName(name);
-//            printer.setEmissions(emissions);
-//            printer.setSpeed(speed);
-//            printer.setCostPerPage(cost);
-//            printer.setTypes(printerType);
-            addPrinter(printer);
+            Printer* printer = PrinterFactory::createPrinter(name, emissions, speed, cost, printerType);
+            if (printer != nullptr) {
+                addPrinter(printer);
+            }
 
             DeviceSeen = true;
 
