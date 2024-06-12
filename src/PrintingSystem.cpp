@@ -1,25 +1,43 @@
 #include "PrintingSystem.h"
 #include "ClimateCompensationInitiative.h"
 #include "../TinyXML/tinyxml.h"
-#include "main.h"
 #include "Job.h"
 #include <climits>
 #include "Logger.h"
 
 int PrintingSystem::getPrinterCount() const
 {
+
+
+
     REQUIRE (printers_.size() >= 0, "Invalid printer count");
     return printers_.size();
+
+
+
 }
+
+
 
 int PrintingSystem::getJobCount() const
 {
+
+
+
     REQUIRE (jobs_.size() >= 0, "Invalid job count");
     return jobs_.size();
+
+
+
 }
+
+
 
 void PrintingSystem::addPrinter(Printer* printer)
 {
+
+
+
 #ifndef TESTING
     REQUIRE (printer.getName() != "", "Invalid printer name");
 #endif
@@ -27,10 +45,18 @@ void PrintingSystem::addPrinter(Printer* printer)
 #ifndef TESTING
     ENSURE (printers_.back().getName() == printer.getName(), "Printer name not added correctly");
 #endif
+
+
+
 }
+
+
 
 void PrintingSystem::addJob(Job* job)
 {
+
+
+
 #ifndef TESTING
     REQUIRE (job.getUserName() != "", "Invalid user name");
 #endif
@@ -38,68 +64,137 @@ void PrintingSystem::addJob(Job* job)
 #ifndef TESTING
     ENSURE (jobs_.back().getUserName() == job.getUserName(), "User name not added correctly");
 #endif
+
+
+
 }
+
+
+
 
 std::vector<Printer*>& PrintingSystem::getPrinters()
 {
+
+
+
     REQUIRE (printers_.size() > 0, "Invalid printer count");
     return printers_;
+
+
+
 }
 
 std::vector<Job*>& PrintingSystem::getJobs()
 {
+
+
+
 #ifndef TESTING
     REQUIRE (jobs_.size() > 0, "Invalid job count");
 #endif
     return jobs_;
+
+
+
 }
+
+
+
 
 void PrintingSystem::deleteJob(int jobNumber)
 {
+
+
+
     REQUIRE (jobNumber >= 0, "Invalid job number");
-    auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](Job *job) {
+    auto it = std::find_if(jobs_.begin(), jobs_.end(), [jobNumber](Job *job)
+    {
+
         return job->getJobNumber() == jobNumber;
+
     });
 
+
+
     // If the job was found, delete it
-    if (it != jobs_.end()) {
+    if (it != jobs_.end())
+    {
+
         jobs_.erase(it);
+
     }
+
+
+
 }
+
+
+
 
 void PrintingSystem::deletePrinter(const std::string& printerName)
 {
+
+
+
     REQUIRE (printerName != "", "Invalid printer name");
     // Find the printer with the specified name
-    auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer* printer) {
+    auto it = std::find_if(printers_.begin(), printers_.end(), [printerName](const Printer* printer)
+    {
+
         return printer->getName() == printerName;
+
     });
 
+
+
     // If the printer was found, delete it
-    if (it != printers_.end()) {
+    if (it != printers_.end())
+    {
+
         printers_.erase(it);
+
     }
+
+
+
 }
 
 int PrintingSystem::calculateTotalCO2Emissions()
 {
+
+
+
     REQUIRE (printers_.size() > 0, "Invalid printer count");
     for (Printer* printer : printers_)
     {
+
         CO2_emissions += printer->getCO2Emissions();
+
     }
+
+
+
     return CO2_emissions;
+
+
+
 }
 
 void PrintingSystem::addUncompletedJob(Job* job)
 {
+
+
+
     REQUIRE (job->getJobNumber() >= 0, "Invalid job number");
     uncompletedJobs_.emplace_back(job);
     ENSURE (uncompletedJobs_.back()->getJobNumber() == job->getJobNumber(), "Job number not added correctly");
+
+
+
 }
 
 
-LoadError PrintingSystem::loadFromFile(const std::string &filename)
+std::vector<LoadError> PrintingSystem::loadFromFileXML(const std::string &filename)
 {
     /**
      * This function loads the printing system configuration from an XML file.
@@ -107,28 +202,44 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
      * If the file is not valid or there's an issue with its content, it returns an appropriate LoadError.
      * Otherwise, it returns LoadError::NO_ERROR to indicate successful loading.
      **/
-    LoadError loadError = LoadError::NO_ERROR;
+
+
+
+    std::vector<LoadError> loadError;
+
+
 
     bool DeviceSeen = false;
     bool JobSeen = false;
+
+
 
     TiXmlDocument doc;
 
     if (!doc.LoadFile(filename.c_str()))
     {
-        loadError = LoadError::FAILED_TO_OPEN_FILE;
+
+        loadError.emplace_back(LoadError::FAILED_TO_OPEN_FILE);
+
     }
+
+
 
     TiXmlElement* systemElement = doc.FirstChildElement("SYSTEM");
     if (!systemElement)
     {
-        loadError = LoadError::MISSING_SYSTEM;
+
+        loadError.emplace_back(LoadError::MISSING_SYSTEM);
+
     }
+
+
 
     TiXmlElement* element = systemElement->FirstChildElement();
 
     while (element != nullptr)
     {
+
         std::string name = "";
         int emissions = 0;
         int speed = 0;
@@ -139,141 +250,175 @@ LoadError PrintingSystem::loadFromFile(const std::string &filename)
         const char* userName = "";
         std::string jobType = "";
 
+
+
         const char* elementName = element->Value();
 
         if (strcmp(elementName, "DEVICE") == 0)
         {
+
             TiXmlElement* nameElement = element->FirstChildElement("name");
             TiXmlElement* emissionsElement = element->FirstChildElement("emissions");
             TiXmlElement* speedElement = element->FirstChildElement("speed");
             TiXmlElement* costElement = element->FirstChildElement("cost");
             TiXmlElement* printerTypeElement = element->FirstChildElement("type");
-            if (!nameElement){
-                loadError = LoadError::MISSING_NAME;
-            }
 
-            if (nameElement){
-                name = nameElement->GetText();
-            }
 
-            if (!emissionsElement){
-                loadError = LoadError::MISSING_EMISSIONS;
-            }
 
-            if (emissionsElement){
+            if (!nameElement) loadError.emplace_back(LoadError::MISSING_NAME);
+
+
+
+            if (nameElement) name = nameElement->GetText();
+
+
+
+            if (!emissionsElement) loadError.emplace_back(LoadError::MISSING_EMISSIONS);
+
+
+
+            if (emissionsElement)
+            {
+
                 emissions = std::atoi(emissionsElement->GetText());
-                if (emissions < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_EMISSIONS;
-                }
+                if (emissions < 0) loadError.emplace_back(LoadError::NEGATIVE_VALUE_EMISSIONS);
+
             }
 
-            if (!speedElement){
-                loadError = LoadError::MISSING_SPEED;
-            }
+
+
+            if (!speedElement) loadError.emplace_back(LoadError::MISSING_SPEED);
+
+
 
             if (speedElement)
             {
+
                 speed = std::atoi(speedElement->GetText());
-                if (speed < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_SPEED;
-                }
+                if (speed < 0) loadError.emplace_back(LoadError::NEGATIVE_VALUE_SPEED);
+
             }
 
-            if (!costElement)
-            {
-                loadError = LoadError::MISSING_COST;
-            }
 
-            if (costElement)
-            {
-                cost = std::atof(costElement->GetText());
-            }
 
-            if (!printerTypeElement)
-            {
-                loadError = LoadError::MISSING_PRINTERTYPE;
-            }
+            if (!costElement) loadError.emplace_back(LoadError::MISSING_COST);
 
-            if (printerTypeElement)
-            {
-                printerType = printerTypeElement->GetText();
-            }
+
+
+            if (costElement) cost = std::atof(costElement->GetText());
+
+
+
+            if (!printerTypeElement) loadError.emplace_back(LoadError::MISSING_PRINTERTYPE);
+
+
+
+            if (printerTypeElement) printerType = printerTypeElement->GetText();
+
+
 
             Printer* printer = PrinterFactory::createPrinter(name, emissions, speed, cost, printerType);
-            if (printer != nullptr) {
-                addPrinter(printer);
-            }
+            if (printer != nullptr) addPrinter(printer);
+
+
 
             DeviceSeen = true;
 
+
+
         }
-        else if (strcmp(elementName, "JOB") == 0) {
+        else if (strcmp(elementName, "JOB") == 0)
+        {
+
             TiXmlElement* jobNumberElement = element->FirstChildElement("jobNumber");
             TiXmlElement* pageCountElement = element->FirstChildElement("pageCount");
             TiXmlElement* userNameElement = element->FirstChildElement("userName");
             TiXmlElement* jobTypeElement = element->FirstChildElement("type");
 
 
-            if (!jobNumberElement){
-                loadError = LoadError::MISSING_JOB_NUMBER;
-            }
 
-            if (jobNumberElement){
+            if (!jobNumberElement) loadError.emplace_back(LoadError::MISSING_JOB_NUMBER);
+
+
+
+            if (jobNumberElement)
+            {
+
                 jobNumber = std::atoi(jobNumberElement->GetText());
-                if (jobNumber < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_JOB_NUMBER;
-                }
+                if (jobNumber < 0) loadError.emplace_back(LoadError::NEGATIVE_VALUE_JOB_NUMBER);
+
             }
 
-            if (!pageCountElement){
-                loadError = LoadError::MISSING_PAGE_COUNT;
-            }
 
-            if (pageCountElement){
+
+            if (!pageCountElement) loadError.emplace_back(LoadError::MISSING_PAGE_COUNT);
+
+
+
+            if (pageCountElement)
+            {
+
                 pageCount = std::atoi(pageCountElement->GetText());
-                if (pageCount < 0){
-                    loadError = LoadError::NEGATIVE_VALUE_PAGE_COUNT;
-                }
+                if (pageCount < 0) loadError.emplace_back(LoadError::NEGATIVE_VALUE_PAGE_COUNT);
+
             }
 
-            if (!userNameElement){
-                loadError = LoadError::MISSING_USER_NAME;
-            }
 
-            if (userNameElement){
-                userName = userNameElement->GetText();
-            }
 
-            if(!jobTypeElement)
-            {
-                loadError = LoadError::MISSING_JOBTYPE;
-            }
+            if (!userNameElement) loadError.emplace_back(LoadError::MISSING_USER_NAME);
 
-            if(jobTypeElement)
-            {
-                jobType = jobTypeElement->GetText();
-            }
+
+
+            if (userNameElement) userName = userNameElement->GetText();
+
+
+
+            if(!jobTypeElement) loadError.emplace_back(LoadError::MISSING_JOBTYPE);
+
+
+
+            if(jobTypeElement) jobType = jobTypeElement->GetText();
+
+
 
             Job* job = JobFactory::createJob(jobType, jobNumber, pageCount, userName);
-            if (job != nullptr) {
+            if (job != nullptr)
+            {
+
                 job->setTotalPages(pageCount);
                 addJob(job);
+
             }
+
+
 
             JobSeen = true;
 
+
+
         }
+
+
+
         element = element->NextSiblingElement();
-    }
-    if (!DeviceSeen) {
-        loadError = LoadError::MISSING_DEVICE;
+
+
+
     }
 
-    if (!JobSeen) {
-        loadError = LoadError::MISSING_JOB;
-    }
+
+
+    if (!DeviceSeen) loadError.emplace_back(LoadError::MISSING_DEVICE);
+
+
+
+    if (!JobSeen) loadError.emplace_back(LoadError::MISSING_JOB);
+
+
 
     return loadError;
+
+
 
 }
 
@@ -331,43 +476,68 @@ bool PrintingSystem::generateStatusReport(const std::string &filename)
      * If the report is successfully generated, it returns true; otherwise, it returns false.
      **/
 
+
+
     std::ofstream* outputFile = new std::ofstream;
     std::string outputFilename = filename;
+
+
 
     // Open output file with new filename
     outputFile->open(outputFilename);
 
+
+
     // Check if output file is opened, if not, print error message and return false
-    if (!outputFile->is_open()) {
+    if (!outputFile->is_open())
+    {
+
         std::cout << "Failed to create output file: " << filename << "\n";
         return false;
+
     }
+
+
 
     Logger::logGenerateStatusReport(outputFile, this);
     outputFile->close();
 
+
+
     // Return true indicating successful generation of the report
     return true;
+
+
+
 }
 
 
-void PrintingSystem::processJob(Job* job, Printer* printer) {
+void PrintingSystem::processJob(Job* job, Printer* printer)
+{
     /**
      * This function processes the jobs in the printer job queue.
      * It processes each page of the job based on the job type (color, bw, scan).
      * After processing all pages, it moves the job to the completed job queue.
      **/
 
-                int pageCount = job->getPageCount();
-                while (job->getPageCount() > 0)
-                {
-                    job->processPage();
-                    printer->incrementCO2Emissions();
-                }
 
-                Logger::logJobCompletion(job, printer, pageCount);
-                printer->addCompletedJob(job);
-            }
+
+    int pageCount = job->getPageCount();
+    while (job->getPageCount() > 0)
+    {
+
+        job->processPage();
+        printer->incrementCO2Emissions();
+
+    }
+
+
+
+    Logger::logJobCompletion(job, printer, pageCount);
+    printer->addCompletedJob(job);
+
+
+}
 
 
 void PrintingSystem::addJobsToPrinters(PrintingSystem* system)
@@ -380,50 +550,84 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem* system)
 
     while (system->getJobCount() > 0)
     {
+
         Job* job = system->getJobs().at(0);
         std::vector<Printer*> suitablePrinters;
+
+
+
         for (Printer* printer : system->getPrinters())
         {
+
             if (printer->getType() == job->getType())
             {
+
                 suitablePrinters.emplace_back(printer);
+
             }
+
         }
+
+
+
 
         Printer* chosenPrinter = nullptr;
         if (suitablePrinters.size() > 1)
         {
+
             int minPages = INT_MAX;
             for (Printer* printer : suitablePrinters)
             {
+
                 int totalPages = 0;
                 for (Job* queuedJob : printer->getPrinterJobs())
                 {
+
                     totalPages += queuedJob->getPageCount();
+
                 }
                 if (totalPages < minPages)
                 {
+
                     minPages = totalPages;
                     chosenPrinter = printer;
+
                 }
+
             }
+
         }
+
+
+
         else if (suitablePrinters.size() == 1)
         {
+
             chosenPrinter = suitablePrinters[0];
+
         }
+
+
 
         if (chosenPrinter != nullptr)
         {
+
             chosenPrinter->addJobToPrinter(job);
             system->deleteJob(job->getJobNumber());
+
         }
+
+
+
         else
         {
+
             std::cout << "Error: No device exists for the job type " << job->getType() << ". The job could not be printed." << std::endl;
             system->addUncompletedJob(job);
             system->deleteJob(job->getJobNumber());
+
         }
+
     }
 
 }
@@ -431,11 +635,26 @@ void PrintingSystem::addJobsToPrinters(PrintingSystem* system)
 
 void PrintingSystem::processAutomatically(PrintingSystem* system)
 {
-    for (Printer* printer : getPrinters()) {
-            while (!printer->getPrinterJobs().empty()) {
-                Job* job = printer->getPrinterJobs().at(0);
-                this->processJob(job, printer);
-            }
+
+
+
+    for (Printer* printer : getPrinters())
+    {
+
+        while (!printer->getPrinterJobs().empty())
+        {
+
+            Job* job = printer->getPrinterJobs().at(0);
+            this->processJob(job, printer);
+
+        }
+
     }
+
+
+
     std::cout << "Total CO2 emissions: " << calculateTotalCO2Emissions() << std::endl;
+
+
+
 }
