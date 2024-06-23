@@ -305,7 +305,13 @@ std::vector<LoadError> PrintingSystem::loadFromFileXML(const std::string &filena
 
 
 
-            if (costElement) cost = std::atof(costElement->GetText());
+            if (costElement)
+            {
+
+                cost = std::atoi(costElement->GetText());
+                if (cost < 0) loadError.emplace_back(LoadError::NEGATIVE_VALUE_COST);
+
+            }
 
 
 

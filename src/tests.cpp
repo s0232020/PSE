@@ -717,3 +717,148 @@ TEST_F(PrintingSystemTest, CalculateExpectedAddedPagesReturnsZeroForNoJobs)
 
 
 }
+
+
+
+TEST_F(PrintingSystemTest, NegativeCost)
+{
+
+
+
+    std::vector<LoadError> error = systemTest->loadFromFileXML("negative_cost.xml");
+
+
+
+    if (error.empty()) {std::cout << "Error on the negative cost test" << std::endl; FAIL();} // There should definitely be an error
+
+
+
+    else if (error.size() > 1) FAIL(); // The test fails because there are multiple errors.
+
+
+
+    else if (error.size() == 1) // In this case there is exactly 1 error, which should be the NEGATIVE_VALUE_SPEED error
+    {
+        LoadError loadError = error.front();
+        EXPECT_EQ(LoadError::NEGATIVE_VALUE_COST, loadError);
+    }
+
+
+
+}
+
+
+
+TEST_F(PrintingSystemTest, NegativeSpeedAndCost)
+{
+
+
+
+    std::vector<LoadError> error = systemTest->loadFromFileXML("negative_speed_and_cost.xml");
+
+
+
+    if (error.empty()) {std::cout << "Error on the negative speed and cost test" << std::endl; FAIL();} // There should definitely be an error
+
+
+
+    else if (error.size() != 2) FAIL(); // The test fails because there are multiple errors.
+
+
+
+    else if (error.size() == 2) // In this case there are exactly 2 errors, which are the NEGATIVE_VALUE_SPEED and NEGATIVE_VALUE_COST error
+    {
+        std::vector<LoadError> loadError = {LoadError::NEGATIVE_VALUE_SPEED, LoadError::NEGATIVE_VALUE_COST};
+        EXPECT_EQ(error, loadError);
+    }
+
+
+
+}
+
+
+
+TEST_F(PrintingSystemTest, NegativeSpeedAndEmissions)
+{
+
+
+
+    std::vector<LoadError> error = systemTest->loadFromFileXML("negative_speed_and_emissions.xml");
+
+
+
+    if (error.empty()) {std::cout << "Error on the negative speed and emissions test" << std::endl; FAIL();} // There should definitely be an error
+
+
+
+    else if (error.size() != 2) FAIL(); // The test fails because there are multiple errors.
+
+
+
+    else if (error.size() == 2) // In this case there are exactly 2 errors, which are the NEGATIVE_VALUE_SPEED and NEGATIVE_VALUE_COST error
+    {
+        std::vector<LoadError> loadError = {LoadError::NEGATIVE_VALUE_EMISSIONS, LoadError::NEGATIVE_VALUE_SPEED};
+        EXPECT_EQ(error, loadError);
+    }
+
+
+
+}
+
+
+
+TEST_F(PrintingSystemTest, NegativeCostAndEmissions)
+{
+
+
+
+    std::vector<LoadError> error = systemTest->loadFromFileXML("negative_cost_and_emissions.xml");
+
+
+
+    if (error.empty()) {std::cout << "Error on the negative cost and emissions test" << std::endl; FAIL();} // There should definitely be an error
+
+
+
+    else if (error.size() != 2) FAIL(); // The test fails because there are multiple errors.
+
+
+
+    else if (error.size() == 2) // In this case there are exactly 2 errors, which are the NEGATIVE_VALUE_SPEED and NEGATIVE_VALUE_COST error
+    {
+        std::vector<LoadError> loadError = {LoadError::NEGATIVE_VALUE_EMISSIONS, LoadError::NEGATIVE_VALUE_COST};
+        EXPECT_EQ(error, loadError);
+    }
+
+
+
+}
+
+
+
+TEST_F(PrintingSystemTest, NegativePagecountAndSpeed)
+{
+
+
+
+    std::vector<LoadError> error = systemTest->loadFromFileXML("negative_pc_and_speed.xml");
+
+
+
+    if (error.empty()) {std::cout << "Error on the negative pc and speed test" << std::endl; FAIL();} // There should definitely be an error
+
+
+
+    else if (error.size() != 2) FAIL(); // The test fails because there are multiple errors.
+
+
+
+    else if (error.size() == 2) // In this case there are exactly 2 errors, which are the NEGATIVE_VALUE_SPEED and NEGATIVE_VALUE_COST error
+    {
+        std::vector<LoadError> loadError = {LoadError::NEGATIVE_VALUE_SPEED, LoadError::NEGATIVE_VALUE_PAGE_COUNT};
+        EXPECT_EQ(error, loadError);
+    }
+
+
+
+}
